@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hizmetler</title>
+
+<style>
+  body { margin:0; font-family:Arial; background:#f5f7fa; }
+  header { background:#fff; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+  h2 { margin:0; font-size:20px; }
+  .container { padding:16px; }
+  .card { background:#fff; padding:16px; border-radius:14px; margin-bottom:16px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+  input, button {
+    width:100%; padding:12px; margin-top:10px; border-radius:10px;
+    border:1px solid #d1d5db; font-size:16px;
+  }
+  button { background:#007bff; color:white; border:none; cursor:pointer; }
+  .service {
+    padding:12px; border-bottom:1px solid #e1e5eb;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .service:last-child { border-bottom:none; }
+  .actions button {
+    background:#ef4444; margin-left:8px; padding:6px 10px;
+    border-radius:8px; font-size:13px;
+  }
+  .actions .edit-btn { background:#10b981; }
+</style>
+</head>
+
+<body>
+
+<header><h2>Hizmetler</h2></header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Yeni Hizmet Ekle</h3>
+    <input id="serviceName" placeholder="Hizmet adı...">
+    <input id="servicePrice" placeholder="Ücret (₺)">
+    <button onclick="addService()">Kaydet</button>
+  </div>
+
+  <div class="card">
+    <h3>Mevcut Hizmetler</h3>
+    <div id="serviceList">Yükleniyor...</div>
+  </div>
+
+</div>
+
+<script>
+function go(page) {
+  window.location.href = `https://cepterandevu.github.io/3535/pages/business/${page}.html`;
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getAuth, onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.appspot.com",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let BUSINESS_ID = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    alert("Oturum açmanız gerekiyor.");
+    window.location.href = "../../index.html";
+    return;
+  }
+  BUSINESS_ID = user.uid;
+  loadServices();
+});
+
+window.addService = async function() {
+  const name = document.getElementById("serviceName").value;
+  const price = document.getElementById("servicePrice").value;
+
+  if (!name || !price) {
+    alert("Lütfen tüm alanları doldurun.");
+    return;
+  }
+
+  await addDoc(collection(db, "services"), {
+    businessId: BUSINESS_ID,
+    name: name,
+    price: price
+  });
+
+  document.getElementById("serviceName").value = "";
+  document.getElementById("servicePrice").value = "";
+
+  loadServices();
+};
+
+async function loadServices() {
+  const q = query(collection(db, "services"), where("businessId", "==", BUSINESS_ID));
+  const snap = await getDocs(q);
+
+  const list = document.getElementById("serviceList");
+  list.innerHTML = "";
+
+  snap.forEach(s => {
+    const data = s.data();
+    list.innerHTML += `
+      <div class="service">
+        <div>${data.name} — <b>${data.price}₺</b></div>
+        <div class="actions">
+          <button class="edit-btn" onclick="editService('${s.id}', '${data.name}', '${data.price}')">Düzenle</button>
+          <button onclick="deleteService('${s.id}')">Sil</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+window.deleteService = async function(id) {
+  await deleteDoc(doc(db, "services", id));
+  loadServices();
+};
+
+window.editService = function(id, oldName, oldPrice) {
+  const newName = prompt("Yeni hizmet adı:", oldName);
+  const newPrice = prompt("Yeni fiyat:", oldPrice);
+
+  if (newName && newPrice) {
+    updateDoc(doc(db, "services", id), {
+      name: newName,
+      price: newPrice
+    }).then(loadServices);
+  }
+};
+
+</script>
+</body>
+</html>

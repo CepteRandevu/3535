@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İşletmeler</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #f5f7fa;
+    font-family: Arial;
+  }
+
+  header {
+    background: #007bff;
+    padding: 16px;
+    text-align: center;
+    color: white;
+  }
+
+  header h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .list {
+    padding: 16px;
+  }
+
+  .business-card {
+    background: white;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    cursor: pointer;
+  }
+
+  .business-card img {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .name {
+    font-size: 19px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .info {
+    font-size: 14px;
+    color: #475569;
+    margin-top: 4px;
+  }
+
+  .rating {
+    margin-top: 6px;
+    color: #f59e0b;
+    font-size: 16px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>İşletmeler</h2>
+</header>
+
+<div class="list" id="list">Yükleniyor...</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getFirestore, collection, getDocs 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.appspot.com",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // --- URL PARAMETRELERİ ---
+  const params = new URLSearchParams(window.location.search);
+  const category = params.get("cat");
+  const city = params.get("city");
+  const district = params.get("district");
+
+  // -----------------------------  
+  // İŞLETMELERİ YÜKLE  
+  // -----------------------------
+  loadBusinesses();
+
+  async function loadBusinesses() {
+    const listBox = document.getElementById("list");
+
+    const snap = await getDocs(collection(db, "businesses"));
+
+    let html = "";
+
+    snap.forEach(doc => {
+      const b = doc.data();
+
+      // Filtre (kategori + şehir + ilçe)
+      if (b.category !== category) return;
+      if (b.city !== city) return;
+      if (b.district !== district) return;
+
+      const img = b.coverPhoto || "https://via.placeholder.com/400x200?text=Kapak+Fotoğrafı";
+
+      html += `
+        <div class="business-card" onclick="goDetail('${doc.id}')">
+          <img src="${img}">
+          <div class="name">${b.name}</div>
+          <div class="info">${b.category} • ${b.city}/${b.district}</div>
+          <div class="rating">⭐ ${b.rating || "0.0"} (${b.reviewCount || 0} yorum)</div>
+        </div>
+      `;
+    });
+
+    if (!html) {
+      html = "<p>Bu bölgede işletme bulunamadı.</p>";
+    }
+
+    listBox.innerHTML = html;
+  }
+
+  // --- DETAILS SAYFASINA GİT ---
+  window.goDetail = function(id){
+    window.location.href = `user-business-detail.html?id=${id}`;
+  };
+</script>
+
+</body>
+</html>

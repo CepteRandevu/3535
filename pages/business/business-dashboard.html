@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İşletme Paneli - Randevular</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #f2f4f7;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  header {
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  nav {
+    display: flex;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  nav button {
+    flex: 1;
+    padding: 14px 0;
+    border: none;
+    background: white;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+  }
+
+  nav button.active {
+    border-bottom: 3px solid #007bff;
+    color: #007bff;
+  }
+
+  .container {
+    padding: 16px;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .card {
+    background: white;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+  }
+
+  .appt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .appt-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #111827;
+  }
+
+  .status-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .st-pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .st-approved {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .st-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .appt-body {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 8px;
+  }
+
+  .appt-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .btn-approve {
+    background: #16a34a;
+    color: white;
+  }
+
+  .btn-reject {
+    background: #ef4444;
+    color: white;
+  }
+
+  .empty {
+    background:white;
+    padding:14px;
+    border-radius:12px;
+    text-align:center;
+    color:#6b7280;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>İşletme Paneli</h2>
+  <div>🔔</div>
+</header>
+
+<nav>
+  <button class="active" onclick="go('business-dashboard')">Randevular</button>
+  <button onclick="go('business-services')">Hizmetler</button>
+  <button onclick="go('business-workers')">Çalışanlar</button>
+  <button onclick="go('business-settings')">Ayarlar</button>
+</nav>
+
+<div class="container">
+  <div id="appointments"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getFirestore, collection, query, where, getDocs, doc, updateDoc, orderBy 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { 
+    getAuth, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.appspot.com",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // GitHub Pages yolu için global nav
+  window.go = function(page) {
+    window.location.href = `https://cepterandevu.github.io/3535/pages/business/${page}.html`;
+  };
+
+  const box = document.getElementById("appointments");
+  let currentBusinessId = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("Giriş yapmalısınız.");
+      window.location.href = "/3535/pages/business/business-auth.html";
+      return;
+    }
+    currentBusinessId = user.uid;
+    loadAppointments();
+  });
+
+  async function loadAppointments() {
+    if (!currentBusinessId) return;
+
+    box.innerHTML = "<div class='empty'>Randevular yükleniyor...</div>";
+
+    const q = query(
+      collection(db, "appointments"),
+      where("businessId", "==", currentBusinessId)
+      // orderBy eklemek istersen: orderBy("date")
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      box.innerHTML = "<div class='empty'>Hiç randevu yok.</div>";
+      return;
+    }
+
+    box.innerHTML = "";
+
+    snap.forEach(d => {
+      const a = d.data();
+      const id = d.id;
+
+      const status = a.status || "pending";
+      let statusClass = "st-pending";
+      let statusText = "Beklemede";
+
+      if (status === "approved") {
+        statusClass = "st-approved";
+        statusText = "Onaylandı";
+      } else if (status === "rejected") {
+        statusClass = "st-rejected";
+        statusText = "Reddedildi";
+      }
+
+      const canAct = status === "pending";
+
+      box.innerHTML += `
+        <div class="card">
+          <div class="appt-header">
+            <div class="appt-title">${a.serviceName || "Hizmet"}</div>
+            <div class="status-chip ${statusClass}">${statusText}</div>
+          </div>
+          <div class="appt-body">
+            <div><b>Tarih:</b> ${a.date || "-"} • <b>Saat:</b> ${a.time || "-"}</div>
+            <div><b>Çalışan:</b> ${a.workerName || "-"}</div>
+            ${a.customerEmail ? `<div><b>Müşteri:</b> ${a.customerEmail}</div>` : ""}
+          </div>
+          ${
+            canAct
+              ? `<div class="appt-actions">
+                   <button class="btn btn-approve" onclick="approveAppointment('${id}')">Onayla</button>
+                   <button class="btn btn-reject" onclick="rejectAppointment('${id}')">Reddet</button>
+                 </div>`
+              : ""
+          }
+        </div>
+      `;
+    });
+  }
+
+  // Global fonksiyonları window’a bağla
+  window.approveAppointment = async function(id) {
+    if (!confirm("Bu randevuyu onaylamak istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "approved"
+    });
+
+    alert("Randevu onaylandı.");
+    loadAppointments();
+  };
+
+  window.rejectAppointment = async function(id) {
+    if (!confirm("Bu randevuyu reddetmek istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "rejected"
+    });
+
+    alert("Randevu reddedildi.");
+    loadAppointments();
+  };
+
+</script>
+
+</body>
+</html>
