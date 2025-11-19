@@ -189,7 +189,7 @@
 
       <div class="bottom-text">
         Henüz hesabın yok mu?
-        <a href="/3535/pages/user/user-register.html">Hemen üye ol</a>
+        <a href="/al/pages/user/user-register.html">Hemen üye ol</a>
       </div>
     </div>
   </div>
@@ -221,7 +221,7 @@
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        window.location.href = "/3535/pages/user/user-panel.html";
+        window.location.href = "/al/pages/user/user-panel.html";
       }
     });
 
@@ -240,7 +240,7 @@
         loginBtn.textContent = "Giriş yapılıyor...";
 
         await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "/3535/pages/user/user-panel.html";
+        window.location.href = "/al/pages/user/user-panel.html";
       } catch (err) {
         console.error(err);
         let msg = "Giriş yapılırken hata oluştu.";

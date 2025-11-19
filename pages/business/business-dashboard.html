@@ -188,7 +188,7 @@
 
   // GitHub Pages yolu için global nav
   window.go = function(page) {
-    window.location.href = `https://cepterandevu.github.io/3535/pages/business/${page}.html`;
+    window.location.href = `https://cepterandevu.github.io/al/pages/business/${page}.html`;
   };
 
   const box = document.getElementById("appointments");
@@ -197,7 +197,7 @@
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       alert("Giriş yapmalısınız.");
-      window.location.href = "/3535/pages/business/business-auth.html";
+      window.location.href = "/al/pages/business/business-auth.html";
       return;
     }
     currentBusinessId = user.uid;
