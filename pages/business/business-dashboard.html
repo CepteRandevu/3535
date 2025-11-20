@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İşletme Paneli - Randevular</title>
+
+
+<style>
+  :root {
+    --bg: #020617;
+    --card: #020617;
+    --card-soft: #0b1220;
+    --accent: #2563eb;
+    --accent-soft: rgba(37,99,235,0.22);
+    --accent-strong: #1d4ed8;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: rgba(148,163,184,0.35);
+    --danger: #ef4444;
+    --success: #22c55e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #1e40af 0, #020617 40%, #000 100%);
+    color: var(--text);
+  }
+  header {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(30,64,175,0.7);
+    background: rgba(15,23,42,0.96);
+    box-shadow: 0 12px 32px rgba(15,23,42,0.9);
+  }
+  header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+  header div {
+    font-size: 18px;
+  }
+  nav {
+    display: flex;
+    background: rgba(15,23,42,0.96);
+    border-bottom: 1px solid rgba(30,64,175,0.7);
+  }
+  nav button {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+  }
+  nav button.active {
+    border-bottom-color: #3b82f6;
+    color: #e5e7eb;
+  }
+  .container {
+    padding: 14px 16px 24px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .summary {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .summary-card {
+    flex: 1;
+    border-radius: 16px;
+    padding: 8px 10px;
+    background: rgba(15,23,42,0.96);
+    border: 1px solid rgba(30,64,175,0.7);
+    box-shadow: 0 12px 30px rgba(15,23,42,0.9);
+    font-size: 11px;
+  }
+  .summary-label {
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .summary-value {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  #appointmentsBox {
+    margin-top: 4px;
+  }
+  .card {
+    background: rgba(15,23,42,0.96);
+    border-radius: 18px;
+    padding: 12px 12px 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(30,64,175,0.7);
+    box-shadow: 0 12px 30px rgba(15,23,42,0.9);
+    font-size: 13px;
+  }
+  .appt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .appt-title {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .status-chip {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    border: 1px solid rgba(148,163,184,0.5);
+  }
+  .st-pending {
+    background: rgba(251,191,36,0.12);
+    border-color: rgba(234,179,8,0.8);
+    color: #facc15;
+  }
+  .st-approved {
+    background: rgba(34,197,94,0.12);
+    border-color: rgba(22,163,74,0.85);
+    color: #bbf7d0;
+  }
+  .st-rejected {
+    background: rgba(248,113,113,0.12);
+    border-color: rgba(239,68,68,0.9);
+    color: #fecaca;
+  }
+  .appt-body {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .appt-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn {
+    flex: 1;
+    padding: 7px;
+    border-radius: 999px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-approve {
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+    color: white;
+  }
+  .btn-reject {
+    background: linear-gradient(135deg,#ef4444,#b91c1c);
+    color: white;
+  }
+  .empty {
+    background: rgba(15,23,42,0.95);
+    padding: 14px;
+    border-radius: 16px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed rgba(148,163,184,0.7);
+    margin-top: 10px;
+  }
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <h2>İşletme Paneli</h2>
+  <div>🔔</div>
+</header>
+
+<nav>
+  <button class="active" onclick="go('business-dashboard')">Randevular</button>
+  <button onclick="go('business-services')">Hizmetler</button>
+  <button onclick="go('business-workers')">Çalışanlar</button>
+  <button onclick="go('business-settings')">Ayarlar</button>
+</nav>
+
+<div class="container">
+  <div id="appointments"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getFirestore, collection, query, where, getDocs, doc, updateDoc, orderBy 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { 
+    getAuth, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.appspot.com",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // GitHub Pages yolu için global nav
+  window.go = function(page) {
+    window.location.href = `https://cepterandevu.github.io/al/pages/business/${page}.html`;
+  };
+
+  const box = document.getElementById("appointments");
+  let currentBusinessId = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("Giriş yapmalısınız.");
+      window.location.href = "/al/pages/business/business-auth.html";
+      return;
+    }
+    currentBusinessId = user.uid;
+    loadAppointments();
+  });
+
+
+  function startAppointmentsListener() {
+    if (!currentBusinessId) return;
+
+    const q = query(
+      collection(db, "appointments"),
+      where("businessId", "==", currentBusinessId)
+    );
+
+    onSnapshot(q, (snap) => {
+      appointmentsBox.innerHTML = "";
+      let upcoming = 0;
+      let past = 0;
+      let cancelled = 0;
+
+      const now = new Date();
+      const all = [];
+
+      snap.forEach(docSnap => {
+        const a = docSnap.data();
+        const id = docSnap.id;
+        const dt = new Date(`${a.date || ""}T${a.time || "00:00"}:00`);
+        const st = (a.status || "pending").toLowerCase();
+        all.push({ id, ...a, dt, st });
+      });
+
+      if (all.length === 0) {
+        appointmentsBox.innerHTML = "<div class='empty'>Henüz randevu yok.</div>";
+        if (document.getElementById("sumUpcoming")) {
+          document.getElementById("sumUpcoming").innerText = "0";
+          document.getElementById("sumPast").innerText = "0";
+          document.getElementById("sumCancelled").innerText = "0";
+        }
+        return;
+      }
+
+      all.sort((a,b) => a.dt - b.dt);
+
+      all.forEach(a => {
+        if (a.st === "cancelled") {
+          cancelled++;
+          past++;
+        } else if (a.dt >= now) {
+          upcoming++;
+        } else {
+          past++;
+        }
+        renderAppointmentCard(a);
+      });
+
+      if (document.getElementById("sumUpcoming")) {
+        document.getElementById("sumUpcoming").innerText = upcoming;
+        document.getElementById("sumPast").innerText = past;
+        document.getElementById("sumCancelled").innerText = cancelled;
+      }
+    }, (err) => {
+      console.error(err);
+      appointmentsBox.innerHTML = "<div class='empty'>Randevular alınırken hata oluştu.</div>";
+    });
+  }
+
+  async function loadAppointments() {
+    if (!currentBusinessId) return;
+
+    box.innerHTML = "<div class='empty'>Randevular yükleniyor...</div>";
+
+    const q = query(
+      collection(db, "appointments"),
+      where("businessId", "==", currentBusinessId)
+      // orderBy eklemek istersen: orderBy("date")
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      box.innerHTML = "<div class='empty'>Hiç randevu yok.</div>";
+      return;
+    }
+
+    box.innerHTML = "";
+
+    snap.forEach(d => {
+      const a = d.data();
+      const id = d.id;
+
+      const status = (a.status || "pending").toLowerCase();
+      let statusClass = "st-pending";
+      let statusText = "Beklemede";
+
+      if (status === "confirmed") {
+        statusClass = "st-approved";
+        statusText = "Onaylandı";
+      } else if (status === "cancelled") {
+        statusClass = "st-rejected";
+        statusText = "İptal edildi";
+      }
+
+      const canAct = status === "pending";
+
+      box.innerHTML += `
+        <div class="card">
+          <div class="appt-header">
+            <div class="appt-title">${a.serviceName || "Hizmet"}</div>
+            <div class="status-chip ${statusClass}">${statusText}</div>
+          </div>
+          <div class="appt-body">
+            <div><b>Tarih:</b> ${a.date || "-"} • <b>Saat:</b> ${a.time || "-"}</div>
+            <div><b>Çalışan:</b> ${a.workerName || "-"}</div>
+            ${a.customerEmail ? `<div><b>Müşteri:</b> ${a.customerEmail}</div>` : ""}
+          </div>
+          ${
+            canAct
+              ? `<div class="appt-actions">
+                   <button class="btn btn-approve" onclick="approveAppointment('${id}')">Onayla</button>
+                   <button class="btn btn-reject" onclick="rejectAppointment('${id}')">Reddet</button>
+                 </div>`
+              : ""
+          }
+        </div>
+      `;
+    });
+  }
+
+  // Global fonksiyonları window’a bağla
+  window.approveAppointment = async function(id) {
+    if (!confirm("Bu randevuyu onaylamak istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "confirmed"
+    });
+
+    alert("Randevu onaylandı.");
+  };
+
+  window.rejectAppointment = async function(id) {
+    if (!confirm("Bu randevuyu reddetmek istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "rejected"
+    });
+
+    alert("Randevu reddedildi.");
+    loadAppointments();
+  };
+
+</script>
+
+</body>
+</html>

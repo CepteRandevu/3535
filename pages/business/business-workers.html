@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Çalışanlar</title>
+
+<style>
+  body { margin:0; font-family:Arial; background:#f5f7fa; }
+  header { background:#fff; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+  h2 { margin:0; font-size:20px; }
+  .container { padding:16px; }
+
+  .card {
+    background:#fff;
+    padding:16px;
+    border-radius:14px;
+    margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  }
+
+  input, button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+    font-size:16px;
+  }
+
+  button {
+    background:#007bff;
+    border:none;
+    color:#fff;
+    cursor:pointer;
+  }
+
+  .worker {
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .worker:last-child { border-bottom:none; }
+
+  .actions button {
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:13px;
+    margin-left:8px;
+    color:#fff;
+  }
+
+  .delete-btn { background:#dc2626; }
+  .edit-btn { background:#10b981; }
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>Çalışanlar</h2>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Yeni Çalışan Ekle</h3>
+    <input id="workerName" placeholder="Ad Soyad">
+    <input id="workerRole" placeholder="Görev (Berber, Uzman, vs)">
+    <button onclick="addWorker()">Kaydet</button>
+  </div>
+
+  <div class="card">
+    <h3>Mevcut Çalışanlar</h3>
+    <div id="workerList">Yükleniyor...</div>
+  </div>
+
+</div>
+
+<!-- GLOBAL go() -->
+<script>
+function go(page) {
+  window.location.href = `https://cepterandevu.github.io/al/pages/business/${page}.html`;
+}
+</script>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.appspot.com",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let BUSINESS_ID = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    alert("Giriş yapmanız gerekiyor.");
+    window.location.href = "../../index.html";
+    return;
+  }
+
+  BUSINESS_ID = user.uid;
+  loadWorkers();
+});
+
+window.addWorker = async function() {
+  const name = document.getElementById("workerName").value;
+  const role = document.getElementById("workerRole").value;
+
+  if (!name || !role) {
+    alert("Lütfen tüm alanları doldurun.");
+    return;
+  }
+
+  await addDoc(collection(db, "workers"), {
+    businessId: BUSINESS_ID,
+    name: name,
+    role: role
+  });
+
+  document.getElementById("workerName").value = "";
+  document.getElementById("workerRole").value = "";
+
+  loadWorkers();
+};
+
+async function loadWorkers() {
+  const q = query(collection(db, "workers"), where("businessId", "==", BUSINESS_ID));
+  const snap = await getDocs(q);
+
+  const list = document.getElementById("workerList");
+  list.innerHTML = "";
+
+  snap.forEach(w => {
+    const data = w.data();
+
+    list.innerHTML += `
+      <div class="worker">
+        <div>
+          <b>${data.name}</b><br>
+          <small>${data.role}</small>
+        </div>
+
+        <div class="actions">
+          <button class="edit-btn" onclick="editWorker('${w.id}', '${data.name}', '${data.role}')">Düzenle</button>
+          <button class="delete-btn" onclick="deleteWorker('${w.id}')">Sil</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+window.deleteWorker = async function(id) {
+  await deleteDoc(doc(db, "workers", id));
+  loadWorkers();
+};
+
+window.editWorker = function(id, oldName, oldRole) {
+  const newName = prompt("Yeni ad:", oldName);
+  const newRole = prompt("Yeni görev:", oldRole);
+
+  if (newName && newRole) {
+    updateDoc(doc(db, "workers", id), {
+      name: newName,
+      role: newRole
+    }).then(loadWorkers);
+  }
+};
+
+</script>
+</body>
+</html>
