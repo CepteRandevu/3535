@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giriş Yap</title>
+
+<style>
+  body{
+    margin:0;
+    background:#050816;
+    color:#f1f5f9;
+    font-family:system-ui;
+    padding:16px;
+  }
+  .container{
+    max-width:400px;
+    margin:0 auto;
+    background:#0f172a;
+    padding:20px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.12);
+    margin-top:40px;
+  }
+  h2{ margin-top:0; }
+  label{ margin-top:10px; color:#94a3b8; display:block; }
+  input{
+    width:100%; padding:12px; margin-top:4px;
+    border-radius:12px; border:1px solid rgba(255,255,255,0.1);
+    background:#0b1120; color:white;
+  }
+  button{
+    width:100%; padding:12px; margin-top:20px;
+    background:#22c55e; border-radius:12px;
+    border:0; font-weight:600; cursor:pointer;
+    color:#022c22; font-size:16px;
+  }
+  p{ text-align:center; margin-top:12px; }
+  a{ color:#22c55e; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Müşteri Girişi</h2>
+
+  <label>Telefon</label>
+  <input id="phoneInput" type="text" placeholder="05xx...">
+
+  <label>Şifre</label>
+  <input id="passInput" type="password" placeholder="*****">
+
+  <button id="loginBtn">Giriş Yap</button>
+
+  <p>Hesabın yok mu?  
+    <a href="customer-register.html">Kayıt Ol</a>
+  </p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "SENIN",
+    authDomain: "SENIN.firebaseapp.com",
+    projectId: "SENIN",
+    storageBucket: "SENIN.appspot.com",
+    messagingSenderId: "SENIN",
+    appId: "SENIN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const btn = document.getElementById("loginBtn");
+
+  btn.addEventListener("click", async ()=>{
+
+    const phone = document.getElementById("phoneInput").value.trim();
+    const pass = document.getElementById("passInput").value;
+
+    if(!phone || !pass){
+      alert("Boş alan bırakmayın.");
+      return;
+    }
+
+    const fakeEmail = phone + "@cepterandevu.com";
+
+    try{
+      await signInWithEmailAndPassword(auth, fakeEmail, pass);
+      alert("Giriş başarılı!");
+
+      // login olduktan sonra index'e dön
+      window.location.href = "index.html";
+
+    }catch(err){
+      alert("Hata: " + err.message);
+    }
+  });
+</script>
+
+</body>
+</html>
