@@ -176,6 +176,10 @@
       box-shadow:0 12px 28px rgba(34,197,94,0.4);
       margin-top:4px;
     }
+    .btn-primary:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
 
     .btn-secondary{
       width:100%;
@@ -188,6 +192,11 @@
       font-weight:500;
       font-size:13px;
       margin-top:4px;
+    }
+
+    .appt-list-empty{
+      font-size:12px;
+      color:var(--muted);
     }
 
     .appt{
@@ -203,6 +212,10 @@
       font-weight:600;
       margin-bottom:4px;
     }
+    .appt-line{
+      margin-bottom:2px;
+      color:var(--muted);
+    }
 
     .status{
       display:inline-block;
@@ -211,10 +224,10 @@
       font-size:11px;
       margin-top:5px;
     }
-    .pending{background:rgba(234,179,8,0.2);color:#facc15;}
-    .approved{background:rgba(34,197,94,0.2);color:#4ade80;}
-    .rejected{background:rgba(239,68,68,0.2);color:#ef4444;}
-    .cancelled{background:rgba(148,163,184,0.2);color:#e5e7eb;}
+    .status.pending{background:rgba(234,179,8,0.2);color:#facc15;}
+    .status.approved{background:rgba(34,197,94,0.2);color:#4ade80;}
+    .status.rejected{background:rgba(239,68,68,0.2);color:#ef4444;}
+    .status.cancelled{background:rgba(148,163,184,0.2);color:#e5e7eb;}
 
     .small-btn{
       padding:5px 10px;
@@ -226,19 +239,32 @@
       color:#fff;
       margin-top:6px;
     }
+
+    .hint{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .info-line{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
   </style>
 
-  <!-- OneSignal -->
+  <!-- OneSignal SDK -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal){
-        await OneSignal.init({
-          appId:"784cba74-0683-49ed-a3c6-e86741fc6aee"
-        });
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal){
+      await OneSignal.init({
+        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee"
       });
+    });
   </script>
 </head>
+
 <body>
 <div class="app">
   <header>
@@ -253,328 +279,436 @@
   </header>
 
   <main class="grid">
-    
-    <!-- SOL TARAF -->
+    <!-- SOL TARAF: PROFİL + HATIRLATICI -->
     <section>
       <div class="card">
         <h2>Profilim</h2>
+        <p class="sub">Bilgilerini güncel tut, profil fotoğrafını ekle.</p>
 
         <div class="profile-layout">
           <div class="pfp-wrap">
-            <img id="pfp" class="pfp">
+            <img id="pfp" class="pfp" src="" alt="Profil Fotoğrafı">
             <button id="choosePhotoBtn" class="pfp-btn">Fotoğraf Seç</button>
             <input id="photoInput" type="file" accept="image/*" style="display:none;">
           </div>
 
           <div style="flex:1;">
             <div class="profile-info-row">
-              <span class="label">Ad Soyad:</span> <span id="pName"></span>
+              <span class="label">Ad Soyad:</span> <span id="pName">-</span>
             </div>
             <div class="profile-info-row">
-              <span class="label">Telefon:</span> <span id="pPhone"></span>
+              <span class="label">Telefon:</span> <span id="pPhone">-</span>
             </div>
             <div class="profile-info-row">
-              <span class="label">Üyelik:</span> <span id="pJoin"></span>
+              <span class="label">Üyelik Tarihi:</span> <span id="pJoin">-</span>
             </div>
 
-            <label>Ad Soyad</label>
-            <input id="editName">
+            <div style="margin-top:10px;">
+              <label for="editName">Ad Soyad</label>
+              <input id="editName" type="text" placeholder="Ad Soyad">
 
-            <label>Yeni Şifre</label>
-            <input id="editPassword" type="password">
+              <label for="editPassword">Yeni Şifre (opsiyonel)</label>
+              <input id="editPassword" type="password" placeholder="Boş bırakırsan değişmez">
 
-            <button id="saveProfileBtn" class="btn-primary">Profili Kaydet</button>
+              <button id="saveProfileBtn" class="btn-primary">Profili Kaydet</button>
+              <div class="hint">Şifre değiştirirken son giriş süresi eskiyse tekrar giriş isteyebilir.</div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Hatırlatıcı (15 gün sonra)</h2>
-        <button id="reminderBtn" class="btn-secondary">Hatırlatıcı Kur</button>
-        <div id="reminderInfo" style="font-size:12px;margin-top:6px;color:#94a3b8;"></div>
+        <h2>Hatırlatıcı</h2>
+        <p class="sub">
+          Örneğin saç, bakım vb. işlemler için <strong>15 gün sonra</strong> tekrar randevu hatırlatması al.
+        </p>
+        <button id="reminderBtn" class="btn-secondary">15 gün sonra hatırlat</button>
+        <div id="reminderInfo" class="info-line"></div>
+        <div class="hint">
+          Bildirimlerin çalışması için tarayıcıda izin vermiş olman gerekir.
+        </div>
       </div>
     </section>
 
-    <!-- SAĞ TARAF -->
+    <!-- SAĞ TARAF: RANDEVULAR -->
     <section>
       <div class="card">
-        <h2>Yaklaşan Randevular</h2>
-        <div id="upcomingList">Yükleniyor...</div>
+        <h2>Yaklaşan Randevularım</h2>
+        <div id="upcomingList" class="appt-list-empty">Yükleniyor...</div>
       </div>
 
       <div class="card">
-        <h2>Geçmiş Randevular</h2>
-        <div id="historyList">Yükleniyor...</div>
+        <h2>Geçmiş Randevularım</h2>
+        <div id="historyList" class="appt-list-empty">Yükleniyor...</div>
       </div>
     </section>
-
   </main>
 </div>
 
 <script type="module">
+  import { firebaseConfig } from "./js/firebase-config.js";
 
-/* --------------------------------------------------------------------
-     FIREBASE IMPORT
--------------------------------------------------------------------- */
-import { firebaseConfig } from "./js/firebase-config.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, collection, query, where, updateDoc, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getAuth, onAuthStateChanged, signOut, updatePassword
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getStorage, ref, uploadBytes, getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, updateDoc,
-  collection, query, where, onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged, signOut, updatePassword
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
-/* INIT */
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+  let currentUID = null;
+  window.currentUID = null;
 
-let uid = null;
+  const pfpEl = document.getElementById("pfp");
+  const choosePhotoBtn = document.getElementById("choosePhotoBtn");
+  const photoInput = document.getElementById("photoInput");
 
-/* HTML ELEMANLARI */
-const pfp = document.getElementById("pfp");
-const pName = document.getElementById("pName");
-const pPhone = document.getElementById("pPhone");
-const pJoin = document.getElementById("pJoin");
+  const pNameEl = document.getElementById("pName");
+  const pPhoneEl = document.getElementById("pPhone");
+  const pJoinEl = document.getElementById("pJoin");
 
-const editName = document.getElementById("editName");
-const editPassword = document.getElementById("editPassword");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
+  const editNameInput = document.getElementById("editName");
+  const editPasswordInput = document.getElementById("editPassword");
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
 
-const upcomingList = document.getElementById("upcomingList");
-const historyList = document.getElementById("historyList");
+  const upcomingList = document.getElementById("upcomingList");
+  const historyList = document.getElementById("historyList");
+  const reminderBtn = document.getElementById("reminderBtn");
+  const reminderInfo = document.getElementById("reminderInfo");
 
-/* --------------------------------------------------------------------
-     AUTH
--------------------------------------------------------------------- */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    location.href="customer-login.html";
-    return;
-  }
+  /* ---------------- AUTH KONTROL ---------------- */
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      window.location.href = "customer-login.html";
+      return;
+    }
 
-  uid = user.uid;
-  loadProfile();
-  listenAppointmentsRealtime();     // ANLIK TAKİP BURADA
-  savePlayerID();                   // OneSignal kayıt
-});
+    currentUID = user.uid;
+    window.currentUID = user.uid;
 
-/* --------------------------------------------------------------------
-     PROFİL YÜKLEME
--------------------------------------------------------------------- */
-async function loadProfile(){
-  const ref = doc(db,"customers",uid);
-  const snap = await getDoc(ref);
-
-  if(!snap.exists()){
-    pName.textContent="-";
-    return;
-  }
-
-  const d = snap.data();
-  pName.textContent = d.name;
-  pPhone.textContent = d.phone;
-  pJoin.textContent = d.createdAt?.toDate?.().toLocaleDateString("tr-TR") ?? "-";
-
-  editName.value = d.name;
-
-  if(d.photoURL){
-    pfp.src = d.photoURL;
-  }else{
-    pfp.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-  }
-}
-
-/* --------------------------------------------------------------------
-     PROFİL FOTOĞRAF YÜKLEME
--------------------------------------------------------------------- */
-choosePhotoBtn.onclick = ()=> photoInput.click();
-
-photoInput.onchange = async()=>{
-  const file = photoInput.files[0];
-  if(!file) return;
-
-  const r = ref(storage, "profilePics/"+uid+".jpg");
-  await uploadBytes(r, file);
-  const url = await getDownloadURL(r);
-
-  await updateDoc(doc(db,"customers",uid), { photoURL:url });
-  pfp.src = url;
-};
-
-/* --------------------------------------------------------------------
-     PROFİL KAYDET
--------------------------------------------------------------------- */
-saveProfileBtn.onclick = async()=>{
-  await updateDoc(doc(db,"customers",uid), {
-    name: editName.value.trim()
+    await loadProfile();
+    listenAppointmentsRealtime();
   });
 
-  if(editPassword.value.length >= 6){
-    await updatePassword(auth.currentUser, editPassword.value);
+  /* ---------------- PROFİL YÜKLE ---------------- */
+  async function loadProfile(){
+    const refCust = doc(db,"customers",currentUID);
+    const snap = await getDoc(refCust);
+    if(!snap.exists()){
+      pNameEl.textContent = "-";
+      pPhoneEl.textContent = "-";
+      pJoinEl.textContent = "-";
+      pfpEl.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      return;
+    }
+
+    const c = snap.data();
+    pNameEl.textContent = c.name || "-";
+    pPhoneEl.textContent = c.phone || "-";
+
+    if(c.createdAt && c.createdAt.toDate){
+      pJoinEl.textContent = c.createdAt.toDate().toLocaleDateString("tr-TR");
+    }else{
+      pJoinEl.textContent = "-";
+    }
+
+    editNameInput.value = c.name || "";
+
+    if(c.photoURL){
+      pfpEl.src = c.photoURL;
+      choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
+    }else{
+      pfpEl.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      choosePhotoBtn.textContent = "Fotoğraf Seç";
+    }
   }
 
-  alert("Profil güncellendi.");
-};
-
-/* --------------------------------------------------------------------
-     ANLIK RANDEVU TAKİBİ  (REALTIME)
--------------------------------------------------------------------- */
-function listenAppointmentsRealtime(){
-  const qRef = query(
-    collection(db,"appointments"),
-    where("customerUID","==", uid)
-  );
-
-  onSnapshot(qRef, async(snap)=>{
-    const items = [];
-    snap.forEach(d=> items.push({id:d.id, ...d.data()}));
-
-    renderAppointments(items);
-  });
-}
-
-function renderAppointments(list){
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  const upcoming = [];
-  const history = [];
-
-  list.forEach(ap=>{
-    const d = new Date(ap.date+"T00:00:00");
-    if(d >= today && ap.status!=="cancelled" && ap.status!=="rejected"){
-      upcoming.push(ap);
-    }else history.push(ap);
+  /* ---------------- PROFİL FOTOĞRAF ---------------- */
+  choosePhotoBtn.addEventListener("click", ()=>{
+    photoInput.click();
   });
 
-  renderUpcoming(upcoming);
-  renderHistory(history);
-}
+  photoInput.addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
 
-function renderUpcoming(arr){
-  upcomingList.innerHTML="";
+    choosePhotoBtn.textContent = "Yükleniyor...";
+    choosePhotoBtn.disabled = true;
 
-  if(arr.length===0){
-    upcomingList.textContent="Yaklaşan randevu yok.";
-    return;
-  }
+    try{
+      const storageRef = ref(storage, `profilePics/${currentUID}.jpg`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
 
-  arr.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+      await updateDoc(doc(db,"customers",currentUID), { photoURL:url });
 
-  arr.forEach(ap=>{
-    const div=document.createElement("div");
-    div.className="appt";
-
-    div.innerHTML=`
-      <div class="appt-title">${ap.businessID}</div>
-      <div>${ap.date} · ${ap.time}</div>
-      <span class="status ${ap.status}">${statusText(ap.status)}</span>
-      <button class="small-btn">İptal</button>
-    `;
-
-    div.querySelector("button").onclick = ()=> updateDoc(doc(db,"appointments",ap.id),{
-      status:"cancelled"
-    });
-
-    upcomingList.appendChild(div);
-  });
-}
-
-function renderHistory(arr){
-  historyList.innerHTML="";
-
-  if(arr.length===0){
-    historyList.textContent="Geçmiş randevu yok.";
-    return;
-  }
-
-  arr.sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-
-  arr.forEach(ap=>{
-    const div=document.createElement("div");
-    div.className="appt";
-
-    div.innerHTML=`
-      <div class="appt-title">${ap.businessID}</div>
-      <div>${ap.date} · ${ap.time}</div>
-      <span class="status ${ap.status}">${statusText(ap.status)}</span>
-    `;
-
-    historyList.appendChild(div);
-  });
-}
-
-function statusText(s){
-  return s==="pending" ? "Onay Bekliyor" :
-         s==="approved" ? "Onaylandı" :
-         s==="rejected" ? "Reddedildi" :
-         s==="cancelled" ? "İptal Edildi" : s;
-}
-
-/* --------------------------------------------------------------------
-     OneSignal PlayerID Kaydı
--------------------------------------------------------------------- */
-async function savePlayerID(){
-  window.OneSignalDeferred.push(async function(OneSignal){
-    const pid = await OneSignal.User.getId();
-    if(pid){
-      await updateDoc(doc(db,"customers",uid), { playerID:pid });
+      pfpEl.src = url;
+      choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
+      alert("Profil fotoğrafı güncellendi.");
+    }catch(err){
+      console.error(err);
+      alert("Fotoğraf yüklenirken bir hata oluştu.");
+      choosePhotoBtn.textContent = "Tekrar Dene";
+    }finally{
+      choosePhotoBtn.disabled = false;
     }
   });
-}
 
-/* --------------------------------------------------------------------
-     Bildirim: 15 gün sonra hatırlatıcı
--------------------------------------------------------------------- */
-reminderBtn.onclick = async()=>{
-  const ref = doc(db,"customers",uid);
-  const snap = await getDoc(ref);
-  if(!snap.exists()) return;
+  /* ---------------- PROFİL KAYDET ---------------- */
+  saveProfileBtn.addEventListener("click", async ()=>{
+    const newName = editNameInput.value.trim();
+    const newPass = editPasswordInput.value;
 
-  const c = snap.data();
-  if(!c.playerID){
-    alert("Bildirim izni vermen gerekiyor.");
-    return;
-  }
+    saveProfileBtn.disabled = true;
 
-  const in15 = new Date(Date.now() + 15*24*60*60*1000);
+    try{
+      if(newName){
+        await updateDoc(doc(db,"customers",currentUID), { name:newName });
+      }
 
-  await fetch("https://onesignal.com/api/v1/notifications",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
-    },
-    body:JSON.stringify({
-      app_id:"784cba74-0683-49ed-a3c6-e86741fc6aee",
-      include_player_ids:[c.playerID],
-      send_after: in15.toISOString(),
-      headings:{tr:"Yeni randevu zamanı"},
-      contents:{tr:"15 gün oldu. Yeni bir randevu oluşturmak ister misin?"}
-    })
+      if(newPass && newPass.length >= 6){
+        await updatePassword(auth.currentUser, newPass);
+      }else if(newPass && newPass.length < 6){
+        alert("Şifre en az 6 karakter olmalı.");
+        saveProfileBtn.disabled = false;
+        return;
+      }
+
+      alert("Profil güncellendi.");
+      await loadProfile();
+      editPasswordInput.value = "";
+
+    }catch(err){
+      console.error(err);
+      if(err.code === "auth/requires-recent-login"){
+        alert("Şifreyi değiştirebilmek için yeniden giriş yapmanız gerekiyor.");
+      }else{
+        alert("Profil güncellenemedi: " + err.message);
+      }
+    }finally{
+      saveProfileBtn.disabled = false;
+    }
   });
 
-  reminderInfo.textContent="Hatırlatıcı ayarlandı: "+ in15.toLocaleDateString("tr-TR");
-};
+  /* ---------------- RANDEVULAR: REALTIME ---------------- */
+  function listenAppointmentsRealtime(){
+    upcomingList.innerHTML = "Yükleniyor...";
+    historyList.innerHTML = "Yükleniyor...";
 
-/* --------------------------------------------------------------------
-     ÇIKIŞ
--------------------------------------------------------------------- */
-logoutBtn.onclick = async()=>{
-  await signOut(auth);
-  location.href="customer-login.html";
-};
+    const qAppt = query(
+      collection(db,"appointments"),
+      where("customerUID","==",currentUID)
+    );
+
+    onSnapshot(qAppt, async (snap)=>{
+      const appts = [];
+      snap.forEach(d=>{
+        appts.push({ id:d.id, ...d.data() });
+      });
+
+      // İsimleri doldur (işletme / hizmet / çalışan)
+      for(const ap of appts){
+        ap.businessName = ap.businessID;
+        ap.serviceName = ap.serviceID;
+        ap.employeeName = ap.employeeID;
+
+        try{
+          if(ap.businessID){
+            const bSnap = await getDoc(doc(db,"businesses",ap.businessID));
+            if(bSnap.exists()){
+              const b = bSnap.data();
+              ap.businessName = b.name || ap.businessID;
+            }
+          }
+          if(ap.serviceID){
+            const sSnap = await getDoc(doc(db,"services",ap.serviceID));
+            if(sSnap.exists()){
+              const s = sSnap.data();
+              ap.serviceName = s.name || ap.serviceID;
+            }
+          }
+          if(ap.employeeID){
+            const eSnap = await getDoc(doc(db,"employees",ap.employeeID));
+            if(eSnap.exists()){
+              const e = eSnap.data();
+              ap.employeeName = e.name || ap.employeeID;
+            }
+          }
+        }catch(e){
+          console.warn("İsimleri çekerken hata:", e);
+        }
+      }
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const upcoming = [];
+      const history = [];
+
+      appts.forEach(ap=>{
+        const d = new Date(ap.date + "T00:00:00");
+        if(d >= today && ap.status !== "cancelled" && ap.status !== "rejected"){
+          upcoming.push(ap);
+        }else{
+          history.push(ap);
+        }
+      });
+
+      renderUpcoming(upcoming);
+      renderHistory(history);
+    }, (err)=>{
+      console.error("Randevu realtime hatası:", err);
+      upcomingList.textContent = "Randevular yüklenemedi.";
+      historyList.textContent = "Randevular yüklenemedi.";
+    });
+  }
+
+  function renderUpcoming(list){
+    if(list.length === 0){
+      upcomingList.className = "appt-list-empty";
+      upcomingList.textContent = "Yaklaşan randevu yok.";
+      return;
+    }
+
+    upcomingList.className = "";
+    upcomingList.innerHTML = "";
+
+    list.sort((a,b)=> (a.date + a.time).localeCompare(b.date + b.time));
+
+    list.forEach(ap=>{
+      const div = document.createElement("div");
+      div.className = "appt";
+      div.innerHTML = `
+        <div class="appt-title">${ap.businessName}</div>
+        <div class="appt-line">${ap.serviceName} · ${ap.employeeName}</div>
+        <div class="appt-line">${ap.date} · ${ap.time}</div>
+        <span class="status ${ap.status}">${statusText(ap.status)}</span>
+      `;
+
+      if(ap.status !== "cancelled"){
+        const btn = document.createElement("button");
+        btn.className = "small-btn";
+        btn.textContent = "Randevuyu İptal Et";
+        btn.onclick = ()=> cancelAppointment(ap.id);
+        div.appendChild(btn);
+      }
+
+      upcomingList.appendChild(div);
+    });
+  }
+
+  function renderHistory(list){
+    if(list.length === 0){
+      historyList.className = "appt-list-empty";
+      historyList.textContent = "Geçmiş randevu yok.";
+      return;
+    }
+
+    historyList.className = "";
+    historyList.innerHTML = "";
+
+    list.sort((a,b)=> (b.date + b.time).localeCompare(a.date + a.time));
+
+    list.forEach(ap=>{
+      const div = document.createElement("div");
+      div.className = "appt";
+      div.innerHTML = `
+        <div class="appt-title">${ap.businessName}</div>
+        <div class="appt-line">${ap.serviceName} · ${ap.employeeName}</div>
+        <div class="appt-line">${ap.date} · ${ap.time}</div>
+        <span class="status ${ap.status}">${statusText(ap.status)}</span>
+      `;
+      historyList.appendChild(div);
+    });
+  }
+
+  function statusText(s){
+    switch(s){
+      case "pending": return "Onay Bekliyor";
+      case "approved": return "Onaylandı";
+      case "rejected": return "Reddedildi";
+      case "cancelled": return "İptal Edildi";
+      default: return s;
+    }
+  }
+
+  async function cancelAppointment(id){
+    if(!confirm("Bu randevuyu iptal etmek istediğine emin misin?")) return;
+    await updateDoc(doc(db,"appointments",id), { status:"cancelled" });
+    // realtime listener zaten listeyi yenileyecek
+    alert("Randevu iptal edildi.");
+  }
+
+  /* ---------------- ÇIKIŞ ---------------- */
+  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+    await signOut(auth);
+    window.location.href = "customer-login.html";
+  });
+
+  /* ---------------- OneSignal PlayerID KAYDI ---------------- */
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      const pid = await OneSignal.User.getId();
+      if(pid && currentUID){
+        const refCustomer = doc(db,"customers", currentUID);
+        await updateDoc(refCustomer, { playerID: pid });
+      }
+    }catch(e){
+      console.warn("PlayerID kaydedilemedi:", e);
+    }
+  });
+
+  /* ---------------- 15 GÜN SONRA HATIRLATICI ---------------- */
+  reminderBtn.addEventListener("click", async ()=>{
+    try{
+      const refCustomer = doc(db,"customers", currentUID);
+      const snap = await getDoc(refCustomer);
+      if(!snap.exists()){
+        alert("Profil bulunamadı.");
+        return;
+      }
+      const c = snap.data();
+      if(!c.playerID){
+        alert("Önce tarayıcıdan bildirim izni vermen gerekiyor.");
+        return;
+      }
+
+      const in15 = new Date(Date.now() + 15*24*60*60*1000);
+      const sendAfter = in15.toISOString();
+
+      await fetch("https://onesignal.com/api/v1/notifications",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
+        },
+        body:JSON.stringify({
+          app_id:"784cba74-0683-49ed-a3c6-e86741fc6aee",
+          include_player_ids:[c.playerID],
+          send_after: sendAfter,
+          headings:{ "tr":"Tekrar randevu zamanı" },
+          contents:{ "tr":"Yaklaşık 15 gün oldu. Yeni bir randevu oluşturmak ister misin?" }
+        })
+      });
+
+      reminderInfo.textContent = `Hatırlatıcı ayarlandı: ${in15.toLocaleDateString("tr-TR")} civarında bildirim gelecek.`;
+      alert("Hatırlatıcı başarıyla ayarlandı.");
+    }catch(err){
+      console.error(err);
+      alert("Hatırlatıcı ayarlanırken hata oluştu.");
+    }
+  });
 
 </script>
 
 </body>
 </html>
-
