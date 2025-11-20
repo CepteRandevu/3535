@@ -13,19 +13,19 @@
       --accent: #22c55e;
       --accent-strong: #16a34a;
       --text: #f9fafb;
-      --muted: #94a3b8;
+      --muted: #9ca3af;
       --border: rgba(148,163,184,0.35);
       --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
       --radius-xl: 22px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       display: flex;
       background: radial-gradient(circle at top, #111827, #020617 55%);
-      color: var(--text);
       font-family: system-ui, sans-serif;
+      color: var(--text);
       min-height: 100vh;
     }
 
@@ -57,8 +57,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 18px;
       font-weight: 800;
+      font-size: 18px;
       color: #ecfdf5;
       box-shadow: 0 10px 30px rgba(34,197,94,0.6);
     }
@@ -105,96 +105,38 @@
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-soft);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
-    .filter-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .filter-row input {
-      padding: 10px;
-      border-radius: 12px;
-      background: #020617;
-      border: 1px solid var(--border);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-    }
-
-    .appt-row {
+    .appt {
       padding: 14px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      margin-bottom: 10px;
     }
 
-    .appt-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 14px;
-    }
-
-    .appt-name {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .appt-meta {
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
       font-size: 12px;
-      color: var(--muted);
+      border-radius: 999px;
+      margin-top: 8px;
     }
+    .pending { background: rgba(234,179,8,0.25); color:#facc15; }
+    .approved { background: rgba(34,197,94,0.25); color:#4ade80; }
+    .cancelled { background: rgba(239,68,68,0.25); color:#ef4444; }
 
-    .status-badge {
-      padding: 3px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      width: fit-content;
-    }
-
-    .pending { background: rgba(219,234,254,0.2); color: #93c5fd; }
-    .approved { background: rgba(74,222,128,0.2); color: #4ade80; }
-    .rejected { background: rgba(248,113,113,0.2); color: #f87171; }
-
-    .action-box {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-approve {
-      background: #22c55e;
+    .btn-small {
+      padding: 6px 10px;
+      border-radius: 10px;
       border: 0;
-      padding: 8px 12px;
-      border-radius: 8px;
-      color: #022c22;
-      font-size: 12px;
-      font-weight: 600;
       cursor: pointer;
-    }
-
-    .btn-reject {
-      background: #ef4444;
-      border: 0;
-      padding: 8px 12px;
-      border-radius: 8px;
-      color: white;
       font-size: 12px;
+      margin-right: 8px;
       font-weight: 600;
-      cursor: pointer;
     }
-
+    .approve-btn { background: #22c55e; color:#022c22; }
+    .reject-btn { background: #ef4444; color:white; }
   </style>
-
-  <!-- Firebase -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-
 </head>
 
 <body>
@@ -220,15 +162,13 @@
     <h1 class="title">Randevu Yönetimi</h1>
 
     <div class="card">
-      <div class="filter-row">
-        <label style="font-size:14px;">Tarih:</label>
-        <input type="date" id="filterDate" />
-      </div>
-
+      <h3>Gelen Randevular</h3>
       <div id="apptList">Yükleniyor...</div>
     </div>
   </main>
 
+
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -238,13 +178,13 @@
 
   import {
     getFirestore,
-    collection,
+    doc,
+    getDoc,
     query,
     where,
+    collection,
     getDocs,
-    updateDoc,
-    doc,
-    getDoc
+    updateDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -260,149 +200,94 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  let BUSINESS_ID = null;
+
   const bizNameSmall = document.getElementById("bizNameSmall");
   const apptList = document.getElementById("apptList");
-  const filterDate = document.getElementById("filterDate");
 
-  let businessID = null;
-
-  /* LOGIN KONTROLÜ */
+  /* LOGIN KONTROL */
   onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "business-login.html";
+    if(!user){
+      location.href = "business-login.html";
       return;
     }
 
-    businessID = user.uid;
+    BUSINESS_ID = user.uid;
+
     await loadBusinessName();
-    loadAppointments();
+    await loadAppointments();
   });
 
-  async function loadBusinessName() {
-    const ref = doc(db, "businesses", businessID);
+  /* İŞLETME ADINI YÜKLE */
+  async function loadBusinessName(){
+    const ref = doc(db, "businesses", BUSINESS_ID);
     const snap = await getDoc(ref);
-    if (snap.exists()) {
-      bizNameSmall.textContent = snap.data().name || "İşletme";
+    if(snap.exists()){
+      bizNameSmall.textContent = snap.data().name;
     }
   }
 
-  /* RANDEVULARI ÇEK */
-  async function loadAppointments() {
-    apptList.textContent = "Yükleniyor...";
+  /* TÜM RANDEVULARI ÇEK */
+  async function loadAppointments(){
+    apptList.innerHTML = "Yükleniyor...";
 
-    const dateVal = filterDate.value || null;
+    const q = query(
+      collection(db,"appointments"),
+      where("businessID","==", BUSINESS_ID)
+    );
 
-    let qRef;
+    const snap = await getDocs(q);
 
-    if (dateVal) {
-      qRef = query(
-        collection(db, "appointments"),
-        where("businessID", "==", businessID),
-        where("date", "==", dateVal)
-      );
-    } else {
-      qRef = query(
-        collection(db, "appointments"),
-        where("businessID", "==", businessID)
-      );
-    }
-
-    const snap = await getDocs(qRef);
-
-    if (snap.empty) {
-      apptList.textContent = "Randevu bulunamadı.";
+    if(snap.empty){
+      apptList.textContent = "Hiç randevu yok.";
       return;
     }
 
     apptList.innerHTML = "";
 
-    snap.forEach((docSnap) => {
-      const data = docSnap.data();
+    snap.forEach(docSnap => {
+      const ap = docSnap.data();
 
-      const row = document.createElement("div");
-      row.className = "appt-row";
+      const div = document.createElement("div");
+      div.className = "appt";
 
-      const statusClass = data.status === "pending" ? "pending"
-                        : data.status === "approved" ? "approved"
-                        : "rejected";
-
-      row.innerHTML = `
-        <div class="appt-info">
-          <div class="appt-name">${data.customerName || "Müşteri"}</div>
-          <div class="appt-meta">${data.date} — ${data.time}</div>
-          <div class="appt-meta">${data.serviceName} / ${data.employeeName}</div>
-          <div class="status-badge ${statusClass}">${data.status}</div>
-        </div>
-
-        <div class="action-box">
-          <button class="btn-approve" data-id="${docSnap.id}">Onayla</button>
-          <button class="btn-reject" data-id="${docSnap.id}">Reddet</button>
-        </div>
+      div.innerHTML = `
+        <b>Müşteri:</b> ${ap.customerUID}<br>
+        <b>Hizmet:</b> ${ap.serviceID}<br>
+        <b>Çalışan:</b> ${ap.employeeID}<br>
+        <b>Tarih:</b> ${ap.date} — <b>${ap.time}</b><br>
+        <span class="status ${ap.status}">${ap.status}</span>
+        <br><br>
       `;
 
-      apptList.appendChild(row);
-    });
+      if(ap.status === "pending"){
+        const approveBtn = document.createElement("button");
+        approveBtn.className = "btn-small approve-btn";
+        approveBtn.textContent = "Onayla";
+        approveBtn.onclick = () => updateStatus(docSnap.id, "approved");
 
-    bindActions();
-  }
+        const rejectBtn = document.createElement("button");
+        rejectBtn.className = "btn-small reject-btn";
+        rejectBtn.textContent = "Reddet";
+        rejectBtn.onclick = () => updateStatus(docSnap.id, "cancelled");
 
-  /* BUTONLAR */
-  function bindActions() {
-    document.querySelectorAll(".btn-approve").forEach((btn) => {
-      btn.onclick = async () => {
-        await updateStatus(btn.dataset.id, "approved");
-      };
-    });
+        div.appendChild(approveBtn);
+        div.appendChild(rejectBtn);
+      }
 
-    document.querySelectorAll(".btn-reject").forEach((btn) => {
-      btn.onclick = async () => {
-        await updateStatus(btn.dataset.id, "rejected");
-      };
+      apptList.appendChild(div);
     });
   }
 
-  /* STATUS UPDATE */
-async function updateStatus(id, status) {
-  // 1) Randevuyu güncelle
-  const apptRef = doc(db, "appointments", id);
-  const apptSnap = await getDoc(apptRef);
-  const appt = apptSnap.data();
-
-  await updateDoc(apptRef, { status });
-
-  // 2) Müşteri PlayerID'sini çek
-  const custRef = doc(db, "customers", appt.customerUID);
-  const custSnap = await getDoc(custRef);
-  const cust = custSnap.data();
-
-  if(cust.playerID){
-    // 3) OneSignal API ile bildirim gönder
-    await fetch("https://onesignal.com/api/v1/notifications", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
-      },
-      body:JSON.stringify({
-        app_id:"784cba74-0683-49ed-a3c6-e86741fc6aee",
-        include_player_ids:[cust.playerID],
-        headings:{ "tr": status==="approved" ? "Randevun Onaylandı" : "Randevun Reddedildi" },
-        contents:{ 
-          "tr": `İşletme: ${bizNameSmall.textContent}
-Hizmet: ${appt.serviceName}
-Tarih: ${appt.date} ${appt.time}`
-        }
-      })
+  /* DURUM GÜNCELLEME */
+  async function updateStatus(id, newStatus){
+    await updateDoc(doc(db,"appointments",id), {
+      status: newStatus
     });
+
+    alert("Randevu güncellendi.");
+    loadAppointments();
   }
-
-  // 4) Listeyi yenile
-  loadAppointments();
-}
-
-
-  /* TARİH FİLTRESİ */
-  filterDate.addEventListener("change", loadAppointments);
 </script>
 
 </body>
