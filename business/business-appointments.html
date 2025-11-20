@@ -101,42 +101,139 @@
 
     .card {
       background: var(--card);
-      padding: 18px;
+      padding: 20px;
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-soft);
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
-    .appt {
-      padding: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .appt-row {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .appt-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .appt-main-line {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .appt-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .appt-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
     }
 
     .status {
       display: inline-block;
-      padding: 4px 10px;
-      font-size: 12px;
+      padding: 3px 8px;
       border-radius: 999px;
-      margin-top: 8px;
-    }
-    .pending { background: rgba(234,179,8,0.25); color:#facc15; }
-    .approved { background: rgba(34,197,94,0.25); color:#4ade80; }
-    .cancelled { background: rgba(239,68,68,0.25); color:#ef4444; }
-
-    .btn-small {
-      padding: 6px 10px;
-      border-radius: 10px;
-      border: 0;
-      cursor: pointer;
       font-size: 12px;
-      margin-right: 8px;
+      text-transform: capitalize;
+    }
+    .pending  { background: rgba(234,179,8,0.18); color:#facc15; }
+    .approved { background: rgba(34,197,94,0.22); color:#4ade80; }
+    .rejected { background: rgba(239,68,68,0.22); color:#fca5a5; }
+    .cancelled { background: rgba(148,163,184,0.22); color:#e5e7eb; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      border-radius: 9px;
+      border: 0;
+      font-size: 12px;
+      cursor: pointer;
       font-weight: 600;
     }
-    .approve-btn { background: #22c55e; color:#022c22; }
-    .reject-btn { background: #ef4444; color:white; }
+
+    .btn-approve {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #022c22;
+      box-shadow: 0 8px 20px rgba(34,197,94,0.4);
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-sm:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .empty {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 2px;
+    }
+
+    @media (max-width: 720px) {
+      .main-area {
+        margin-left: 0;
+        padding: 16px;
+      }
+      .sidebar {
+        display: none;
+      }
+      .appt-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .appt-right {
+        align-items: flex-start;
+      }
+    }
   </style>
+
+  <!-- Firebase (global, ama asıl import altta module içinde) -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 </head>
 
 <body>
@@ -149,26 +246,39 @@
     </div>
 
     <div class="menu">
-      <button onclick="location.href='business-panel.html'">Panel</button>
-      <button onclick="location.href='business-services.html'">Hizmetler</button>
-      <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+      <button onclick="location.href='/al/business/business-panel.html'">Panel</button>
+      <button onclick="location.href='/al/business/business-services.html'">Hizmetler</button>
+      <button onclick="location.href='/al/business/business-employees.html'">Çalışanlar</button>
       <button class="active">Randevular</button>
-      <button onclick="location.href='business-settings.html'">Ayarlar</button>
+      <button onclick="location.href='/al/business/business-settings.html'">Ayarlar</button>
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- MAIN CONTENT -->
   <main class="main-area">
     <h1 class="title">Randevu Yönetimi</h1>
 
     <div class="card">
-      <h3>Gelen Randevular</h3>
-      <div id="apptList">Yükleniyor...</div>
+      <div class="card-header">
+        <h3>Bekleyen Randevular</h3>
+        <span id="pendingCount">0 adet</span>
+      </div>
+      <div id="pendingList" class="appt-list">
+        <div class="empty">Şu anda bekleyen randevu yok.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Tüm Randevular</h3>
+        <span id="allCount">0 adet</span>
+      </div>
+      <div id="allList" class="appt-list">
+        <div class="empty">Henüz randevu oluşturulmamış.</div>
+      </div>
     </div>
   </main>
 
-
-<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -178,15 +288,16 @@
 
   import {
     getFirestore,
-    doc,
-    getDoc,
+    collection,
     query,
     where,
-    collection,
-    getDocs,
+    onSnapshot,
+    doc,
+    getDoc,
     updateDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  /* Firebase Config (diğer sayfalarla aynı) */
   const firebaseConfig = {
     apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
     authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -200,94 +311,256 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  let BUSINESS_ID = null;
+  let businessID = null;
 
   const bizNameSmall = document.getElementById("bizNameSmall");
-  const apptList = document.getElementById("apptList");
+  const pendingListEl = document.getElementById("pendingList");
+  const allListEl = document.getElementById("allList");
+  const pendingCountEl = document.getElementById("pendingCount");
+  const allCountEl = document.getElementById("allCount");
 
-  /* LOGIN KONTROL */
+  // Basit cache’ler (müşteri / hizmet / çalışan isimlerini tekrar tekrar çekmemek için)
+  const userCache = {};
+  const serviceCache = {};
+  const employeeCache = {};
+
   onAuthStateChanged(auth, async (user) => {
-    if(!user){
-      location.href = "business-login.html";
+    if (!user) {
+      window.location.href = "/al/business/business-login.html";
       return;
     }
 
-    BUSINESS_ID = user.uid;
-
+    businessID = user.uid;
     await loadBusinessName();
-    await loadAppointments();
+    listenAppointmentsRealtime();
   });
 
-  /* İŞLETME ADINI YÜKLE */
-  async function loadBusinessName(){
-    const ref = doc(db, "businesses", BUSINESS_ID);
-    const snap = await getDoc(ref);
-    if(snap.exists()){
-      bizNameSmall.textContent = snap.data().name;
+  async function loadBusinessName() {
+    try {
+      const ref = doc(db, "businesses", businessID);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        bizNameSmall.textContent = snap.data().name || "İşletme";
+      }
+    } catch (e) {
+      console.error("İşletme ismi okunamadı:", e);
     }
   }
 
-  /* TÜM RANDEVULARI ÇEK */
-  async function loadAppointments(){
-    apptList.innerHTML = "Yükleniyor...";
+  function sortAppointments(list) {
+    return list.slice().sort((a, b) => {
+      if (a.date === b.date) {
+        return a.time.localeCompare(b.time);
+      }
+      return a.date.localeCompare(b.date);
+    });
+  }
 
-    const q = query(
-      collection(db,"appointments"),
-      where("businessID","==", BUSINESS_ID)
-    );
+  async function enrichAppointments(items) {
+    const result = [];
 
-    const snap = await getDocs(q);
+    for (const ap of items) {
+      const obj = { ...ap };
 
-    if(snap.empty){
-      apptList.textContent = "Hiç randevu yok.";
-      return;
-    }
-
-    apptList.innerHTML = "";
-
-    snap.forEach(docSnap => {
-      const ap = docSnap.data();
-
-      const div = document.createElement("div");
-      div.className = "appt";
-
-      div.innerHTML = `
-        <b>Müşteri:</b> ${ap.customerUID}<br>
-        <b>Hizmet:</b> ${ap.serviceID}<br>
-        <b>Çalışan:</b> ${ap.employeeID}<br>
-        <b>Tarih:</b> ${ap.date} — <b>${ap.time}</b><br>
-        <span class="status ${ap.status}">${ap.status}</span>
-        <br><br>
-      `;
-
-      if(ap.status === "pending"){
-        const approveBtn = document.createElement("button");
-        approveBtn.className = "btn-small approve-btn";
-        approveBtn.textContent = "Onayla";
-        approveBtn.onclick = () => updateStatus(docSnap.id, "approved");
-
-        const rejectBtn = document.createElement("button");
-        rejectBtn.className = "btn-small reject-btn";
-        rejectBtn.textContent = "Reddet";
-        rejectBtn.onclick = () => updateStatus(docSnap.id, "cancelled");
-
-        div.appendChild(approveBtn);
-        div.appendChild(rejectBtn);
+      // Müşteri bilgileri (users koleksiyonu)
+      if (ap.customerUID) {
+        if (!userCache[ap.customerUID]) {
+          try {
+            const usnap = await getDoc(doc(db, "users", ap.customerUID));
+            userCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
+          } catch(e) {
+            console.error("Kullanıcı okunamadı:", e);
+          }
+        }
+        const u = userCache[ap.customerUID];
+        if (u) {
+          obj.customerName = u.name || "";
+          obj.customerPhone = u.phone || "";
+        }
       }
 
-      apptList.appendChild(div);
+      // Hizmet bilgisi
+      if (ap.serviceID) {
+        if (!serviceCache[ap.serviceID]) {
+          try {
+            const ssnap = await getDoc(doc(db, "services", ap.serviceID));
+            serviceCache[ap.serviceID] = ssnap.exists() ? ssnap.data() : null;
+          } catch(e) {
+            console.error("Hizmet okunamadı:", e);
+          }
+        }
+        const s = serviceCache[ap.serviceID];
+        if (s) {
+          obj.serviceName = s.name || "";
+          obj.serviceDuration = s.duration || null;
+        }
+      }
+
+      // Çalışan bilgisi
+      if (ap.employeeID) {
+        if (!employeeCache[ap.employeeID]) {
+          try {
+            const esnap = await getDoc(doc(db, "employees", ap.employeeID));
+            employeeCache[ap.employeeID] = esnap.exists() ? esnap.data() : null;
+          } catch(e) {
+            console.error("Çalışan okunamadı:", e);
+          }
+        }
+        const emp = employeeCache[ap.employeeID];
+        if (emp) {
+          obj.employeeName = emp.name || "";
+        }
+      }
+
+      result.push(obj);
+    }
+
+    return result;
+  }
+
+  function renderAppointments(items) {
+    // Bekleyenler
+    const pending = items.filter(ap => ap.status === "pending");
+    const sortedAll = sortAppointments(items);
+    const sortedPending = sortAppointments(pending);
+
+    pendingListEl.innerHTML = "";
+    allListEl.innerHTML = "";
+
+    pendingCountEl.textContent = `${pending.length} adet`;
+    allCountEl.textContent = `${items.length} adet`;
+
+    if (sortedPending.length === 0) {
+      pendingListEl.innerHTML = `<div class="empty">Şu anda bekleyen randevu yok.</div>`;
+    } else {
+      sortedPending.forEach(ap => {
+        pendingListEl.appendChild(buildAppointmentRow(ap, true));
+      });
+    }
+
+    if (sortedAll.length === 0) {
+      allListEl.innerHTML = `<div class="empty">Henüz randevu oluşturulmamış.</div>`;
+    } else {
+      sortedAll.forEach(ap => {
+        allListEl.appendChild(buildAppointmentRow(ap, false));
+      });
+    }
+  }
+
+  function buildAppointmentRow(ap, isPendingSection) {
+    const row = document.createElement("div");
+    row.className = "appt-row";
+
+    const left = document.createElement("div");
+    left.className = "appt-left";
+
+    const mainLine = document.createElement("div");
+    mainLine.className = "appt-main-line";
+
+    const svcText = ap.serviceName ? ap.serviceName : ap.serviceID || "Hizmet";
+    const empText = ap.employeeName ? ap.employeeName : ap.employeeID || "";
+
+    mainLine.textContent = `${svcText} · ${ap.date} ${ap.time}`;
+
+    const sub1 = document.createElement("div");
+    sub1.className = "appt-sub";
+    sub1.textContent = empText ? `Çalışan: ${empText}` : "";
+
+    const sub2 = document.createElement("div");
+    sub2.className = "appt-sub";
+    const cName = ap.customerName || "Müşteri";
+    const cPhone = ap.customerPhone || "";
+    sub2.textContent = cPhone ? `${cName} · ${cPhone}` : cName;
+
+    left.appendChild(mainLine);
+    if (sub1.textContent) left.appendChild(sub1);
+    left.appendChild(sub2);
+
+    const right = document.createElement("div");
+    right.className = "appt-right";
+
+    const statusEl = document.createElement("span");
+    statusEl.className = `status ${ap.status || "pending"}`;
+    statusEl.textContent =
+      ap.status === "pending"   ? "Beklemede" :
+      ap.status === "approved"  ? "Onaylandı" :
+      ap.status === "rejected"  ? "Reddedildi" :
+      ap.status === "cancelled" ? "İptal" : (ap.status || "Durum");
+
+    right.appendChild(statusEl);
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = `Oluşturma: ${ap.createdAt ? new Date(ap.createdAt).toLocaleString("tr-TR") : "-"}`;
+    right.appendChild(tag);
+
+    // Sadece bekleyen ve henüz onaylanmamış/iptal olmamış ise butonlar
+    if (ap.status === "pending") {
+      const btnRow = document.createElement("div");
+      btnRow.style.display = "flex";
+      btnRow.style.gap = "6px";
+
+      const approveBtn = document.createElement("button");
+      approveBtn.className = "btn-sm btn-approve";
+      approveBtn.textContent = "Onayla";
+      approveBtn.onclick = () => updateStatus(ap.id, "approved", approveBtn);
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "btn-sm btn-reject";
+      rejectBtn.textContent = "Reddet";
+      rejectBtn.onclick = () => updateStatus(ap.id, "rejected", rejectBtn);
+
+      btnRow.appendChild(approveBtn);
+      btnRow.appendChild(rejectBtn);
+      right.appendChild(btnRow);
+    }
+
+    row.appendChild(left);
+    row.appendChild(right);
+
+    return row;
+  }
+
+  async function updateStatus(id, newStatus, btn) {
+    try {
+      if (btn) btn.disabled = true;
+
+      const ref = doc(db, "appointments", id);
+      await updateDoc(ref, {
+        status: newStatus,
+        updatedAt: Date.now()
+      });
+
+      // Burada istersen OneSignal bildirimi tetiklenir (ileride)
+      // sendStatusNotification(...)
+
+    } catch (e) {
+      console.error("Durum güncellenemedi:", e);
+      alert("Durum güncellenirken hata oluştu.");
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function listenAppointmentsRealtime() {
+    const qRef = query(
+      collection(db, "appointments"),
+      where("businessID", "==", businessID)
+    );
+
+    onSnapshot(qRef, async (snap) => {
+      const items = [];
+      snap.forEach(docSnap => {
+        items.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      // Önce ilişkili verileri doldur (müşteri / hizmet / çalışan)
+      const enriched = await enrichAppointments(items);
+      renderAppointments(enriched);
+    }, (err) => {
+      console.error("Randevu dinleme hatası:", err);
     });
   }
 
-  /* DURUM GÜNCELLEME */
-  async function updateStatus(id, newStatus){
-    await updateDoc(doc(db,"appointments",id), {
-      status: newStatus
-    });
-
-    alert("Randevu güncellendi.");
-    loadAppointments();
-  }
 </script>
 
 </body>
