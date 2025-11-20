@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>İşletme Kaydı | Cepterandevu</title>
+
+  <style>
+    :root {
+      --bg:#050816;
+      --card:#101528;
+      --accent:#22c55e;
+      --accent-strong:#16a34a;
+      --text:#f9fafb;
+      --muted:#9ca3af;
+      --border:rgba(148,163,184,0.4);
+      --radius-xl:24px;
+      --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:radial-gradient(circle at top,#111827,#020617 55%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:40px 20px;
+    }
+
+    .form-shell{
+      width:100%;
+      max-width:460px;
+      background:rgba(15,23,42,0.94);
+      padding:28px;
+      border-radius:var(--radius-xl);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(10px);
+    }
+
+    h1{font-size:22px;margin-bottom:6px;}
+    .sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+
+    label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:4px;
+      display:block;
+    }
+
+    input,select{
+      width:100%;
+      padding:10px 14px;
+      background:#0b1120;
+      border-radius:12px;
+      border:1px solid var(--border);
+      color:var(--text);
+      font-size:14px;
+      margin-bottom:12px;
+      outline:none;
+    }
+
+    input:focus,select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px var(--accent);
+    }
+
+    .btn-primary{
+      width:100%;
+      padding:12px;
+      border:0;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+      color:#022c22;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+      box-shadow:0 12px 30px rgba(34,197,94,0.35);
+      margin-top:6px;
+      transition:transform 0.1s ease,box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover{
+      filter:brightness(1.05);
+      transform:translateY(-1px);
+      box-shadow:0 14px 35px rgba(34,197,94,0.55);
+    }
+
+    .error-box{
+      background:rgba(248,113,113,0.15);
+      border:1px solid rgba(248,113,113,0.6);
+      padding:10px;
+      border-radius:10px;
+      font-size:12px;
+      color:#fecaca;
+      margin-bottom:12px;
+      display:none;
+      text-align:center;
+    }
+
+    .link-row{
+      margin-top:14px;
+      font-size:12px;
+      text-align:center;
+    }
+    .link-row a{
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:500;
+    }
+    .link-row a:hover{
+      text-decoration:underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-shell">
+    <h1>İşletme Kaydı</h1>
+    <p class="sub">
+      İşletmeni dakikalar içinde sisteme ekle. Telefon numaran ile giriş yapabileceksin.
+    </p>
+
+    <div id="errorBox" class="error-box"></div>
+
+    <label for="bizName">İşletme Adı</label>
+    <input id="bizName" type="text" placeholder="Örn: Pratik Kuaför & Güzellik" />
+
+    <label for="city">İl</label>
+    <input id="city" type="text" placeholder="Örn: İzmir" />
+
+    <label for="district">İlçe</label>
+    <input id="district" type="text" placeholder="Örn: Karşıyaka" />
+
+    <label for="tags">Kategori / Etiketler</label>
+    <input id="tags" type="text" placeholder="Kuaför, Bakım, Güzellik" />
+
+    <label for="phone">Telefon</label>
+    <input id="phone" type="tel" placeholder="05XXXXXXXXX" maxlength="11" />
+
+    <label for="password">Şifre</label>
+    <input id="password" type="password" placeholder="En az 6 karakter" />
+
+    <button id="registerBtn" class="btn-primary">İşletme Hesabı Oluştur</button>
+
+    <div class="link-row">
+      Zaten hesabınız var mı? <a href="business-login.html">Giriş Yap</a>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:124c2004605d68b32700f1",
+  };
+
+  const BUSINESS_SUFFIX = "@biz.cepterandevu";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const errorBox = document.getElementById("errorBox");
+  const registerBtn = document.getElementById("registerBtn");
+
+  function showError(msg){
+    errorBox.style.display = "block";
+    errorBox.textContent = msg;
+  }
+
+  registerBtn.addEventListener("click", async ()=>{
+    errorBox.style.display = "none";
+    registerBtn.disabled = true;
+
+    const name = document.getElementById("bizName").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const district = document.getElementById("district").value.trim();
+    const tagsRaw = document.getElementById("tags").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
+
+    if(!name || !city || !district || !phone || !password){
+      showError("Lütfen tüm zorunlu alanları doldurun.");
+      registerBtn.disabled = false;
+      return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g,"");
+    if(!cleanPhone.startsWith("05") || cleanPhone.length !== 11){
+      showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
+      registerBtn.disabled = false;
+      return;
+    }
+
+    if(password.length < 6){
+      showError("Şifre en az 6 karakter olmalıdır.");
+      registerBtn.disabled = false;
+      return;
+    }
+
+    const email = cleanPhone + BUSINESS_SUFFIX;
+    const tags = tagsRaw
+      ? tagsRaw.split(",").map(t=>t.trim()).filter(Boolean)
+      : [];
+
+    try{
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = cred.user.uid;
+
+      await addDoc(collection(db,"businesses"),{
+        ownerUID: uid,
+        phone: cleanPhone,
+        name,
+        city,
+        district,
+        tags,
+        totalAppointments: 0,
+        activeEmployees: 0,
+        createdAt: Date.now()
+      });
+
+      alert("İşletme hesabınız oluşturuldu.");
+      window.location.href = "business-panel.html";
+
+    }catch(err){
+      console.error(err);
+      if(err.code === "auth/email-already-in-use"){
+        showError("Bu telefon numarası ile zaten bir işletme hesabı kayıtlı.");
+      }else{
+        showError("Kayıt sırasında hata oluştu: "+err.message);
+      }
+    }finally{
+      registerBtn.disabled = false;
+    }
+  });
+
+</script>
+</body>
+</html>
