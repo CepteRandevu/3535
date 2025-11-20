@@ -13,40 +13,46 @@
       --accent-strong: #16a34a;
       --text: #f9fafb;
       --muted: #9ca3af;
-      --border: rgba(148, 163, 184, 0.4);
-      --radius-xl: 24px;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --border: rgba(148,163,184,0.4);
+      --radius: 20px;
+      --shadow: 0 16px 40px rgba(0,0,0,0.4);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, #111827, #020617 55%);
-      color: var(--text);
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #111827, #020617 60%);
+      margin: 0;
+      padding: 40px 20px;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 40px 20px;
+      color: var(--text);
     }
 
-    .form-shell {
+    .card {
       width: 100%;
-      max-width: 420px;
-      background: rgba(15,23,42,0.92);
-      padding: 28px;
-      border-radius: var(--radius-xl);
+      max-width: 430px;
+      background: var(--card);
+      padding: 26px;
+      border-radius: var(--radius);
       border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
     }
 
-    h1 { font-size: 22px; margin-bottom: 6px; }
-    p.sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    p.sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
 
     label {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--muted);
       margin-bottom: 4px;
       display: block;
@@ -54,13 +60,13 @@
 
     input {
       width: 100%;
-      padding: 10px 14px;
-      background: #0b1120;
-      border: 1px solid var(--border);
+      padding: 11px 12px;
       border-radius: 12px;
-      font-size: 14px;
+      background: #020617;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
       color: var(--text);
-      margin-bottom: 14px;
+      font-size: 14px;
       outline: none;
     }
 
@@ -69,83 +75,65 @@
       box-shadow: 0 0 0 1px var(--accent);
     }
 
-    .btn-primary {
+    .btn {
       width: 100%;
       padding: 12px;
-      border: none;
-      border-radius: 14px;
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border: 0;
+      border-radius: 14px;
+      font-size: 15px;
       color: #022c22;
       font-weight: 700;
-      cursor: pointer;
-      font-size: 14px;
-      box-shadow: 0 12px 30px rgba(34,197,94,0.35);
       margin-top: 6px;
-      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(34,197,94,0.4);
     }
 
-    .btn-primary:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 35px rgba(34,197,94,0.55);
-    }
-
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 5px 20px rgba(34,197,94,0.25);
-    }
-
-    .error-box {
-      background: rgba(255, 82, 82, 0.15);
-      border: 1px solid rgba(255, 82, 82, 0.5);
+    .error {
+      background: rgba(239,68,68,0.25);
+      border: 1px solid rgba(239,68,68,0.5);
       padding: 10px;
       border-radius: 10px;
-      font-size: 12px;
-      color: #ffbaba;
+      font-size: 13px;
       margin-bottom: 12px;
+      text-align: center;
+      color: #fecaca;
       display: none;
-      text-align: center;
     }
 
-    .link-row {
-      margin-top: 14px;
+    .link {
       font-size: 12px;
+      margin-top: 12px;
       text-align: center;
     }
 
-    .link-row a {
+    .link a {
       color: var(--accent);
       text-decoration: none;
-      font-weight: 500;
-    }
-
-    .link-row a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
-  <div class="form-shell">
 
-    <h1>İşletme Girişi</h1>
-    <p class="sub">Telefon numaranız ve şifreniz ile işletme hesabınıza giriş yapın.</p>
+<div class="card">
+  <h1>İşletme Girişi</h1>
+  <p class="sub">Telefon ve şifre ile giriş yapın.</p>
 
-    <div id="errorBox" class="error-box"></div>
+  <div id="errBox" class="error"></div>
 
-    <label for="phone">Telefon</label>
-    <input type="tel" id="phone" placeholder="05XXXXXXXXX"
-           maxlength="11" pattern="05\d{9}" />
+  <label>Telefon</label>
+  <input id="phone" type="tel" maxlength="11" placeholder="05XXXXXXXXX">
 
-    <label for="password">Şifre</label>
-    <input type="password" id="password" placeholder="Şifreniz" />
+  <label>Şifre</label>
+  <input id="password" type="password" placeholder="Şifreniz">
 
-    <button id="loginBtn" class="btn-primary">Giriş Yap</button>
+  <button id="loginBtn" class="btn">Giriş Yap</button>
 
-    <div class="link-row">
-      İşletmeniz yok mu? <a href="business-register.html">Hesap Oluştur</a>
-    </div>
+  <div class="link">
+    Hesabınız yok mu? <a href="business-register.html">Kayıt Ol</a>
   </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -163,63 +151,46 @@
     appId: "1:86298180836:web:124c2004605d68b32700f1",
   };
 
-  const BUSINESS_SUFFIX = "@biz.cepterandevu";
-
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  const errorBox = document.getElementById("errorBox");
+  const errBox = document.getElementById("errBox");
   const loginBtn = document.getElementById("loginBtn");
-  const phoneInput = document.getElementById("phone");
-  const passInput = document.getElementById("password");
 
-  function showError(msg){
-    errorBox.style.display = "block";
-    errorBox.textContent = msg;
+  function showErr(msg) {
+    errBox.style.display = "block";
+    errBox.textContent = msg;
   }
 
-  loginBtn.addEventListener("click", async ()=>{
-    errorBox.style.display = "none";
-    loginBtn.disabled = true;
+  loginBtn.addEventListener("click", async () => {
+    errBox.style.display = "none";
 
-    const phone = phoneInput.value.trim();
-    const password = passInput.value;
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
 
-    if(!phone || !password){
-      showError("Lütfen tüm alanları doldurun.");
-      loginBtn.disabled = false;
-      return;
+    if (!phone || !password) {
+      return showErr("Tüm alanları doldurun.");
     }
 
-    const cleanPhone = phone.replace(/\D/g,"");
-    if(!cleanPhone.startsWith("05") || cleanPhone.length !== 11){
-      showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
-      loginBtn.disabled = false;
-      return;
+    if (!phone.startsWith("05") || phone.length !== 11) {
+      return showErr("Telefon numarası geçersiz.");
     }
 
-    const email = cleanPhone + BUSINESS_SUFFIX;
+    const email = phone + "@biz.app";
 
-    try{
+    try {
+      loginBtn.disabled = true;
+
       await signInWithEmailAndPassword(auth, email, password);
-      // Başarılı giriş: işletme paneline git
+
       window.location.href = "business-panel.html";
-    }catch(err){
-      console.error(err);
-      if(
-        err.code === "auth/user-not-found" ||
-        err.code === "auth/wrong-password" ||
-        err.code === "auth/invalid-credential"
-      ){
-        showError("Telefon numarası veya şifre hatalı.");
-      }else{
-        showError("Giriş sırasında hata oluştu: " + err.message);
-      }
-    }finally{
+
+    } catch (e) {
+      showErr("Hatalı telefon numarası veya şifre.");
       loginBtn.disabled = false;
     }
   });
-
 </script>
+
 </body>
 </html>
