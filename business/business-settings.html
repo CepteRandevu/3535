@@ -1,280 +1,303 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ayarlar | Cepterandevu</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayarlar | Cepterandevu</title>
 
-  <style>
-    :root {
-      --bg:#050816;
-      --sidebar:#0b1120;
-      --card:#101528;
-      --accent:#22c55e;
-      --accent-strong:#16a34a;
-      --text:#f9fafb;
-      --muted:#9ca3af;
-      --border:rgba(148,163,184,0.35);
-      --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
-      --radius-xl:22px;
-    }
+<style>
+  :root {
+    --bg:#050816;
+    --sidebar:#0b1120;
+    --card:#101528;
+    --accent:#22c55e;
+    --accent-strong:#16a34a;
+    --text:#f9fafb;
+    --muted:#9ca3af;
+    --border:rgba(148,163,184,0.35);
+    --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
+    --radius-xl:22px;
+  }
 
-    *{margin:0;padding:0;box-sizing:border-box;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    display:flex;
+    background:radial-gradient(circle at top,#111827,#020617 55%);
+    font-family:system-ui,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+  }
 
-    body{
-      display:flex;
-      background:radial-gradient(circle at top,#111827,#020617 55%);
-      color:var(--text);
-      font-family:system-ui,sans-serif;
-      min-height:100vh;
-    }
+  /* SIDEBAR */
+  .sidebar{
+    width:240px;
+    background:var(--sidebar);
+    padding:24px 18px;
+    border-right:1px solid var(--border);
+    position:fixed;top:0;bottom:0;
+    display:flex;flex-direction:column;
+    gap:14px;
+  }
+  .logo-box{
+    display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  }
+  .logo-mark{
+    width:36px;height:36px;border-radius:14px;
+    background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+    display:flex;justify-content:center;align-items:center;
+    font-weight:800;font-size:18px;color:#ecfdf5;
+    box-shadow:0 10px 30px rgba(34,197,94,0.6);
+  }
+  .biz-name-small{font-size:14px;font-weight:600;}
 
-    /* SIDEBAR */
-    .sidebar{
-      width:240px;
-      background:var(--sidebar);
-      padding:24px 18px;
-      border-right:1px solid var(--border);
-      position:fixed;
-      top:0;bottom:0;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
+  .menu button{
+    width:100%;padding:10px 12px;background:transparent;border:0;
+    text-align:left;color:var(--muted);cursor:pointer;
+    border-radius:12px;font-size:14px;
+  }
+  .menu button.active{
+    background:var(--accent);color:#022c22;font-weight:600;
+  }
 
-    .logo-box{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:20px;
-    }
+  /* MAIN */
+  .main-area{
+    margin-left:240px;flex:1;padding:24px;
+  }
+  .title{font-size:22px;font-weight:600;margin-bottom:16px;}
 
-    .logo-mark{
-      width:36px;height:36px;border-radius:14px;
-      background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-      display:flex;align-items:center;justify-content:center;
-      font-size:18px;font-weight:800;color:#ecfdf5;
-      box-shadow:0 10px 30px rgba(34,197,94,0.6);
-    }
+  .card{
+    background:var(--card);
+    padding:20px;
+    border-radius:var(--radius-xl);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-soft);
+    margin-bottom:20px;
+  }
 
-    .biz-name-small{font-size:14px;font-weight:600;}
+  label{
+    display:block;font-size:13px;color:var(--muted);margin-bottom:4px;
+  }
+  input, select, textarea{
+    width:100%;padding:10px 12px;border-radius:12px;
+    background:#020617;border:1px solid var(--border);
+    color:var(--text);margin-bottom:10px;outline:none;
+  }
+  textarea{height:70px;resize:none;}
 
-    .menu button{
-      width:100%;padding:10px 12px;background:transparent;
-      border:0;text-align:left;color:var(--muted);
-      cursor:pointer;border-radius:12px;font-size:14px;
-    }
+  .btn-primary{
+    width:100%;background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+    border:0;padding:12px;font-size:15px;border-radius:12px;font-weight:600;
+    cursor:pointer;color:#022c22;margin-top:6px;
+    box-shadow:0 12px 30px rgba(34,197,94,0.45);
+  }
+  .logout-btn{
+    width:100%;background:#ef4444;color:white;
+    padding:12px;border:0;border-radius:12px;font-size:15px;margin-top:20px;
+    cursor:pointer;
+  }
 
-    .menu button.active{background:var(--accent);color:#022c22;font-weight:600;}
+  .logo-preview{
+    width:90px;height:90px;border-radius:12px;margin-bottom:8px;
+    object-fit:cover;border:2px solid var(--accent);
+  }
 
-    /* MAIN */
-    .main-area{margin-left:240px;flex:1;padding:24px;}
-    .title{font-size:22px;font-weight:600;margin-bottom:16px;}
+</style>
 
-    .card{
-      background:var(--card);
-      padding:20px;
-      border-radius:var(--radius-xl);
-      border:1px solid var(--border);
-      box-shadow:var(--shadow-soft);
-      margin-bottom:20px;
-    }
-
-    label{
-      font-size:13px;color:var(--muted);display:block;margin-bottom:5px;
-    }
-
-    input,textarea{
-      width:100%;padding:10px 12px;border-radius:12px;
-      background:#020617;border:1px solid var(--border);
-      color:var(--text);margin-bottom:12px;font-size:14px;
-      resize:none;
-    }
-
-    input:focus,textarea:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px var(--accent);
-      outline:none;
-    }
-
-    .logo-preview{
-      width:90px;height:90px;border-radius:12px;
-      background:#0f172a;border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;
-      color:var(--muted);font-size:12px;margin-bottom:8px;
-      overflow:hidden;
-    }
-
-    .logo-preview img{width:100%;height:100%;object-fit:cover;}
-
-    .btn-save{
-      width:100%;padding:12px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-      border:0;border-radius:12px;
-      font-size:15px;font-weight:600;color:#022c22;
-      cursor:pointer;margin-top:6px;
-      box-shadow:0 12px 30px rgba(34,197,94,0.45);
-    }
-  </style>
-
-  <!-- OneSignal SDK -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-      authDomain: "cepterandevu-35fe4.firebaseapp.com",
-      projectId: "cepterandevu-35fe4",
-      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-      messagingSenderId: "86298180836",
-      appId: "1:86298180836:web:124c2004605d68b32700f1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    let businessID = null;
-
-    const bizNameSmall = document.getElementById("bizNameSmall");
-    const bizName = document.getElementById("bizName");
-    const phone = document.getElementById("phone");
-    const desc = document.getElementById("description");
-    const city = document.getElementById("city");
-    const district = document.getElementById("district");
-    const playerID = document.getElementById("playerID");
-    const logoFile = document.getElementById("logoFile");
-    const logoPreview = document.getElementById("logoPreview");
-
-    /* LOGIN KONTROLÜ */
-    onAuthStateChanged(auth, async(user)=>{
-      if(!user){
-        window.location.href="business-login.html";
-        return;
-      }
-      businessID = user.uid;
-      loadSettings();
-    });
-
-    /* AYAR YÜKLE */
-    async function loadSettings(){
-      const refBiz = doc(db,"businesses",businessID);
-      const snap = await getDoc(refBiz);
-      if(!snap.exists()) return;
-
-      const d = snap.data();
-
-      bizNameSmall.textContent = d.name || "İşletme";
-      bizName.value = d.name || "";
-      phone.value = d.phone || "";
-      desc.value = d.description || "";
-      city.value = d.city || "";
-      district.value = d.district || "";
-      playerID.value = d.playerID || "";
-
-      if(d.logoURL){
-        logoPreview.innerHTML = `<img src="${d.logoURL}">`;
-      }
-    }
-
-    /* OneSignal PlayerID OTOMATİK KAYDETME */
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal){
-      try{
-        const pid = await OneSignal.User.getId();
-        if(pid){
-          document.getElementById("playerID").value = pid;
-        }
-      }catch(e){}
-    });
-
-    /* KAYDET */
-    window.saveSettings = async function(){
-      const refBiz = doc(db,"businesses",businessID);
-
-      let logoURL = null;
-
-      if(logoFile.files.length > 0){
-        const file = logoFile.files[0];
-        const storageRef = ref(storage, `logos/${businessID}/${file.name}`);
-        await uploadBytes(storageRef, file);
-        logoURL = await getDownloadURL(storageRef);
-      }
-
-      await updateDoc(refBiz,{
-        name: bizName.value,
-        phone: phone.value,
-        description: desc.value,
-        city: city.value,
-        district: district.value,
-        playerID: playerID.value,
-        ...(logoURL && { logoURL })
-      });
-
-      alert("Ayarlar kaydedildi!");
-    }
-  </script>
-
+<!-- Firebase -->
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
 </head>
+
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo-box">
-      <div class="logo-mark">C</div>
-      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
-    </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-box">
+    <div class="logo-mark">C</div>
+    <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+  </div>
 
-    <div class="menu">
-      <button onclick="location.href='business-panel.html'">Panel</button>
-      <button onclick="location.href='business-services.html'">Hizmetler</button>
-      <button onclick="location.href='business-employees.html'">Çalışanlar</button>
-      <button onclick="location.href='business-appointments.html'">Randevular</button>
-      <button class="active">Ayarlar</button>
-    </div>
-  </aside>
+  <div class="menu">
+    <button onclick="location.href='business-panel.html'">Panel</button>
+    <button onclick="location.href='business-services.html'">Hizmetler</button>
+    <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+    <button onclick="location.href='business-appointments.html'">Randevular</button>
+    <button class="active">Ayarlar</button>
+  </div>
+</aside>
 
-  <!-- MAIN AREA -->
-  <main class="main-area">
-    <h1 class="title">Ayarlar</h1>
+<!-- MAIN -->
+<main class="main-area">
+  <h1 class="title">Ayarlar</h1>
 
-    <div class="card">
+  <div class="card">
+    <h3 style="margin-bottom:10px;">İşletme Bilgileri</h3>
 
-      <label>İşletme Adı</label>
-      <input id="bizName" type="text">
+    <label>Logo</label>
+    <img id="logoPreview" class="logo-preview" src="">
+    <input type="file" id="logoInput" accept="image/*">
 
-      <label>Telefon</label>
-      <input id="phone" type="text">
+    <label>İşletme Adı</label>
+    <input id="bizName">
 
-      <label>Açıklama</label>
-      <textarea id="description" rows="3"></textarea>
+    <label>İl</label>
+    <select id="citySelect">
+      <option value="">İl seç</option>
+      <option>İzmir</option>
+      <option>İstanbul</option>
+      <option>Ankara</option>
+    </select>
 
-      <label>İl</label>
-      <input id="city" type="text">
+    <label>İlçe</label>
+    <select id="districtSelect">
+      <option value="">İlçe seç</option>
+    </select>
 
-      <label>İlçe</label>
-      <input id="district" type="text">
+    <label>Telefon</label>
+    <input id="bizPhone">
 
-      <!-- GİZLİ PLAYERID -->
-      <div style="display:none;">
-        <input id="playerID" type="text">
-      </div>
+    <label>Adres</label>
+    <textarea id="bizAddress"></textarea>
 
-      <label>Logo Yükle</label>
-      <div class="logo-preview" id="logoPreview">Logo Yok</div>
-      <input id="logoFile" type="file" accept="image/*">
+    <label>Açıklama</label>
+    <textarea id="bizAbout"></textarea>
 
-      <button class="btn-save" onclick="saveSettings()">Kaydet</button>
-    </div>
+    <button class="btn-primary" id="saveBiz">İşletme Bilgilerini Kaydet</button>
+  </div>
 
-  </main>
+  <div class="card">
+    <h3>Şifre Değiştir</h3>
+    <label>Yeni Şifre</label>
+    <input type="password" id="newPass">
+    <button class="btn-primary" id="savePass">Şifreyi Güncelle</button>
+  </div>
+
+  <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+
+</main>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:124c2004605d68b32700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  let BUSINESS_ID = null;
+
+  const bizNameSmall = document.getElementById("bizNameSmall");
+  const bizName = document.getElementById("bizName");
+  const bizPhone = document.getElementById("bizPhone");
+  const bizAddress = document.getElementById("bizAddress");
+  const bizAbout = document.getElementById("bizAbout");
+  const citySelect = document.getElementById("citySelect");
+  const districtSelect = document.getElementById("districtSelect");
+  const logoPreview = document.getElementById("logoPreview");
+  const logoInput = document.getElementById("logoInput");
+
+  /* LOGIN */
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      location.href = "business-login.html";
+      return;
+    }
+
+    BUSINESS_ID = user.uid;
+    await loadBusiness();
+  });
+
+  /* İŞLETME BİLGİSİ YÜKLE */
+  async function loadBusiness(){
+    const ref = doc(db,"businesses",BUSINESS_ID);
+    const snap = await getDoc(ref);
+    if(!snap.exists()) return;
+
+    const d = snap.data();
+
+    bizNameSmall.textContent = d.name;
+    bizName.value = d.name;
+    bizPhone.value = d.phone || "";
+    bizAddress.value = d.address || "";
+    bizAbout.value = d.about || "";
+    citySelect.value = d.city || "";
+    districtSelect.value = d.district || "";
+
+    if(d.logoURL){
+      logoPreview.src = d.logoURL;
+    } else {
+      logoPreview.src = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
+    }
+  }
+
+
+  /* LOGO YÜKLE */
+  logoInput.addEventListener("change", async ()=> {
+    const file = logoInput.files[0];
+    if(!file) return;
+
+    const storageRef = ref(storage,"logos/"+BUSINESS_ID+".jpg");
+    await uploadBytes(storageRef,file);
+
+    const url = await getDownloadURL(storageRef);
+
+    await updateDoc(doc(db,"businesses",BUSINESS_ID),{
+      logoURL:url
+    });
+
+    logoPreview.src = url;
+    alert("Logo güncellendi!");
+  });
+
+
+  /* İŞLETME BİLGİLERİ KAYDET */
+  document.getElementById("saveBiz").addEventListener("click", async ()=>{
+    await updateDoc(doc(db,"businesses",BUSINESS_ID),{
+      name:bizName.value,
+      phone:bizPhone.value,
+      address:bizAddress.value,
+      about:bizAbout.value,
+      city:citySelect.value,
+      district:districtSelect.value
+    });
+
+    alert("İşletme bilgileri güncellendi!");
+  });
+
+  /* ŞİFRE GÜNCELLE */
+  document.getElementById("savePass").addEventListener("click", async ()=>{
+    const pass = document.getElementById("newPass").value;
+    if(pass.length < 6){
+      alert("Şifre en az 6 karakter olmalı.");
+      return;
+    }
+
+    await updatePassword(auth.currentUser, pass);
+    alert("Şifre güncellendi!");
+  });
+
+  /* ÇIKIŞ */
+  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+    await signOut(auth);
+    location.href = "business-login.html";
+  });
+
+</script>
 
 </body>
 </html>
