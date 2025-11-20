@@ -138,6 +138,11 @@
       background:#020617;
     }
 
+    .small-label{
+      font-size:11px;
+      color:var(--muted);
+    }
+
     .biz-stats{
       display:flex;
       gap:12px;
@@ -183,19 +188,6 @@
       margin-bottom:4px;
     }
     .nav-desc{
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    .stat-box{
-      display:flex;
-      justify-content:space-between;
-      margin-top:8px;
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    .small-label{
       font-size:11px;
       color:var(--muted);
     }
@@ -248,40 +240,41 @@
     <section>
       <div class="card">
         <h2>Hızlı İşlemler</h2>
-        <p class="sub">En sık yaptığın ayar ve işlemlere tek dokunuşla git.</p>
+        <p class="sub">En sık kullandığın ekranlara tek dokunuşla git.</p>
 
         <div class="nav-grid">
           <div class="nav-card" onclick="window.location.href='business-services.html'">
             <div class="nav-title">Hizmetler</div>
             <div class="nav-desc">
-              Saç kesim, bakım, muayene, seans gibi tüm hizmetlerini ekle / düzenle.
+              Hizmet ekle, fiyat ve sürelerini düzenle.
             </div>
           </div>
 
           <div class="nav-card" onclick="window.location.href='business-employees.html'">
             <div class="nav-title">Çalışanlar</div>
             <div class="nav-desc">
-              Personel ekle, hangi hizmeti kimin yapacağını belirle.
+              Personel ekle, hangi hizmetleri yaptığını seç.
             </div>
           </div>
 
           <div class="nav-card" onclick="window.location.href='business-appointments.html'">
             <div class="nav-title">Randevular</div>
             <div class="nav-desc">
-              Gelen randevuları onayla / reddet, yoğunluğu takip et.
+              Gelen randevuları onayla, reddet, yoğunluğu takip et.
             </div>
           </div>
 
           <div class="nav-card" onclick="window.location.href='business-settings.html'">
             <div class="nav-title">Ayarlar</div>
             <div class="nav-desc">
-              Çalışma saatleri, kapalı günler, logo ve bildirim ayarlarını yönet.
+              Çalışma saatleri, kapalı günler, logo ve bildirim ayarları.
             </div>
           </div>
         </div>
 
         <p class="hint">
-          İpuçu: İlk önce <strong>Hizmetler</strong> ve <strong>Çalışanlar</strong> sayfalarını tamamla, sonra randevu almaya başla.
+          İpucu: İlk olarak <strong>Hizmetler</strong> ve <strong>Çalışanlar</strong> sayfalarını doldur,
+          sonra randevuları aç.
         </p>
       </div>
     </section>
@@ -289,15 +282,28 @@
 </div>
 
 <script type="module">
-  import { firebaseConfig } from "./js/firebase-config.js";
-
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
-    getFirestore, collection, query, where, getDocs
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import {
-    getAuth, onAuthStateChanged, signOut
+    getAuth,
+    onAuthStateChanged,
+    signOut
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:124c2004605d68b32700f1",
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -311,7 +317,6 @@
       window.location.href = "business-login.html";
       return;
     }
-
     await loadBusinessForOwner(user.uid);
   });
 
@@ -327,7 +332,7 @@
         bizContent.innerHTML = `
           <div class="error-box">
             Bu hesapla ilişkili bir işletme bulunamadı.<br>
-            Henüz kayıt formunu tamamlamadıysan <strong>business-register.html</strong> üzerinden yeni işletme oluştur.
+            Henüz kayıt formunu tamamlamadıysan <strong>İşletme Kaydı</strong> sayfasından yeni işletme oluştur.
           </div>
         `;
         return;
@@ -357,7 +362,7 @@
           ${
             tags.length
               ? tags.map(t=>`<span class="tag">${t}</span>`).join("")
-              : '<span class="small-label">Tanımlı etiket yok. (Kuaför, Klinik, Spa vb.)</span>'
+              : '<span class="small-label">Tanımlı etiket yok. (Örn: Kuaför, Klinik, Spa)</span>'
           }
         </div>
 
@@ -376,7 +381,7 @@
       console.error(err);
       bizContent.innerHTML = `
         <div class="error-box">
-          İşletme bilgileri yüklenirken bir hata oluştu: ${err.message}
+          İşletme bilgileri yüklenirken hata oluştu: ${err.message}
         </div>
       `;
     }
