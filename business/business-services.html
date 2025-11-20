@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hizmet Yönetimi | Cepterandevu</title>
+  <title>Çalışan Yönetimi | Cepterandevu</title>
 
   <style>
     :root {
@@ -29,7 +29,7 @@
       min-height: 100vh;
     }
 
-    /* SIDEBAR – Aynı business-panel ile birebir */
+    /* SIDEBAR */
     .sidebar {
       width: 240px;
       background: var(--sidebar);
@@ -101,7 +101,7 @@
 
     .card {
       background: var(--card);
-      padding: 18px;
+      padding: 20px;
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-soft);
@@ -122,13 +122,27 @@
       background: #020617;
       border: 1px solid var(--border);
       color: var(--text);
-      outline: none;
       margin-bottom: 10px;
     }
 
     input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 0;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
     }
 
     .btn-primary {
@@ -145,7 +159,7 @@
       box-shadow: 0 12px 30px rgba(34,197,94,0.45);
     }
 
-    .service-row {
+    .emp-row {
       padding: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       display: flex;
@@ -153,17 +167,17 @@
       align-items: center;
     }
 
-    .service-info {
+    .emp-info {
       display: flex;
       flex-direction: column;
     }
 
-    .service-name {
+    .emp-name {
       font-size: 15px;
       font-weight: 600;
     }
 
-    .service-meta {
+    .emp-meta {
       font-size: 12px;
       color: var(--muted);
     }
@@ -181,6 +195,7 @@
     .delete-btn:hover {
       filter: brightness(1.15);
     }
+
   </style>
 
   <!-- Firebase -->
@@ -200,8 +215,8 @@
 
     <div class="menu">
       <button onclick="location.href='business-panel.html'">Panel</button>
-      <button class="active">Hizmetler</button>
-      <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+      <button onclick="location.href='business-services.html'">Hizmetler</button>
+      <button class="active">Çalışanlar</button>
       <button onclick="location.href='business-appointments.html'">Randevular</button>
       <button onclick="location.href='business-settings.html'">Ayarlar</button>
     </div>
@@ -209,28 +224,25 @@
 
   <!-- MAIN CONTENT -->
   <main class="main-area">
-    <h1 class="title">Hizmet Yönetimi</h1>
+    <h1 class="title">Çalışan Yönetimi</h1>
 
-    <!-- HİZMET EKLEME FORMU -->
+    <!-- ÇALIŞAN EKLEME -->
     <div class="card">
-      <h3 style="margin-bottom:10px;">Yeni Hizmet Ekle</h3>
+      <h3 style="margin-bottom:10px;">Yeni Çalışan Ekle</h3>
 
-      <label>Hizmet Adı</label>
-      <input type="text" id="serviceName">
+      <label>Çalışan Adı</label>
+      <input type="text" id="empNameInput">
 
-      <label>Süre (dakika)</label>
-      <input type="number" id="serviceDuration" placeholder="örn: 30">
+      <label>Bağlı Hizmetler</label>
+      <div id="servicesCheckbox" class="checkbox-list">Yükleniyor...</div>
 
-      <label>Fiyat (₺)</label>
-      <input type="number" id="servicePrice" placeholder="örn: 150">
-
-      <button class="btn-primary" id="addServiceBtn">Ekle</button>
+      <button class="btn-primary" id="addEmpBtn">Ekle</button>
     </div>
 
-    <!-- MEVCUT HİZMETLER -->
+    <!-- MEVCUT ÇALIŞANLAR -->
     <div class="card">
-      <h3 style="margin-bottom:10px;">Mevcut Hizmetler</h3>
-      <div id="servicesList">Yükleniyor...</div>
+      <h3 style="margin-bottom:10px;">Mevcut Çalışanlar</h3>
+      <div id="empList">Yükleniyor...</div>
     </div>
   </main>
 
@@ -268,11 +280,11 @@
   const db = getFirestore(app);
 
   let businessID = null;
+  let SERVICES = {};
 
-  const serviceNameInput = document.getElementById("serviceName");
-  const serviceDurationInput = document.getElementById("serviceDuration");
-  const servicePriceInput = document.getElementById("servicePrice");
-  const servicesListEl = document.getElementById("servicesList");
+  const servicesCheckbox = document.getElementById("servicesCheckbox");
+  const empListEl = document.getElementById("empList");
+  const empNameInput = document.getElementById("empNameInput");
   const bizNameSmall = document.getElementById("bizNameSmall");
 
   /* LOGIN KONTROLÜ */
@@ -285,6 +297,7 @@
     businessID = user.uid;
     await loadBusinessName();
     await loadServices();
+    await loadEmployees();
   });
 
   async function loadBusinessName() {
@@ -295,65 +308,102 @@
     }
   }
 
-  /* HİZMET EKLEME */
-  document.getElementById("addServiceBtn").onclick = async () => {
-    const name = serviceNameInput.value.trim();
-    const duration = parseInt(serviceDurationInput.value);
-    const price = parseFloat(servicePriceInput.value);
-
-    if (!name || !duration || !price) {
-      alert("Tüm alanları doldurun.");
-      return;
-    }
-
-    await addDoc(collection(db, "services"), {
-      businessID,
-      name,
-      duration,
-      price
-    });
-
-    serviceNameInput.value = "";
-    serviceDurationInput.value = "";
-    servicePriceInput.value = "";
-
-    await loadServices();
-  };
-
-  /* HİZMETLERİ YÜKLE */
+  /* HİZMETLERİ ÇEK → CHECKBOX LİST OLUŞTUR */
   async function loadServices() {
-    servicesListEl.textContent = "Yükleniyor...";
+    servicesCheckbox.textContent = "Yükleniyor...";
 
     const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
     const snap = await getDocs(qRef);
 
-    if (snap.empty) {
-      servicesListEl.textContent = "Henüz hizmet eklenmemiş.";
-      return;
-    }
-
-    servicesListEl.innerHTML = "";
+    SERVICES = {};
+    servicesCheckbox.innerHTML = "";
 
     snap.forEach((docSnap) => {
       const data = docSnap.data();
+      SERVICES[docSnap.id] = data;
+
+      const div = document.createElement("div");
+      div.className = "checkbox-item";
+      div.innerHTML = `
+        <input type="checkbox" value="${docSnap.id}">
+        <label>${data.name} (${data.duration} dk)</label>
+      `;
+      servicesCheckbox.appendChild(div);
+    });
+
+    if (Object.keys(SERVICES).length === 0) {
+      servicesCheckbox.textContent = "Önce hizmet ekleyin.";
+    }
+  }
+
+  /* ÇALIŞAN EKLEME */
+  document.getElementById("addEmpBtn").onclick = async () => {
+    const name = empNameInput.value.trim();
+    if (!name) {
+      alert("Çalışan adı gerekli.");
+      return;
+    }
+
+    const selectedServices = Array.from(
+      servicesCheckbox.querySelectorAll("input[type='checkbox']:checked")
+    ).map(i => i.value);
+
+    if (selectedServices.length === 0) {
+      alert("En az bir hizmet seçin.");
+      return;
+    }
+
+    await addDoc(collection(db, "employees"), {
+      businessID,
+      name,
+      services: selectedServices
+    });
+
+    empNameInput.value = "";
+    servicesCheckbox.querySelectorAll("input").forEach(c => c.checked = false);
+
+    await loadEmployees();
+  };
+
+  /* ÇALIŞANLARI ÇEKME */
+  async function loadEmployees() {
+    empListEl.textContent = "Yükleniyor...";
+
+    const qRef = query(collection(db, "employees"), where("businessID", "==", businessID));
+    const snap = await getDocs(qRef);
+
+    empListEl.innerHTML = "";
+
+    if (snap.empty) {
+      empListEl.textContent = "Henüz çalışan eklenmemiş.";
+      return;
+    }
+
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+
       const row = document.createElement("div");
-      row.className = "service-row";
+      row.className = "emp-row";
+
+      let serviceNames = (data.services || [])
+        .map(id => SERVICES[id]?.name || id)
+        .join(", ");
 
       row.innerHTML = `
-        <div class="service-info">
-          <div class="service-name">${data.name}</div>
-          <div class="service-meta">${data.duration} dk — ${data.price}₺</div>
+        <div class="emp-info">
+          <div class="emp-name">${data.name}</div>
+          <div class="emp-meta">${serviceNames}</div>
         </div>
         <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
       `;
 
-      servicesListEl.appendChild(row);
+      empListEl.appendChild(row);
     });
 
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.onclick = async () => {
-        await deleteDoc(doc(db, "services", btn.dataset.id));
-        await loadServices();
+        await deleteDoc(doc(db, "employees", btn.dataset.id));
+        await loadEmployees();
       };
     });
   }
