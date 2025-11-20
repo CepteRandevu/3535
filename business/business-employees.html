@@ -192,16 +192,7 @@
       cursor: pointer;
     }
 
-    .delete-btn:hover {
-      filter: brightness(1.15);
-    }
-
   </style>
-
-  <!-- Firebase -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 </head>
 
 <body>
@@ -222,50 +213,37 @@
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="main-area">
     <h1 class="title">Çalışan Yönetimi</h1>
 
-    <!-- ÇALIŞAN EKLEME -->
     <div class="card">
-      <h3 style="margin-bottom:10px;">Yeni Çalışan Ekle</h3>
+      <h3>Yeni Çalışan Ekle</h3>
 
       <label>Çalışan Adı</label>
-      <input type="text" id="empNameInput">
+      <input id="empNameInput" type="text">
 
       <label>Bağlı Hizmetler</label>
       <div id="servicesCheckbox" class="checkbox-list">Yükleniyor...</div>
 
-      <button class="btn-primary" id="addEmpBtn">Ekle</button>
+      <button id="addEmpBtn" class="btn-primary">Ekle</button>
     </div>
 
-    <!-- MEVCUT ÇALIŞANLAR -->
     <div class="card">
-      <h3 style="margin-bottom:10px;">Mevcut Çalışanlar</h3>
+      <h3>Mevcut Çalışanlar</h3>
       <div id="empList">Yükleniyor...</div>
     </div>
   </main>
 
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
-    getAuth,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs,
-    deleteDoc,
-    doc,
-    getDoc
+    getFirestore, collection, query, where, getDocs,
+    addDoc, deleteDoc, doc, getDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  /* Firebase Config */
   const firebaseConfig = {
     apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
     authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -282,131 +260,129 @@
   let businessID = null;
   let SERVICES = {};
 
+  const bizNameSmall = document.getElementById("bizNameSmall");
+  const empNameInput = document.getElementById("empNameInput");
   const servicesCheckbox = document.getElementById("servicesCheckbox");
   const empListEl = document.getElementById("empList");
-  const empNameInput = document.getElementById("empNameInput");
-  const bizNameSmall = document.getElementById("bizNameSmall");
 
-  /* LOGIN KONTROLÜ */
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "business-login.html";
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      location.href = "business-login.html";
       return;
     }
 
-    businessID = user.uid;
-    await loadBusinessName();
-    await loadServices();
-    await loadEmployees();
+    // ❗ İşletme ID düzeltildi
+    const qBiz = query(collection(db,"businesses"), where("ownerUID","==",user.uid));
+    const snapBiz = await getDocs(qBiz);
+
+    if(snapBiz.empty){
+      alert("İşletme kaydı bulunamadı.");
+      return;
+    }
+
+    businessID = snapBiz.docs[0].id;
+
+    loadBusinessName();
+    loadServices();
+    loadEmployees();
   });
 
-  async function loadBusinessName() {
-    const ref = doc(db, "businesses", businessID);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      bizNameSmall.textContent = snap.data().name || "İşletme";
-    }
+
+  async function loadBusinessName(){
+    const d = await getDoc(doc(db,"businesses",businessID));
+    if(d.exists()) bizNameSmall.textContent = d.data().name;
   }
 
-  /* HİZMETLERİ ÇEK → CHECKBOX LİST OLUŞTUR */
-  async function loadServices() {
-    servicesCheckbox.textContent = "Yükleniyor...";
 
-    const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
-    const snap = await getDocs(qRef);
+  async function loadServices(){
+    servicesCheckbox.innerHTML = "Yükleniyor...";
+
+    const q = query(collection(db,"services"), where("businessID","==",businessID));
+    const snap = await getDocs(q);
 
     SERVICES = {};
     servicesCheckbox.innerHTML = "";
 
-    snap.forEach((docSnap) => {
-      const data = docSnap.data();
-      SERVICES[docSnap.id] = data;
+    snap.forEach(docSnap=>{
+      const s = docSnap.data();
+      SERVICES[docSnap.id] = s;
 
-      const div = document.createElement("div");
-      div.className = "checkbox-item";
-      div.innerHTML = `
-        <input type="checkbox" value="${docSnap.id}">
-        <label>${data.name} (${data.duration} dk)</label>
+      servicesCheckbox.innerHTML += `
+        <div class="checkbox-item">
+          <input type="checkbox" value="${docSnap.id}">
+          <label>${s.name} (${s.duration} dk)</label>
+        </div>
       `;
-      servicesCheckbox.appendChild(div);
     });
 
-    if (Object.keys(SERVICES).length === 0) {
-      servicesCheckbox.textContent = "Önce hizmet ekleyin.";
+    if(snap.empty){
+      servicesCheckbox.innerHTML = "Önce hizmet ekleyin.";
     }
   }
 
-  /* ÇALIŞAN EKLEME */
-  document.getElementById("addEmpBtn").onclick = async () => {
+
+  document.getElementById("addEmpBtn").onclick = async()=>{
     const name = empNameInput.value.trim();
-    if (!name) {
-      alert("Çalışan adı gerekli.");
-      return;
-    }
+    if(!name) return alert("Çalışan adı gerekli.");
 
-    const selectedServices = Array.from(
+    const selected = Array.from(
       servicesCheckbox.querySelectorAll("input[type='checkbox']:checked")
-    ).map(i => i.value);
+    ).map(i=>i.value);
 
-    if (selectedServices.length === 0) {
+    if(selected.length === 0){
       alert("En az bir hizmet seçin.");
       return;
     }
 
-    await addDoc(collection(db, "employees"), {
+    await addDoc(collection(db,"employees"),{
       businessID,
       name,
-      services: selectedServices
+      services:selected
     });
 
     empNameInput.value = "";
-    servicesCheckbox.querySelectorAll("input").forEach(c => c.checked = false);
-
-    await loadEmployees();
+    loadEmployees();
   };
 
-  /* ÇALIŞANLARI ÇEKME */
-  async function loadEmployees() {
-    empListEl.textContent = "Yükleniyor...";
 
-    const qRef = query(collection(db, "employees"), where("businessID", "==", businessID));
-    const snap = await getDocs(qRef);
+  async function loadEmployees(){
+    empListEl.innerHTML = "Yükleniyor...";
 
-    empListEl.innerHTML = "";
+    const q = query(collection(db,"employees"), where("businessID","==",businessID));
+    const snap = await getDocs(q);
 
-    if (snap.empty) {
-      empListEl.textContent = "Henüz çalışan eklenmemiş.";
+    if(snap.empty){
+      empListEl.innerHTML = "Henüz çalışan eklenmemiş.";
       return;
     }
 
-    snap.forEach((docSnap) => {
-      const data = docSnap.data();
+    empListEl.innerHTML = "";
 
-      const row = document.createElement("div");
-      row.className = "emp-row";
+    snap.forEach(docSnap=>{
+      const d = docSnap.data();
 
-      let serviceNames = (data.services || [])
-        .map(id => SERVICES[id]?.name || id)
+      const servicesText = (d.services||[])
+        .map(sid => SERVICES[sid]?.name || sid)
         .join(", ");
 
-      row.innerHTML = `
-        <div class="emp-info">
-          <div class="emp-name">${data.name}</div>
-          <div class="emp-meta">${serviceNames}</div>
+      empListEl.innerHTML += `
+        <div class="emp-row">
+          <div class="emp-info">
+            <div class="emp-name">${d.name}</div>
+            <div class="emp-meta">${servicesText}</div>
+          </div>
+          <button class="delete-btn" onclick="deleteEmp('${docSnap.id}')">Sil</button>
         </div>
-        <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
       `;
-
-      empListEl.appendChild(row);
-    });
-
-    document.querySelectorAll(".delete-btn").forEach((btn) => {
-      btn.onclick = async () => {
-        await deleteDoc(doc(db, "employees", btn.dataset.id));
-        await loadEmployees();
-      };
     });
   }
+
+
+  window.deleteEmp = async(id)=>{
+    await deleteDoc(doc(db,"employees",id));
+    loadEmployees();
+  };
+
 </script>
 
 </body>
