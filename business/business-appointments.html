@@ -362,13 +362,44 @@
   }
 
   /* STATUS UPDATE */
-  async function updateStatus(id, status) {
-    await updateDoc(doc(db, "appointments", id), {
-      status
-    });
+async function updateStatus(id, status) {
+  // 1) Randevuyu güncelle
+  const apptRef = doc(db, "appointments", id);
+  const apptSnap = await getDoc(apptRef);
+  const appt = apptSnap.data();
 
-    loadAppointments();
+  await updateDoc(apptRef, { status });
+
+  // 2) Müşteri PlayerID'sini çek
+  const custRef = doc(db, "customers", appt.customerUID);
+  const custSnap = await getDoc(custRef);
+  const cust = custSnap.data();
+
+  if(cust.playerID){
+    // 3) OneSignal API ile bildirim gönder
+    await fetch("https://onesignal.com/api/v1/notifications", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
+      },
+      body:JSON.stringify({
+        app_id:"784cba74-0683-49ed-a3c6-e86741fc6aee",
+        include_player_ids:[cust.playerID],
+        headings:{ "tr": status==="approved" ? "Randevun Onaylandı" : "Randevun Reddedildi" },
+        contents:{ 
+          "tr": `İşletme: ${bizNameSmall.textContent}
+Hizmet: ${appt.serviceName}
+Tarih: ${appt.date} ${appt.time}`
+        }
+      })
+    });
   }
+
+  // 4) Listeyi yenile
+  loadAppointments();
+}
+
 
   /* TARİH FİLTRESİ */
   filterDate.addEventListener("change", loadAppointments);
