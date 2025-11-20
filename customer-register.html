@@ -1,148 +1,312 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Müşteri Kayıt</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Müşteri Kayıt | Cepterandevu</title>
 
-<style>
-  body{
-    margin:0;
-    background:#050816;
-    color:#f1f5f9;
-    font-family:system-ui;
-    padding:16px;
-  }
-  .container{
-    max-width:400px;
-    margin:0 auto;
-    background:#0f172a;
-    padding:20px;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,0.12);
-    margin-top:30px;
-  }
-  h2{ margin-top:0; }
-  label{
-    display:block;
-    margin-top:10px;
-    color:#94a3b8;
-  }
-  input{
-    width:100%;
-    padding:12px;
-    margin-top:4px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.1);
-    background:#0b1120;
-    color:white;
-  }
-  button{
-    width:100%;
-    padding:12px;
-    margin-top:20px;
-    border:0;
-    border-radius:12px;
-    background:#22c55e;
-    font-weight:600;
-    color:#022c22;
-    font-size:16px;
-    cursor:pointer;
-  }
-  p{
-    text-align:center;
-    margin-top:12px;
-  }
-  a{
-    color:#22c55e;
-    text-decoration:none;
-  }
-</style>
+    <style>
+        /* CSS Tanımlamaları */
+        :root {
+            --bg: #050816;
+            --card: #101528;
+            --accent: #22c55e;
+            --accent-strong: #16a34a;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: rgba(148,163,184,0.4);
+            --radius-xl: 24px;
+            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: radial-gradient(circle at top, #111827, #020617 55%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+
+        .form-shell {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(15,23,42,0.9);
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        p.sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            display: block;
+            user-select: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15,23,42,0.85);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #022c22;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 12px 30px rgba(34,197,94,0.35);
+            margin-top: 6px;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 14px 35px rgba(34,197,94,0.55);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 5px 20px rgba(34,197,94,0.25);
+        }
+
+        .error-box {
+            background: rgba(255, 82, 82, 0.15);
+            border: 1px solid rgba(255, 82, 82, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #ffbaba;
+            margin-bottom: 12px;
+            display: none;
+            text-align: center;
+        }
+
+        .link-row {
+            margin-top: 14px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .link-row a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: text-decoration 0.2s;
+        }
+
+        .link-row a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="form-shell">
+        <h1>Müşteri Kayıt</h1>
+        <p class="sub">Hızlıca hesabını oluştur ve randevu almaya başla.</p>
 
-<div class="container">
-  <h2>Hesap Oluştur</h2>
+        <div id="errorBox" class="error-box"></div>
 
-  <label>Ad Soyad</label>
-  <input id="nameInput" type="text" placeholder="Adınız Soyadınız">
+        <label for="firstName">Ad</label>
+        <input type="text" id="firstName" placeholder="Adınızı girin" required />
 
-  <label>Telefon</label>
-  <input id="phoneInput" type="text" placeholder="05xx...">
+        <label for="lastName">Soyad</label>
+        <input type="text" id="lastName" placeholder="Soyadınızı girin" required />
 
-  <label>Şifre</label>
-  <input id="passInput" type="password" placeholder="******">
+        <label for="phone">Telefon</label>
+        <input type="tel" id="phone" placeholder="05XXXXXXXXX" required pattern="05\d{9}" title="Telefon numarası 05 ile başlamalı ve 11 hane olmalı." maxlength="11" />
 
-  <button id="registerBtn">Kayıt Ol</button>
+        <label for="password">Şifre</label>
+        <input type="password" id="password" placeholder="Şifre belirleyin (min. 6 karakter)" required minlength="6" />
 
-  <p>
-    Zaten hesabın var mı?
-    <a href="customer-login.html">Giriş Yap</a>
-  </p>
-</div>
+        <button class="btn-primary" id="registerBtn">Kayıt Ol</button>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth, createUserWithEmailAndPassword, updateProfile
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        <div class="link-row">
+            Zaten hesabınız var mı? <a href="customer-login.html">Giriş Yap</a>
+        </div>
+    </div>
 
-  import {
-    getFirestore, doc, setDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  /* FIREBASE CONFIG - kendi bilgilerinle doldur (login ile AYNI olacak) */
-  const firebaseConfig = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
-  };
+        // Firestore ve Auth işlemlerinden önce log seviyesini ayarla
+        setLogLevel('Debug');
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+        // Canvas Ortamından Global Değişkenleri Alma
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 
-  const btn = document.getElementById("registerBtn");
+        // Firebase Uygulamasını Başlatma
+        let app;
+        let auth;
+        let db;
 
-  btn.addEventListener("click", async ()=>{
-    const name  = document.getElementById("nameInput").value.trim();
-    const phone = document.getElementById("phoneInput").value.trim();
-    const pass  = document.getElementById("passInput").value;
+        try {
+            if (Object.keys(firebaseConfig).length === 0) {
+                throw new Error("Firebase yapılandırması eksik.");
+            }
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log("Firebase başarıyla başlatıldı.");
+        } catch (e) {
+            console.error("Firebase başlatılırken hata oluştu:", e);
+            document.getElementById("errorBox").style.display = "block";
+            document.getElementById("errorBox").textContent = "Uygulama sunucuya bağlanamadı. Yapılandırma hatası.";
+        }
 
-    if(!name || !phone || !pass){
-      alert("Lütfen tüm alanları doldurun.");
-      return;
-    }
+        // Element Referansları
+        const errorBox = document.getElementById("errorBox");
+        const btn = document.getElementById("registerBtn");
+        
+        // Form alanları
+        const firstNameInput = document.getElementById("firstName");
+        const lastNameInput = document.getElementById("lastName");
+        const phoneInput = document.getElementById("phone");
+        const passwordInput = document.getElementById("password");
 
-    const fakeEmail = phone + "@cepterandevu.com";
+        /**
+         * Kullanıcıya hata mesajını gösterir.
+         * @param {string} msg Gösterilecek hata mesajı.
+         */
+        function showError(msg) {
+            errorBox.style.display = "block";
+            errorBox.textContent = msg;
+            btn.disabled = false; // Hata durumunda butonu tekrar aktif et
+        }
 
-    try{
-      // Auth hesabını oluştur
-      const userCred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+        /**
+         * Müşteri kayıt işlemini gerçekleştirir.
+         */
+        async function handleRegister() {
+            if (!db || !auth) {
+                showError("Veritabanı bağlantısı henüz hazır değil.");
+                return;
+            }
+            
+            errorBox.style.display = "none";
+            btn.disabled = true;
 
-      // İsim bilgisini profile yaz
-      await updateProfile(userCred.user, {
-        displayName: name
-      });
+            const firstName = firstNameInput.value.trim();
+            const lastName = lastNameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const password = passwordInput.value;
 
-      // Firestore user profili
-      await setDoc(doc(db,"users", userCred.user.uid), {
-        name: name,
-        phone: phone,
-        createdAt: Date.now()
-      });
+            if (!firstName || !lastName || !phone || !password) {
+                return showError("Lütfen tüm alanları doldurun.");
+            }
+            
+            // Telefon numarası temizliği ve kontrolü
+            const cleanPhone = phone.replace(/\D/g, "");
+            if (!cleanPhone.startsWith("05") || cleanPhone.length !== 11) {
+                return showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
+            }
+            
+            if (password.length < 6) {
+                return showError("Şifre çok zayıf. En az 6 karakter olmalı.");
+            }
 
-      alert("Kayıt başarılı! Giriş ekranına yönlendiriliyorsunuz.");
-      window.location.href = "customer-login.html";
+            // Firebase Authentication için telefon numarasını e-posta formatına çevir
+            // Güvenlik kuralları: /artifacts/{appId}/users/{userId}/customers/{customerId}
+            const email = cleanPhone + "@" + appId + ".app";
+            
+            try {
+                // 1. Firebase Auth ile yeni kullanıcı oluştur
+                const userCred = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
 
-    }catch(err){
-      alert("Hata: " + err.message);
-    }
-  });
-</script>
+                const uid = userCred.user.uid;
+                const customerData = {
+                    uid,
+                    name: firstName + " " + lastName,
+                    phone: cleanPhone, // Temizlenmiş numarayı kaydet
+                    createdAt: serverTimestamp(),
+                    // Kullanıcının rolünü belirtmek için ek alan
+                    role: 'customer' 
+                };
 
+                // 2. Firestore'a kullanıcı verilerini kaydet (Private Data)
+                // Firestore yolu: /artifacts/{appId}/users/{userId}/customerData/{uid}
+                const customerDocRef = doc(db, 
+                    `artifacts/${appId}/users/${uid}/customerData`, // Collection Path
+                    uid // Document ID
+                );
+
+                await setDoc(customerDocRef, customerData);
+                console.log("Müşteri verileri Firestore'a kaydedildi:", uid);
+
+                // 3. Başarılı kayıt sonrası yönlendirme
+                const params = new URLSearchParams(window.location.search);
+                const redirectUrl = params.get("redirect") || "customer-panel.html";
+                window.location.href = redirectUrl;
+                
+            } catch (err) {
+                console.error("Kayıt hatası:", err.code, err.message);
+                if (err.code === "auth/email-already-in-use") {
+                    showError("Bu telefon numarasıyla kayıt zaten var.");
+                } else if (err.code === "auth/weak-password") {
+                    showError("Şifre çok zayıf. En az 6 karakter olmalı.");
+                } else {
+                    showError("Kayıt sırasında beklenmeyen bir hata oluştu: " + err.message);
+                }
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Butonun tıklama olayını ayarla
+        btn.addEventListener('click', handleRegister);
+    </script>
 </body>
 </html>
