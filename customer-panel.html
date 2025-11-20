@@ -426,6 +426,20 @@
     window.location.href="customer-login.html";
   });
 
+  /* Müşterinin OneSignal PlayerID'sini otomatik kaydet */
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal){
+  try{
+    const pid = await OneSignal.User.getId();
+
+    if(pid && window.currentUID){
+      const refCustomer = doc(db,"customers",window.currentUID);
+      await updateDoc(refCustomer, { playerID: pid });
+    }
+  }catch(e){}
+});
+
+
 </script>
 
 </body>
