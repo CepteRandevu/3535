@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ana Sayfa</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+  }
+
+  header {
+    padding: 18px;
+    background: #007bff;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .welcome {
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .section-title {
+    padding: 16px;
+    font-size: 16px;
+    color: #475569;
+  }
+
+  .categories {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .cat-card {
+    background: white;
+    padding: 26px 10px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 16px;
+  }
+
+  .filter-box {
+    padding: 16px;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    background: #007bff;
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 12px;
+    margin-top: 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  Randeo
+</header>
+
+<div class="welcome" id="welcomeText">
+  Hoş geldiniz!
+</div>
+
+<div class="section-title">Kategori Seçin</div>
+
+<div class="categories">
+  <div class="cat-card" onclick="selectCategory('Berber')">💈 Berber</div>
+  <div class="cat-card" onclick="selectCategory('Kuaför')">💇 Kuaför</div>
+  <div class="cat-card" onclick="selectCategory('Oto Yıkama')">🚗 Oto Yıkama</div>
+  <div class="cat-card" onclick="selectCategory('Güzellik')">💅 Güzellik</div>
+</div>
+
+<div class="section-title">Bölge Seçin</div>
+
+<div class="filter-box">
+  <label>İl</label>
+  <select id="citySelect">
+    <option value="">Seçiniz</option>
+    <option>İzmir</option>
+    <option>İstanbul</option>
+    <option>Ankara</option>
+    <option>Bursa</option>
+  </select>
+
+  <label style="margin-top:12px;">İlçe</label>
+  <select id="districtSelect">
+    <option value="">Seçiniz</option>
+    <option>Karabağlar</option>
+    <option>Buca</option>
+    <option>Bornova</option>
+    <option>Bayraklı</option>
+    <option>Konak</option>
+  </select>
+
+  <button onclick="goList()">İşletmeleri Göster</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getAuth, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.appspot.com",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  let chosenCategory = null;
+
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("welcomeText").innerText =
+      "Hoş geldiniz, " + (user.email || "");
+  });
+
+  window.selectCategory = function(cat) {
+    chosenCategory = cat;
+    alert(cat + " seçildi.");
+  };
+
+  window.goList = function() {
+    const city = document.getElementById("citySelect").value;
+    const district = document.getElementById("districtSelect").value;
+
+    if (!chosenCategory) {
+      alert("Lütfen kategori seçin.");
+      return;
+    }
+
+    if (!city || !district) {
+      alert("Lütfen il ve ilçe seçin.");
+      return;
+    }
+
+    window.location.href =
+      `user-business-list.html?cat=${chosenCategory}&city=${city}&district=${district}`;
+  };
+</script>
+
+</body>
+</html>

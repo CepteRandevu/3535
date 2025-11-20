@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İşletme Paneli - Randevular</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #f2f4f7;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  header {
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  nav {
+    display: flex;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  nav button {
+    flex: 1;
+    padding: 14px 0;
+    border: none;
+    background: white;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+  }
+
+  nav button.active {
+    border-bottom: 3px solid #007bff;
+    color: #007bff;
+  }
+
+  
+  .subtabs {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 16px;
+  }
+  .subtab {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: none;
+    background: #e5e7eb;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .subtab.active {
+    background: #111827;
+    color: #f9fafb;
+  }
+
+  #calendarView {
+    margin-top: 4px;
+  }
+
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  .cal-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #0f172a;
+  }
+  .cal-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .cal-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #workerFilter {
+    padding: 6px 8px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    font-size: 12px;
+    background: #ffffff;
+  }
+  .cal-nav-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .cal-nav-btn:hover {
+    background: #f3f4f6;
+  }
+
+  .cal-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    margin-right: 4px;
+  }
+  .dot-free {
+    background: #bbf7d0;
+  }
+  .dot-busy {
+    background: #fecaca;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: 70px repeat(7, minmax(0, 1fr));
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  .cal-cell {
+    border-bottom: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    padding: 6px 6px;
+    font-size: 11px;
+    line-height: 1.2;
+    min-height: 28px;
+    box-sizing: border-box;
+  }
+  .cal-cell:last-child {
+    border-right: none;
+  }
+  .cal-row-last .cal-cell {
+    border-bottom: none;
+  }
+  .cal-corner {
+    background: #f9fafb;
+  }
+  .cal-day-header {
+    background: #f9fafb;
+    font-weight: 600;
+    text-align: center;
+    font-size: 11px;
+  }
+  .cal-time {
+    font-size: 11px;
+    color: #6b7280;
+    background: #f9fafb;
+  }
+  .cal-slot-free {
+    background: #f9fafb;
+  }
+  .cal-slot-busy {
+    background: #fee2e2;
+    color: #7f1d1d;
+    font-weight: 500;
+  }
+  .cal-slot-busy small {
+    display: block;
+    font-size: 10px;
+    color: #9b1c1c;
+  }
+
+  @media (max-width: 640px) {
+    .cal-grid {
+      overflow-x: auto;
+      display: block;
+      white-space: nowrap;
+    }
+    .cal-row {
+      display: grid;
+      grid-template-columns: 70px repeat(7, minmax(90px, 1fr));
+    }
+  }
+.container {
+    padding: 16px;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  .card {
+    background: white;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+  }
+
+  .appt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .appt-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #111827;
+  }
+
+  .status-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .st-pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .st-approved {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .st-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .appt-body {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 8px;
+  }
+
+  .appt-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .btn-approve {
+    background: #16a34a;
+    color: white;
+  }
+
+  .btn-reject {
+    background: #ef4444;
+    color: white;
+  }
+
+  .empty {
+    background:white;
+    padding:14px;
+    border-radius:12px;
+    text-align:center;
+    color:#6b7280;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>İşletme Paneli</h2>
+  <div>🔔</div>
+</header>
+
+<nav>
+  <button class="active" onclick="go('business-dashboard')">Randevular</button>
+  <button onclick="go('business-services')">Hizmetler</button>
+  <button onclick="go('business-workers')">Çalışanlar</button>
+  <button onclick="go('business-settings')">Ayarlar</button>
+</nav>
+
+<div class="container">
+  <div class="subtabs">
+    <button id="tabList" class="subtab active">Liste</button>
+    <button id="tabCalendar" class="subtab">Haftalık Takvim</button>
+  </div>
+
+  <div id="listView">
+    <div id="appointments"></div>
+  </div>
+
+  <div id="calendarView" style="display:none">
+    <div class="cal-header">
+      <div>
+        <div class="cal-title">Haftalık Takvim</div>
+        <div class="cal-subtitle" id="calWeekLabel"></div>
+      </div>
+      <div class="cal-controls">
+        <select id="workerFilter">
+          <option value="all">Tüm çalışanlar</option>
+        </select>
+        <button class="cal-nav-btn" id="prevWeek">&lt;</button>
+        <button class="cal-nav-btn" id="nextWeek">&gt;</button>
+      </div>
+    </div>
+    <div class="cal-legend">
+      <span class="dot dot-free"></span> Müsait
+      <span class="dot dot-busy"></span> Dolu
+    </div>
+    <div id="calendarGrid" class="cal-grid"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { 
+    getFirestore, collection, query, where, getDocs, doc, updateDoc, orderBy 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { 
+    getAuth, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.appspot.com",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const box = document.getElementById("appointments");
+  const tabListBtn = document.getElementById("tabList");
+  const tabCalBtn = document.getElementById("tabCalendar");
+  const listView = document.getElementById("listView");
+  const calendarView = document.getElementById("calendarView");
+  const workerFilterEl = document.getElementById("workerFilter");
+  const calWeekLabel = document.getElementById("calWeekLabel");
+  const calendarGrid = document.getElementById("calendarGrid");
+  const prevWeekBtn = document.getElementById("prevWeek");
+  const nextWeekBtn = document.getElementById("nextWeek");
+
+  let currentBusinessId = null;
+  let allAppointments = [];
+  let businessMeta = { startHour: "09:00", endHour: "21:00" };
+  let currentWeekStart = getWeekStart(new Date());
+
+  tabListBtn.addEventListener("click", () => {
+    tabListBtn.classList.add("active");
+    tabCalBtn.classList.remove("active");
+    listView.style.display = "block";
+    calendarView.style.display = "none";
+  });
+
+  tabCalBtn.addEventListener("click", () => {
+    tabCalBtn.classList.add("active");
+    tabListBtn.classList.remove("active");
+    listView.style.display = "none";
+    calendarView.style.display = "block";
+    renderCalendar();
+  });
+
+  prevWeekBtn.addEventListener("click", () => {
+    currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+    renderCalendar();
+  });
+
+  nextWeekBtn.addEventListener("click", () => {
+    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+    renderCalendar();
+  });
+
+  workerFilterEl.addEventListener("change", () => {
+    renderCalendar();
+  });
+
+  function getWeekStart(d) {
+    const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const day = date.getDay(); // 0=PAZ,1=PZT..6=CMT
+    const diff = (day === 0 ? -6 : 1) - day; // haftanın pazartesi günü
+    date.setDate(date.getDate() + diff);
+    date.setHours(0,0,0,0);
+    return date;
+  }
+
+  function buildTimeSlots(startStr, endStr) {
+    const [sh, sm] = (startStr || "09:00").split(":").map(n => parseInt(n, 10));
+    const [eh, em] = (endStr || "21:00").split(":").map(n => parseInt(n, 10));
+    let startMin = sh * 60 + (sm || 0);
+    let endMin = eh * 60 + (em || 0);
+    if (isNaN(startMin) || isNaN(endMin) || endMin <= startMin) {
+      startMin = 9 * 60;
+      endMin = 21 * 60;
+    }
+    const slots = [];
+    for (let m = startMin; m < endMin; m += 30) {
+      const h = String(Math.floor(m / 60)).padStart(2, "0");
+      const mm = String(m % 60).padStart(2, "0");
+      slots.push(`${h}:${mm}`);
+    }
+    return slots;
+  }
+
+  function formatDateTr(d) {
+    const months = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  async function loadBusinessMeta() {
+    if (!currentBusinessId) return;
+    const ref = doc(db, "businesses", currentBusinessId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const b = snap.data();
+      if (b.startHour) businessMeta.startHour = b.startHour;
+      if (b.endHour) businessMeta.endHour = b.endHour;
+    }
+  }
+
+  async function loadWorkersForFilter() {
+    if (!currentBusinessId) return;
+    workerFilterEl.innerHTML = '<option value="all">Tüm çalışanlar</option>';
+    const wq = query(
+      collection(db, "workers"),
+      where("businessId", "==", currentBusinessId)
+    );
+    const wsnap = await getDocs(wq);
+    wsnap.forEach(docSnap => {
+      const w = docSnap.data();
+      if (w.name) {
+        const opt = document.createElement("option");
+        opt.value = w.name;
+        opt.textContent = w.name;
+        workerFilterEl.appendChild(opt);
+      }
+    });
+  }
+
+  async function loadCalendarData() {
+    if (!currentBusinessId) return;
+    const qCal = query(
+      collection(db, "appointments"),
+      where("businessId", "==", currentBusinessId),
+      orderBy("date"),
+      orderBy("time")
+    );
+    const snap = await getDocs(qCal);
+    const all = [];
+    snap.forEach(docSnap => {
+      const a = docSnap.data();
+      if (!a.date || !a.time) return;
+      try {
+        const d = new Date(a.date + "T00:00:00");
+        d.setHours(0,0,0,0);
+        const day = d.getDay();
+        const dayIndex = day === 0 ? 6 : day - 1; // Pzt=0..Paz=6
+        all.push({
+          id: docSnap.id,
+          ...a,
+          _dateObj: d,
+          _dayIndex: dayIndex,
+          _status: (a.status || "pending").toLowerCase()
+        });
+      } catch (e) {
+        console.error("Tarih parse hatası", e);
+      }
+    });
+    allAppointments = all;
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    if (!calendarGrid || !calendarView) return;
+    const slots = buildTimeSlots(businessMeta.startHour, businessMeta.endHour);
+    if (!slots.length) {
+      calendarGrid.innerHTML = "<div class='cal-cell cal-corner'>Çalışma saatleri ayarlardan belirlenmemiş.</div>";
+      return;
+    }
+
+    const weekStart = new Date(currentWeekStart.getTime());
+    const weekEnd = new Date(weekStart.getTime());
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart.getTime());
+      d.setDate(d.getDate() + i);
+      days.push(d);
+    }
+
+    calWeekLabel.textContent = `${formatDateTr(days[0])} - ${formatDateTr(days[6])}`;
+
+    const workerVal = workerFilterEl.value || "all";
+
+    let html = "";
+    // Header row
+    html += "<div class='cal-row'>";
+    html += "<div class='cal-cell cal-corner'></div>";
+    const gunler = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+    for (let i = 0; i < 7; i++) {
+      html += `<div class="cal-cell cal-day-header">${gunler[i]}<br><small>${days[i].getDate()}/${days[i].getMonth()+1}</small></div>`;
+    }
+    html += "</div>";
+
+    for (let si = 0; si < slots.length; si++) {
+      const time = slots[si];
+      const isLastRow = si === slots.length - 1;
+      html += `<div class="cal-row${isLastRow ? " cal-row-last" : ""}">`;
+      html += `<div class="cal-cell cal-time">${time}</div>`;
+
+      for (let di = 0; di < 7; di++) {
+        const dayDate = days[di];
+        const cellApps = allAppointments.filter(a => {
+          if (!a._dateObj) return false;
+          if (a._dateObj < weekStart || a._dateObj >= weekEnd) return false;
+          if (a._dayIndex !== di) return false;
+          if (a.time !== time) return false;
+          if (workerVal !== "all" && (a.workerName || "") !== workerVal) return false;
+          const st = (a._status || "pending").toLowerCase();
+          if (st === "cancelled") return false;
+          return true;
+        });
+
+        if (!cellApps.length) {
+          html += `<div class="cal-cell cal-slot-free cal-slot"></div>`;
+        } else {
+          const first = cellApps[0];
+          const extra = cellApps.length > 1 ? ` +${cellApps.length - 1}` : "";
+          const cust = first.customerName || "Müşteri";
+          const phone = first.customerPhone || first.customerEmail || "";
+          html += `<div class="cal-cell cal-slot-busy cal-slot">
+            ${cust}${extra ? `<small>${extra} randevu daha</small>` : ""}
+            ${phone ? `<small>${phone}</small>` : ""}
+          </div>`;
+        }
+      }
+
+      html += "</div>";
+    }
+
+    calendarGrid.innerHTML = html;
+  }
+
+  // GitHub Pages yolu için global nav
+  window.go = function(page) {
+    window.location.href = `https://cepterandevu.github.io/al/pages/business/${page}.html`;
+  };
+
+  const box = document.getElementById("appointments");
+  let currentBusinessId = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("Giriş yapmalısınız.");
+      window.location.href = "/al/pages/business/business-auth.html";
+      return;
+    }
+    currentBusinessId = user.uid;
+    await loadBusinessMeta();
+    await loadWorkersForFilter();
+    await loadCalendarData();
+    loadAppointments();
+  });
+
+  async function loadAppointments() {
+    if (!currentBusinessId) return;
+
+    box.innerHTML = "<div class='empty'>Randevular yükleniyor...</div>";
+
+    const q = query(
+      collection(db, "appointments"),
+      where("businessId", "==", currentBusinessId)
+      // orderBy eklemek istersen: orderBy("date")
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      box.innerHTML = "<div class='empty'>Hiç randevu yok.</div>";
+      return;
+    }
+
+    box.innerHTML = "";
+
+    snap.forEach(d => {
+      const a = d.data();
+      const id = d.id;
+
+      const rawStatus = (a.status || "pending").toLowerCase();
+      let statusClass = "st-pending";
+      let statusText = "Beklemede";
+
+      if (rawStatus === "confirmed") {
+        statusClass = "st-approved";
+        statusText = "Onaylandı";
+      } else if (rawStatus === "cancelled") {
+        statusClass = "st-rejected";
+        statusText = "İptal edildi";
+      }
+
+      const canAct = rawStatus === "pending";
+
+      box.innerHTML += `
+        <div class="card">
+          <div class="appt-header">
+            <div class="appt-title">${a.serviceName || "Hizmet"}</div>
+            <div class="status-chip ${statusClass}">${statusText}</div>
+          </div>
+          <div class="appt-body">
+            <div><b>Tarih:</b> ${a.date || "-"} • <b>Saat:</b> ${a.time || "-"}</div>
+            <div><b>Çalışan:</b> ${a.workerName || "-"}</div>
+            ${a.customerEmail ? `<div><b>Müşteri:</b> ${a.customerEmail}</div>` : ""}
+          </div>
+          ${
+            canAct
+              ? `<div class="appt-actions">
+                   <button class="btn btn-approve" onclick="approveAppointment('${id}')">Onayla</button>
+                   <button class="btn btn-reject" onclick="rejectAppointment('${id}')">Reddet</button>
+                 </div>`
+              : ""
+          }
+        </div>
+      `;
+    });
+  }
+
+  // Global fonksiyonları window’a bağla
+  window.approveAppointment = async function(id) {
+    if (!confirm("Bu randevuyu onaylamak istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "confirmed"
+    });
+
+    alert("Randevu onaylandı.");
+    loadAppointments();
+  };
+
+  window.rejectAppointment = async function(id) {
+    if (!confirm("Bu randevuyu reddetmek istiyor musunuz?")) return;
+
+    await updateDoc(doc(db, "appointments", id), {
+      status: "cancelled"
+    });
+
+    alert("Randevu iptal edildi.");
+    loadAppointments();
+  };
+
+</script>
+
+</body>
+</html>
