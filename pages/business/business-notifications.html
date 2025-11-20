@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bildirim Ayarları</title>
+  <link rel="stylesheet" href="../../styles/global.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #f0f2f7;
+      font-family: Arial, sans-serif;
+    }
+
+    .title-box {
+      margin: 20px 16px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .info-card {
+      background: white;
+      margin: 16px;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+      font-size: 16px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .btn {
+      width: calc(100% - 32px);
+      margin: 20px 16px;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #ff7a45, #0099ff);
+      color: white;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+    }
+
+    .token-box {
+      margin: 20px 16px;
+      padding: 14px;
+      background: #ffffff;
+      border-radius: 10px;
+      color: #334155;
+      font-size: 14px;
+      word-wrap: break-word;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display:none;
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <!-- PREMIUM RANDEO TOP BAR -->
+  <div class="randeo-bar">
+    <button onclick="history.back()">←</button>
+    <div class="title">Bildirim Ayarları</div>
+    <div style="width:24px"></div>
+  </div>
+
+  <div class="title-box">Yeni Randevuları Kaçırmayın</div>
+
+  <div class="info-card">
+    İşletmenize müşteri yeni randevu oluşturduğunda
+    size anında bildirim gönderilir.<br><br>
+    Bu özellik sayesinde:
+    <ul style="margin-left:16px; margin-top:10px;">
+      <li>Yeni randevuları anında görürsünüz</li>
+      <li>Onaylama/iptal süreçleri hızlanır</li>
+      <li>İşletmeniz daha profesyonel görünür</li>
+    </ul>
+  </div>
+
+  <button class="btn" id="enableBtn">Bildirimleri Aç</button>
+
+  <div class="token-box" id="tokenBox"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getAuth, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import {
+      getFirestore, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    import {
+      getMessaging, getToken
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+      authDomain: "cepterandevu-35fe4.firebaseapp.com",
+      projectId: "cepterandevu-35fe4",
+      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+      messagingSenderId: "86298180836",
+      appId: "1:86298180836:web:ab05fbb0dcfbb56b2700f1",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const messaging = getMessaging(app);
+
+    let businessUid = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("Lütfen giriş yapın.");
+        window.location.href = "../business-auth.html";
+      }
+      businessUid = user.uid;
+    });
+
+    document.getElementById("enableBtn").onclick = async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          alert("İzin verilmedi.");
+          return;
+        }
+
+        const token = await getToken(messaging, {
+          vapidKey: "BHz_LvVX9Y9cQxHWZOYLX-YscxL6gItx9sQetA8uJurvn8aAXA3t9K2TYwvr2_xG3jg19P5y2aXLhENWbCBx_Pc"
+        });
+
+        // Firestore’a kaydet
+        await setDoc(
+          doc(db, "businessTokens", businessUid),
+          { token, businessUid },
+          { merge: true }
+        );
+
+        document.getElementById("tokenBox").style.display = "block";
+        document.getElementById("tokenBox").innerHTML =
+          `<b>Token:</b><br>${token}`;
+
+        alert("Bildirimler başarıyla aktif edildi!");
+
+      } catch (err) {
+        alert("Hata: " + err);
+      }
+    };
+  </script>
+
+</body>
+</html>
