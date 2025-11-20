@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Müşteri Paneli</title>
+
+<style>
+  :root{
+    --bg:#050816;
+    --card:#0f172a;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --accent:#22c55e;
+    --radius:16px;
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui, sans-serif;
+    padding:16px;
+  }
+
+  .container{
+    max-width:560px;
+    margin:0 auto;
+  }
+
+  .card{
+    background:var(--card);
+    padding:16px;
+    margin-bottom:18px;
+    border-radius:var(--radius);
+    border:1px solid rgba(255,255,255,0.07);
+  }
+
+  h2{
+    margin-top:0;
+    margin-bottom:12px;
+  }
+
+  .profile-top{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .profile-left{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  .pfp{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--accent);
+  }
+
+  .photo-btn{
+    padding:6px 14px;
+    font-size:12px;
+    border-radius:999px;
+    border:0;
+    cursor:pointer;
+    background:var(--accent);
+    color:#022c22;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  .appt{
+    background:#0b1120;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.07);
+    margin-bottom:10px;
+  }
+
+  .status{
+    display:inline-block;
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:12px;
+    margin-top:6px;
+  }
+  .pending{ background:rgba(234,179,8,0.2); color:#facc15; }
+  .approved{ background:rgba(34,197,94,0.25); color:#4ade80; }
+  .cancelled{ background:rgba(239,68,68,0.25); color:#ef4444; }
+
+  .small-btn{
+    padding:6px 12px;
+    border-radius:12px;
+    background:#ef4444;
+    color:white;
+    border:0;
+    cursor:pointer;
+    margin-top:10px;
+    font-size:13px;
+  }
+
+  button{
+    width:100%;
+    padding:12px;
+    background:var(--accent);
+    border-radius:var(--radius);
+    border:0;
+    color:#022c22;
+    font-weight:600;
+    cursor:pointer;
+    font-size:16px;
+  }
+
+  .logout{
+    background:#ef4444;
+    color:white;
+    margin-top:24px;
+  }
+
+  input{
+    width:100%;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+    background:#0b1120;
+    color:white;
+    margin-bottom:10px;
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- PROFİL -->
+  <div class="card">
+    <h2>Profilim</h2>
+
+    <div class="profile-top">
+      <div class="profile-left">
+        <button id="choosePhotoBtn" class="photo-btn">
+          Fotoğraf Seç
+        </button>
+        <img id="pfp" class="pfp" src="" alt="Profil Fotoğrafı">
+      </div>
+
+      <div>
+        <div><b>Ad Soyad:</b> <span id="pName"></span></div>
+        <div><b>Telefon:</b> <span id="pPhone"></span></div>
+        <div><b>Üyelik:</b> <span id="pJoin"></span></div>
+      </div>
+    </div>
+
+    <!-- Gizli input -->
+    <input id="photoInput" type="file" accept="image/*" style="display:none;">
+
+    <h3 style="margin-top:16px;font-size:16px;">Profil Düzenle</h3>
+    <input id="editName" type="text" placeholder="Ad Soyad">
+    <input id="editPassword" type="password" placeholder="Yeni Şifre (opsiyonel)">
+    <button id="saveProfile">Profili Kaydet</button>
+  </div>
+
+
+  <!-- Yaklaşan Randevular -->
+  <div class="card">
+    <h2>Yaklaşan Randevular</h2>
+    <div id="upcomingList">Yükleniyor...</div>
+  </div>
+
+  <!-- Geçmiş Randevular -->
+  <div class="card">
+    <h2>Geçmiş Randevular</h2>
+    <div id="historyList">Yükleniyor...</div>
+  </div>
+
+  <button class="logout" id="logoutBtn">Çıkış Yap</button>
+
+</div>
+
+
+<script type="module">
+  /* --------------------------------------------------
+       FIREBASE IMPORTS
+  -------------------------------------------------- */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  import {
+    getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  import {
+    getStorage, ref, uploadBytes, getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+
+  /* --------------------------------------------------
+       FIREBASE CONFIG  (BURAYI DOLDUR)
+  -------------------------------------------------- */
+  const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:124c2004605d68b32700f1",
+  };
+
+
+  /* --------------------------------------------------
+       INIT
+  -------------------------------------------------- */
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+
+  let currentUID = null;
+
+  const pfp = document.getElementById("pfp");
+  const editName = document.getElementById("editName");
+  const editPassword = document.getElementById("editPassword");
+  const photoInput = document.getElementById("photoInput");
+  const choosePhotoBtn = document.getElementById("choosePhotoBtn");
+
+  const pName = document.getElementById("pName");
+  const pPhone = document.getElementById("pPhone");
+  const pJoin = document.getElementById("pJoin");
+
+  const upcomingList = document.getElementById("upcomingList");
+  const historyList = document.getElementById("historyList");
+
+  /* --------------------------------------------------
+       LOGIN KONTROL
+  -------------------------------------------------- */
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      window.location.href = "customer-login.html";
+      return;
+    }
+
+    currentUID = user.uid;
+    await loadProfile();
+    await loadAppointments();
+  });
+
+
+  /* --------------------------------------------------
+       PROFİL YÜKLE
+  -------------------------------------------------- */
+  async function loadProfile(){
+    const refDoc = doc(db,"users",currentUID);
+    const snap = await getDoc(refDoc);
+
+    if(!snap.exists()) return;
+
+    const u = snap.data();
+
+    pName.textContent = u.name;
+    pPhone.textContent = u.phone;
+    pJoin.textContent = new Date(u.createdAt).toLocaleDateString("tr-TR");
+
+    editName.value = u.name;
+
+    if(u.photoURL){
+      pfp.src = u.photoURL;
+      choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
+    } else {
+      pfp.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      choosePhotoBtn.textContent = "Fotoğraf Seç";
+    }
+  }
+
+
+  /* --------------------------------------------------
+       PROFİL FOTOĞRAF YÜKLEME
+  -------------------------------------------------- */
+  choosePhotoBtn.addEventListener("click", ()=>{
+    photoInput.click();
+  });
+
+  photoInput.addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+
+    choosePhotoBtn.textContent = "Yükleniyor...";
+
+    const storageRef = ref(storage, "pfp/" + currentUID + ".jpg");
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    await updateDoc(doc(db,"users",currentUID), { photoURL:url });
+
+    alert("Fotoğraf güncellendi!");
+    choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
+    location.reload();
+  });
+
+
+  /* --------------------------------------------------
+       PROFİL DÜZENLE
+  -------------------------------------------------- */
+  document.getElementById("saveProfile").addEventListener("click", async ()=>{
+    const newName = editName.value.trim();
+    const newPass = editPassword.value;
+
+    await updateDoc(doc(db,"users",currentUID), { name:newName });
+    await updateProfile(auth.currentUser, { displayName:newName });
+
+    if(newPass.length > 0){
+      await updatePassword(auth.currentUser, newPass);
+    }
+
+    alert("Profil güncellendi!");
+    location.reload();
+  });
+
+
+  /* --------------------------------------------------
+       RADNEVULARI YÜKLE
+  -------------------------------------------------- */
+  async function loadAppointments(){
+    upcomingList.innerHTML = "";
+    historyList.innerHTML = "";
+
+    const q = query(collection(db,"appointments"), where("customerUID","==",currentUID));
+    const snap = await getDocs(q);
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const upcoming = [];
+    const history = [];
+
+    snap.forEach(docSnap=>{
+      const ap = docSnap.data();
+      const d = new Date(ap.date+"T00:00:00");
+
+      (d >= today ? upcoming : history).push({id:docSnap.id, ...ap});
+    });
+
+    renderUpcoming(upcoming);
+    renderHistory(history);
+  }
+
+
+  function renderUpcoming(arr){
+    if(arr.length === 0){
+      upcomingList.textContent = "Yaklaşan randevu yok.";
+      return;
+    }
+
+    arr.forEach(ap=>{
+      const div = document.createElement("div");
+      div.className="appt";
+      div.innerHTML = `
+        <b>İşletme:</b> ${ap.businessID}<br>
+        <b>Hizmet:</b> ${ap.serviceID}<br>
+        <b>Çalışan:</b> ${ap.employeeID}<br>
+        <b>Tarih:</b> ${ap.date}<br>
+        <b>Saat:</b> ${ap.time}<br>
+        <span class="status ${ap.status}">${ap.status}</span>
+      `;
+
+      if(ap.status !== "cancelled"){
+        const btn = document.createElement("button");
+        btn.className="small-btn";
+        btn.textContent="İptal Et";
+        btn.onclick = ()=> cancelApt(ap.id);
+        div.appendChild(btn);
+      }
+
+      upcomingList.appendChild(div);
+    });
+  }
+
+
+  function renderHistory(arr){
+    if(arr.length === 0){
+      historyList.textContent = "Geçmiş randevu yok.";
+      return;
+    }
+
+    arr.forEach(ap=>{
+      const div=document.createElement("div");
+      div.className="appt";
+      div.innerHTML=`
+        <b>İşletme:</b> ${ap.businessID}<br>
+        <b>Hizmet:</b> ${ap.serviceID}<br>
+        <b>Çalışan:</b> ${ap.employeeID}<br>
+        <b>Tarih:</b> ${ap.date}<br>
+        <b>Saat:</b> ${ap.time}<br>
+        <span class="status ${ap.status}">${ap.status}</span>
+      `;
+      historyList.appendChild(div);
+    });
+  }
+
+
+  /* --------------------------------------------------
+       RANDEVU İPTAL
+  -------------------------------------------------- */
+  async function cancelApt(id){
+    await updateDoc(doc(db,"appointments",id),{
+      status:"cancelled"
+    });
+    alert("Randevu iptal edildi.");
+    location.reload();
+  }
+
+
+  /* --------------------------------------------------
+       ÇIKIŞ
+  -------------------------------------------------- */
+  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+    await signOut(auth);
+    window.location.href="customer-login.html";
+  });
+
+</script>
+
+</body>
+</html>
