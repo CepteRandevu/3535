@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Müşteri Giriş | Cepterandevu</title>
 
     <style>
-        /* CSS Tanımlamaları */
         :root {
             --bg: #050816;
             --card: #101528;
@@ -16,114 +15,74 @@
             --muted: #9ca3af;
             --border: rgba(148,163,184,0.4);
             --radius-xl: 24px;
-            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+            --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {margin:0;padding:0;box-sizing:border-box;}
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: radial-gradient(circle at top, #111827, #020617 55%);
+            font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+            background: radial-gradient(circle at top,#111827,#020617 55%);
             color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 20px;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
+            padding:40px 20px;
         }
 
         .form-shell {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(15,23,42,0.9);
-            padding: 28px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-soft);
-            backdrop-filter: blur(10px);
+            width:100%;
+            max-width:420px;
+            background:rgba(15,23,42,0.92);
+            padding:28px;
+            border-radius:var(--radius-xl);
+            border:1px solid var(--border);
+            box-shadow:var(--shadow-soft);
+            backdrop-filter:blur(10px);
         }
 
-        h1 { font-size: 22px; margin-bottom: 6px; }
-        p.sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+        h1 {font-size:22px;margin-bottom:6px;}
+        p.sub {font-size:12px;color:var(--muted);margin-bottom:20px;}
 
         label {
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 4px;
-            display: block;
-            user-select: none;
+            font-size:12px;color:var(--muted);
+            margin-bottom:4px;display:block;
         }
 
         input {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(15,23,42,0.85);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            width:100%;padding:10px 14px;
+            background:#0b1120;border:1px solid var(--border);
+            border-radius:12px;font-size:14px;color:var(--text);
+            margin-bottom:14px;outline:none;
         }
 
         input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent);
+            border-color:var(--accent);
+            box-shadow:0 0 0 1px var(--accent);
         }
 
         .btn-primary {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-            color: #022c22;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 12px 30px rgba(34,197,94,0.35);
-            margin-top: 6px;
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-primary:hover { 
-            filter: brightness(1.05); 
-            transform: translateY(-1px);
-            box-shadow: 0 14px 35px rgba(34,197,94,0.55);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(1px);
-            box-shadow: 0 5px 20px rgba(34,197,94,0.25);
+            width:100%;padding:12px;border:0;
+            border-radius:14px;
+            background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+            color:#022c22;font-weight:700;font-size:14px;
+            cursor:pointer;margin-top:6px;
+            box-shadow:0 12px 30px rgba(34,197,94,0.35);
         }
 
         .error-box {
-            background: rgba(255, 82, 82, 0.15);
-            border: 1px solid rgba(255, 82, 82, 0.5);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #ffbaba;
-            margin-bottom: 12px;
-            display: none;
-            text-align: center;
+            background:rgba(255,82,82,0.15);
+            border:1px solid rgba(255,82,82,0.5);
+            padding:10px;border-radius:10px;
+            font-size:12px;color:#ffbaba;
+            margin-bottom:12px;display:none;
+            text-align:center;
         }
 
-        .link-row {
-            margin-top: 14px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .link-row a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-            transition: text-decoration 0.2s;
-        }
-
-        .link-row a:hover { text-decoration: underline; }
+        .link-row {margin-top:14px;font-size:12px;text-align:center;}
+        .link-row a {color:var(--accent);text-decoration:none;}
+        .link-row a:hover {text-decoration:underline;}
     </style>
 </head>
 
@@ -135,124 +94,83 @@
         <div id="errorBox" class="error-box"></div>
 
         <label for="phone">Telefon</label>
-        <input type="tel" id="phone" placeholder="05XXXXXXXXX" required pattern="05\d{9}" title="Telefon numarası 05 ile başlamalı ve 11 hane olmalı." maxlength="11" />
+        <input type="tel" id="phone" placeholder="05XXXXXXXXX">
 
         <label for="password">Şifre</label>
-        <input type="password" id="password" placeholder="Şifreniz" required />
+        <input type="password" id="password" placeholder="Şifreniz">
 
-        <button class="btn-primary" id="loginBtn">Giriş Yap</button>
+        <button id="loginBtn" class="btn-primary">Giriş Yap</button>
 
         <div class="link-row">
             Hesabınız yok mu? <a href="customer-register.html">Kayıt Ol</a>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import {
-            getAuth,
-            signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<script type="module">
 
-        // Firestore ve Auth işlemlerinden önce log seviyesini ayarla
-        setLogLevel('Debug');
+    /* ------------------ FIREBASE ------------------ */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+        getAuth,
+        signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Canvas Ortamından Global Değişkenleri Alma
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+      authDomain: "cepterandevu-35fe4.firebaseapp.com",
+      projectId: "cepterandevu-35fe4",
+      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+      messagingSenderId: "86298180836",
+      appId: "1:86298180836:web:124c2004605d68b32700f1"
+    };
 
-        // Firebase Uygulamasını Başlatma
-        let auth;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-        try {
-            if (Object.keys(firebaseConfig).length === 0) {
-                throw new Error("Firebase yapılandırması eksik.");
-            }
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            console.log("Firebase başarıyla başlatıldı.");
-        } catch (e) {
-            console.error("Firebase başlatılırken hata oluştu:", e);
-            document.getElementById("errorBox").style.display = "block";
-            document.getElementById("errorBox").textContent = "Uygulama sunucuya bağlanamadı. Yapılandırma hatası.";
+    /* ------------------ LOGIN ------------------ */
+
+    const errorBox = document.getElementById("errorBox");
+    const phoneInput = document.getElementById("phone");
+    const passInput = document.getElementById("password");
+    const btn = document.getElementById("loginBtn");
+
+    function showError(msg){
+        errorBox.style.display="block";
+        errorBox.textContent = msg;
+    }
+
+    btn.addEventListener("click", async ()=>{
+
+        errorBox.style.display="none";
+
+        const phone = phoneInput.value.trim();
+        const pass = passInput.value.trim();
+
+        if(!phone || !pass){
+            return showError("Lütfen tüm alanları doldurun.");
         }
 
-        // Element Referansları
-        const errorBox = document.getElementById("errorBox");
-        const btn = document.getElementById("loginBtn");
-        
-        // Form alanları
-        const phoneInput = document.getElementById("phone");
-        const passwordInput = document.getElementById("password");
-
-        /**
-         * Kullanıcıya hata mesajını gösterir.
-         * @param {string} msg Gösterilecek hata mesajı.
-         */
-        function showError(msg) {
-            errorBox.style.display = "block";
-            errorBox.textContent = msg;
-            btn.disabled = false; // Hata durumunda butonu tekrar aktif et
+        if(!phone.startsWith("05") || phone.length !== 11){
+            return showError("Telefon numarası geçersiz.");
         }
 
-        /**
-         * Müşteri giriş işlemini gerçekleştirir.
-         */
-        async function handleLogin() {
-            if (!auth) {
-                showError("Kimlik doğrulama servisi henüz hazır değil.");
-                return;
-            }
-            
-            errorBox.style.display = "none";
-            btn.disabled = true;
+        const email = phone + "@customer.app";
 
-            const phone = phoneInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!phone || !password) {
-                return showError("Lütfen tüm alanları doldurun.");
-            }
-            
-            // Telefon numarası temizliği ve kontrolü
-            const cleanPhone = phone.replace(/\D/g, "");
-            if (!cleanPhone.startsWith("05") || cleanPhone.length !== 11) {
-                return showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
-            }
-            
-            // Firebase Authentication için telefon numarasını e-posta formatına çevir
-            const email = cleanPhone + "@" + appId + ".app";
-            
-            try {
-                // Firebase Auth ile giriş yap
-                await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-                console.log("Kullanıcı başarıyla giriş yaptı.");
-
-                // Başarılı giriş sonrası yönlendirme
-                const params = new URLSearchParams(window.location.search);
-                const redirectUrl = params.get("redirect") || "customer-panel.html";
-                window.location.href = redirectUrl;
-                
-            } catch (err) {
-                console.error("Giriş hatası:", err.code, err.message);
-                if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
-                    showError("Hatalı telefon numarası veya şifre.");
-                } else {
-                    showError("Giriş sırasında bir hata oluştu: " + err.message);
-                }
-            } finally {
-                btn.disabled = false;
+        try{
+            await signInWithEmailAndPassword(auth, email, pass);
+            window.location.href = "customer-panel.html";
+        }catch(err){
+            if(err.code === "auth/user-not-found"){
+                showError("Bu telefon numarasıyla kayıtlı hesap bulunamadı.");
+            }else if(err.code === "auth/wrong-password"){
+                showError("Şifre hatalı.");
+            }else{
+                showError("Giriş yapılamadı: " + err.message);
             }
         }
+    });
 
-        // Butonun tıklama olayını ayarla
-        btn.addEventListener('click', handleLogin);
-    </script>
+</script>
+
 </body>
 </html>
