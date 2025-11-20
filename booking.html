@@ -1,91 +1,82 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Randevu Oluştur</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Randevu Oluştur</title>
 
-  <style>
-    :root{
-      --bg:#050816;
-      --card:#0f172a;
-      --accent:#22c55e;
-      --accent-soft:rgba(34,197,94,0.15);
-      --text:#f1f5f9;
-      --muted:#94a3b8;
-      --radius:16px;
-    }
-
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui, sans-serif;
-      padding:16px;
-    }
-
-    .container{
-      max-width:500px;
-      margin:0 auto;
-    }
-
-    .card{
-      background:var(--card);
-      padding:16px;
-      margin-bottom:14px;
-      border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,0.08);
-    }
-
-    h2{
-      margin-top:0;
-      font-size:18px;
-    }
-
-    label{
-      font-size:14px;
-      color:var(--muted);
-      margin-bottom:4px;
-      display:block;
-    }
-
-    select, input{
-      width:100%;
-      padding:10px;
-      border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,0.15);
-      background:#0b1120;
-      color:var(--text);
-      margin-bottom:12px;
-      font-size:15px;
-    }
-
-    button{
-      width:100%;
-      padding:12px;
-      border:0;
-      border-radius:var(--radius);
-      background:var(--accent);
-      color:#022c22;
-      font-weight:600;
-      font-size:16px;
-      cursor:pointer;
-      margin-top:10px;
-    }
-
-    button:disabled{
-      opacity:0.4;
-      cursor:not-allowed;
-    }
-
-    .loading{
-      text-align:center;
-      padding:20px;
-      color:var(--muted);
-    }
-
-  </style>
+<style>
+  :root{
+    --bg:#050816;
+    --card:#0f172a;
+    --accent:#22c55e;
+    --accent-soft:rgba(34,197,94,0.15);
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --radius:16px;
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui, sans-serif;
+    padding:16px;
+  }
+  .container{
+    max-width:500px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--card);
+    padding:16px;
+    margin-bottom:14px;
+    border-radius:var(--radius);
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  h2{
+    margin-top:0;
+    font-size:20px;
+  }
+  label{
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:4px;
+    display:block;
+  }
+  select, input{
+    width:100%;
+    padding:10px;
+    border-radius:var(--radius);
+    border:1px solid rgba(255,255,255,0.15);
+    background:#0b1120;
+    color:var(--text);
+    margin-bottom:12px;
+    font-size:15px;
+  }
+  button{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:var(--radius);
+    background:var(--accent);
+    color:#022c22;
+    font-weight:600;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+  button:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+  .loading{
+    text-align:center;
+    padding:30px;
+    color:var(--muted);
+  }
+</style>
 </head>
+
 <body>
 
 <div class="container">
@@ -120,7 +111,13 @@
     collection, query, where, getDocs, addDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // kendi config'inle değiştir
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  /* ---------------------------------------------------
+     1) FIREBASE CONFIG (BURAYI KENDİ PROJENE GÖRE DOLDUR)
+  ----------------------------------------------------- */
   const firebaseConfig = {
   apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
   authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -130,8 +127,10 @@
   appId: "1:86298180836:web:124c2004605d68b32700f1",
   };
 
+  /* --------------------------------------------------- */
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
 
   const urlParams = new URLSearchParams(window.location.search);
   const businessId = urlParams.get("businessId");
@@ -146,7 +145,9 @@
   const loadingEl = document.getElementById("loading");
   const cardEl = document.getElementById("bookingCard");
 
-  // sabit örnek saatler
+  /* ---------------------------------------------------
+     2) SABİT SAAT SEÇENEKLERİ
+  ----------------------------------------------------- */
   const hours = [
     "09:00","09:30","10:00","10:30",
     "11:00","11:30","13:00","13:30",
@@ -155,12 +156,29 @@
   ];
 
   hours.forEach(h=>{
-    const opt=document.createElement("option");
-    opt.value=h;
-    opt.textContent=h;
+    const opt = document.createElement("option");
+    opt.value = h;
+    opt.textContent = h;
     timeSelect.appendChild(opt);
   });
 
+  /* ---------------------------------------------------
+     3) LOGIN ZORUNLULUĞU
+  ----------------------------------------------------- */
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      window.location.href = "customer-login.html";
+      return;
+    }
+
+    window.currentUID = user.uid; // gerçek UID
+
+    loadBusiness();
+  });
+
+  /* ---------------------------------------------------
+     4) İŞLETME BİLGİSİNİ ÇEK
+  ----------------------------------------------------- */
   async function loadBusiness(){
     if(!businessId){
       loadingEl.textContent = "businessId bulunamadı.";
@@ -180,12 +198,15 @@
     bizNameEl.textContent = biz.name;
     bizLocationEl.textContent = `${biz.city} - ${biz.district}`;
 
-    cardEl.style.display="block";
-    loadingEl.style.display="none";
+    cardEl.style.display = "block";
+    loadingEl.style.display = "none";
 
     await loadServices();
   }
 
+  /* ---------------------------------------------------
+     5) HİZMETLERİ ÇEK
+  ----------------------------------------------------- */
   async function loadServices(){
     serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
 
@@ -201,9 +222,11 @@
     });
   }
 
+  /* ---------------------------------------------------
+     6) ÇALIŞANLARI HİZMETE GÖRE LİSTELE
+  ----------------------------------------------------- */
   async function loadEmployees(serviceId){
     employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
-
     if(!serviceId) return;
 
     const q = query(collection(db,"employees"), where("businessID","==",businessId));
@@ -224,14 +247,18 @@
     loadEmployees(serviceSelect.value);
   });
 
+  /* ---------------------------------------------------
+     7) RANDEVU OLUŞTUR
+  ----------------------------------------------------- */
   createBtn.addEventListener("click", async ()=>{
+
     const serviceId = serviceSelect.value;
     const empId = employeeSelect.value;
     const date = dateInput.value;
     const time = timeSelect.value;
 
     if(!serviceId || !empId || !date || !time){
-      alert("Tüm alanları seçmelisin.");
+      alert("Lütfen tüm alanları doldurun.");
       return;
     }
 
@@ -241,18 +268,18 @@
       businessID: businessId,
       serviceID: serviceId,
       employeeID: empId,
-      customerUID: "anonim-test", // login ekleyince değişecek
+      customerUID: window.currentUID,
       date: date,
       time: time,
       status: "pending",
       createdAt: Date.now()
     });
 
-    alert("Randevu oluşturuldu!");
+    alert("Randevu başarıyla oluşturuldu!");
     createBtn.disabled = false;
   });
 
-  loadBusiness();
 </script>
+
 </body>
 </html>
