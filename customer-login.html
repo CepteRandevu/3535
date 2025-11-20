@@ -71,6 +71,11 @@
             box-shadow:0 12px 30px rgba(34,197,94,0.35);
         }
 
+        .btn-primary:disabled {
+            opacity:0.5;
+            cursor:not-allowed;
+        }
+
         .error-box {
             background:rgba(255,82,82,0.15);
             border:1px solid rgba(255,82,82,0.5);
@@ -94,7 +99,7 @@
         <div id="errorBox" class="error-box"></div>
 
         <label for="phone">Telefon</label>
-        <input type="tel" id="phone" placeholder="05XXXXXXXXX">
+        <input type="tel" id="phone" placeholder="05XXXXXXXXX" maxlength="11">
 
         <label for="password">Şifre</label>
         <input type="password" id="password" placeholder="Şifreniz">
@@ -107,27 +112,16 @@
     </div>
 
 <script type="module">
+    import { firebaseConfig } from "./js/firebase-config.js";
 
-    /* ------------------ FIREBASE ------------------ */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { 
         getAuth,
         signInWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-      authDomain: "cepterandevu-35fe4.firebaseapp.com",
-      projectId: "cepterandevu-35fe4",
-      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-      messagingSenderId: "86298180836",
-      appId: "1:86298180836:web:124c2004605d68b32700f1"
-    };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-
-    /* ------------------ LOGIN ------------------ */
 
     const errorBox = document.getElementById("errorBox");
     const phoneInput = document.getElementById("phone");
@@ -140,36 +134,41 @@
     }
 
     btn.addEventListener("click", async ()=>{
-
         errorBox.style.display="none";
+        btn.disabled = true;
 
         const phone = phoneInput.value.trim();
         const pass = passInput.value.trim();
 
         if(!phone || !pass){
+            btn.disabled = false;
             return showError("Lütfen tüm alanları doldurun.");
         }
 
-        if(!phone.startsWith("05") || phone.length !== 11){
-            return showError("Telefon numarası geçersiz.");
+        const cleanPhone = phone.replace(/\D/g,"");
+        if(!cleanPhone.startsWith("05") || cleanPhone.length !== 11){
+            btn.disabled = false;
+            return showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
         }
 
-        const email = phone + "@customer.app";
+        const email = cleanPhone + "@customer.app";
 
         try{
             await signInWithEmailAndPassword(auth, email, pass);
             window.location.href = "customer-panel.html";
         }catch(err){
+            console.error("Giriş hatası:", err);
             if(err.code === "auth/user-not-found"){
                 showError("Bu telefon numarasıyla kayıtlı hesap bulunamadı.");
-            }else if(err.code === "auth/wrong-password"){
+            }else if(err.code === "auth/wrong-password" || err.code === "auth/invalid-credential"){
                 showError("Şifre hatalı.");
             }else{
                 showError("Giriş yapılamadı: " + err.message);
             }
+        }finally{
+            btn.disabled = false;
         }
     });
-
 </script>
 
 </body>
