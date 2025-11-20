@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Randevu Yönetimi | Cepterandevu</title>
+
+  <style>
+    :root {
+      --bg: #050816;
+      --sidebar: #0b1120;
+      --card: #101528;
+      --accent: #22c55e;
+      --accent-strong: #16a34a;
+      --text: #f9fafb;
+      --muted: #94a3b8;
+      --border: rgba(148,163,184,0.35);
+      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
+      --radius-xl: 22px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      display: flex;
+      background: radial-gradient(circle at top, #111827, #020617 55%);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #ecfdf5;
+      box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+    }
+
+    .biz-name-small {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .menu button {
+      width: 100%;
+      padding: 10px 12px;
+      background: transparent;
+      border: 0;
+      text-align: left;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .menu button.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    /* MAIN */
+    .main-area {
+      margin-left: 240px;
+      flex: 1;
+      padding: 24px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 20px;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .filter-row input {
+      padding: 10px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .appt-row {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .appt-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+    }
+
+    .appt-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .appt-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      width: fit-content;
+    }
+
+    .pending { background: rgba(219,234,254,0.2); color: #93c5fd; }
+    .approved { background: rgba(74,222,128,0.2); color: #4ade80; }
+    .rejected { background: rgba(248,113,113,0.2); color: #f87171; }
+
+    .action-box {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-approve {
+      background: #22c55e;
+      border: 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #022c22;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      border: 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+  </style>
+
+  <!-- Firebase -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-box">
+      <div class="logo-mark">C</div>
+      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+    </div>
+
+    <div class="menu">
+      <button onclick="location.href='business-panel.html'">Panel</button>
+      <button onclick="location.href='business-services.html'">Hizmetler</button>
+      <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+      <button class="active">Randevular</button>
+      <button onclick="location.href='business-settings.html'">Ayarlar</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-area">
+    <h1 class="title">Randevu Yönetimi</h1>
+
+    <div class="card">
+      <div class="filter-row">
+        <label style="font-size:14px;">Tarih:</label>
+        <input type="date" id="filterDate" />
+      </div>
+
+      <div id="apptList">Yükleniyor...</div>
+    </div>
+  </main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs,
+    updateDoc,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:124c2004605d68b32700f1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const bizNameSmall = document.getElementById("bizNameSmall");
+  const apptList = document.getElementById("apptList");
+  const filterDate = document.getElementById("filterDate");
+
+  let businessID = null;
+
+  /* LOGIN KONTROLÜ */
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "business-login.html";
+      return;
+    }
+
+    businessID = user.uid;
+    await loadBusinessName();
+    loadAppointments();
+  });
+
+  async function loadBusinessName() {
+    const ref = doc(db, "businesses", businessID);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      bizNameSmall.textContent = snap.data().name || "İşletme";
+    }
+  }
+
+  /* RANDEVULARI ÇEK */
+  async function loadAppointments() {
+    apptList.textContent = "Yükleniyor...";
+
+    const dateVal = filterDate.value || null;
+
+    let qRef;
+
+    if (dateVal) {
+      qRef = query(
+        collection(db, "appointments"),
+        where("businessID", "==", businessID),
+        where("date", "==", dateVal)
+      );
+    } else {
+      qRef = query(
+        collection(db, "appointments"),
+        where("businessID", "==", businessID)
+      );
+    }
+
+    const snap = await getDocs(qRef);
+
+    if (snap.empty) {
+      apptList.textContent = "Randevu bulunamadı.";
+      return;
+    }
+
+    apptList.innerHTML = "";
+
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+
+      const row = document.createElement("div");
+      row.className = "appt-row";
+
+      const statusClass = data.status === "pending" ? "pending"
+                        : data.status === "approved" ? "approved"
+                        : "rejected";
+
+      row.innerHTML = `
+        <div class="appt-info">
+          <div class="appt-name">${data.customerName || "Müşteri"}</div>
+          <div class="appt-meta">${data.date} — ${data.time}</div>
+          <div class="appt-meta">${data.serviceName} / ${data.employeeName}</div>
+          <div class="status-badge ${statusClass}">${data.status}</div>
+        </div>
+
+        <div class="action-box">
+          <button class="btn-approve" data-id="${docSnap.id}">Onayla</button>
+          <button class="btn-reject" data-id="${docSnap.id}">Reddet</button>
+        </div>
+      `;
+
+      apptList.appendChild(row);
+    });
+
+    bindActions();
+  }
+
+  /* BUTONLAR */
+  function bindActions() {
+    document.querySelectorAll(".btn-approve").forEach((btn) => {
+      btn.onclick = async () => {
+        await updateStatus(btn.dataset.id, "approved");
+      };
+    });
+
+    document.querySelectorAll(".btn-reject").forEach((btn) => {
+      btn.onclick = async () => {
+        await updateStatus(btn.dataset.id, "rejected");
+      };
+    });
+  }
+
+  /* STATUS UPDATE */
+  async function updateStatus(id, status) {
+    await updateDoc(doc(db, "appointments", id), {
+      status
+    });
+
+    loadAppointments();
+  }
+
+  /* TARİH FİLTRESİ */
+  filterDate.addEventListener("change", loadAppointments);
+</script>
+
+</body>
+</html>
