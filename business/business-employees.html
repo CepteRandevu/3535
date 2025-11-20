@@ -191,7 +191,6 @@
       color: white;
       cursor: pointer;
     }
-
   </style>
 </head>
 
@@ -213,37 +212,37 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- MAIN CONTENT -->
   <main class="main-area">
     <h1 class="title">Çalışan Yönetimi</h1>
 
     <div class="card">
-      <h3>Yeni Çalışan Ekle</h3>
+      <h3 style="margin-bottom:10px;">Yeni Çalışan Ekle</h3>
 
       <label>Çalışan Adı</label>
-      <input id="empNameInput" type="text">
+      <input type="text" id="empNameInput">
 
       <label>Bağlı Hizmetler</label>
       <div id="servicesCheckbox" class="checkbox-list">Yükleniyor...</div>
 
-      <button id="addEmpBtn" class="btn-primary">Ekle</button>
+      <button class="btn-primary" id="addEmpBtn">Ekle</button>
     </div>
 
     <div class="card">
-      <h3>Mevcut Çalışanlar</h3>
+      <h3 style="margin-bottom:10px;">Mevcut Çalışanlar</h3>
       <div id="empList">Yükleniyor...</div>
     </div>
   </main>
-
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
-    getFirestore, collection, query, where, getDocs,
-    addDoc, deleteDoc, doc, getDoc
+    getFirestore, collection, addDoc, query, where,
+    getDocs, deleteDoc, doc, getDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  /* Firebase Config */
   const firebaseConfig = {
     apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
     authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -260,129 +259,105 @@
   let businessID = null;
   let SERVICES = {};
 
-  const bizNameSmall = document.getElementById("bizNameSmall");
-  const empNameInput = document.getElementById("empNameInput");
   const servicesCheckbox = document.getElementById("servicesCheckbox");
   const empListEl = document.getElementById("empList");
+  const empNameInput = document.getElementById("empNameInput");
+  const bizNameSmall = document.getElementById("bizNameSmall");
 
-  onAuthStateChanged(auth, async (user)=>{
-    if(!user){
-      location.href = "business-login.html";
-      return;
-    }
+  /* LOGIN KONTROLÜ */
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return location.href = "business-login.html";
 
-    // ❗ İşletme ID düzeltildi
-    const qBiz = query(collection(db,"businesses"), where("ownerUID","==",user.uid));
-    const snapBiz = await getDocs(qBiz);
+    businessID = user.uid;
 
-    if(snapBiz.empty){
-      alert("İşletme kaydı bulunamadı.");
-      return;
-    }
-
-    businessID = snapBiz.docs[0].id;
-
-    loadBusinessName();
-    loadServices();
-    loadEmployees();
+    await loadBusinessName();
+    await loadServices();
+    await loadEmployees();
   });
 
-
-  async function loadBusinessName(){
-    const d = await getDoc(doc(db,"businesses",businessID));
-    if(d.exists()) bizNameSmall.textContent = d.data().name;
+  async function loadBusinessName() {
+    const snap = await getDoc(doc(db, "businesses", businessID));
+    if (snap.exists()) bizNameSmall.textContent = snap.data().name || "İşletme";
   }
 
+  /* HİZMETLERİ LİSTELE */
+  async function loadServices() {
+    servicesCheckbox.textContent = "Yükleniyor...";
 
-  async function loadServices(){
-    servicesCheckbox.innerHTML = "Yükleniyor...";
-
-    const q = query(collection(db,"services"), where("businessID","==",businessID));
-    const snap = await getDocs(q);
+    const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
+    const snap = await getDocs(qRef);
 
     SERVICES = {};
     servicesCheckbox.innerHTML = "";
 
-    snap.forEach(docSnap=>{
-      const s = docSnap.data();
-      SERVICES[docSnap.id] = s;
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+      SERVICES[docSnap.id] = data;
 
       servicesCheckbox.innerHTML += `
         <div class="checkbox-item">
           <input type="checkbox" value="${docSnap.id}">
-          <label>${s.name} (${s.duration} dk)</label>
+          <label>${data.name} (${data.duration} dk)</label>
         </div>
       `;
     });
 
-    if(snap.empty){
-      servicesCheckbox.innerHTML = "Önce hizmet ekleyin.";
-    }
+    if (snap.empty) servicesCheckbox.textContent = "Önce hizmet ekleyin.";
   }
 
-
-  document.getElementById("addEmpBtn").onclick = async()=>{
+  /* ÇALIŞAN EKLE */
+  document.getElementById("addEmpBtn").onclick = async () => {
     const name = empNameInput.value.trim();
-    if(!name) return alert("Çalışan adı gerekli.");
+    if (!name) return alert("Çalışan adı gerekli.");
 
-    const selected = Array.from(
-      servicesCheckbox.querySelectorAll("input[type='checkbox']:checked")
-    ).map(i=>i.value);
+    const selected = [...servicesCheckbox.querySelectorAll("input:checked")].map(i => i.value);
+    if (selected.length === 0) return alert("En az bir hizmet seçin.");
 
-    if(selected.length === 0){
-      alert("En az bir hizmet seçin.");
-      return;
-    }
-
-    await addDoc(collection(db,"employees"),{
+    await addDoc(collection(db, "employees"), {
       businessID,
       name,
-      services:selected
+      services: selected
     });
 
     empNameInput.value = "";
-    loadEmployees();
+    await loadEmployees();
   };
 
+  /* ÇALIŞANLARI LİSTELE */
+  async function loadEmployees() {
+    empListEl.textContent = "Yükleniyor...";
 
-  async function loadEmployees(){
-    empListEl.innerHTML = "Yükleniyor...";
-
-    const q = query(collection(db,"employees"), where("businessID","==",businessID));
-    const snap = await getDocs(q);
-
-    if(snap.empty){
-      empListEl.innerHTML = "Henüz çalışan eklenmemiş.";
-      return;
-    }
+    const qRef = query(collection(db, "employees"), where("businessID", "==", businessID));
+    const snap = await getDocs(qRef);
 
     empListEl.innerHTML = "";
 
-    snap.forEach(docSnap=>{
-      const d = docSnap.data();
+    if (snap.empty) {
+      empListEl.textContent = "Henüz çalışan eklenmemiş.";
+      return;
+    }
 
-      const servicesText = (d.services||[])
-        .map(sid => SERVICES[sid]?.name || sid)
-        .join(", ");
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const services = d.services.map(id => SERVICES[id]?.name || id).join(", ");
 
       empListEl.innerHTML += `
         <div class="emp-row">
           <div class="emp-info">
             <div class="emp-name">${d.name}</div>
-            <div class="emp-meta">${servicesText}</div>
+            <div class="emp-meta">${services}</div>
           </div>
-          <button class="delete-btn" onclick="deleteEmp('${docSnap.id}')">Sil</button>
+          <button class="delete-btn" onclick="deleteEmployee('${docSnap.id}')">Sil</button>
         </div>
       `;
     });
   }
 
-
-  window.deleteEmp = async(id)=>{
-    await deleteDoc(doc(db,"employees",id));
+  /* ÇALIŞAN SİL */
+  window.deleteEmployee = async (id) => {
+    await deleteDoc(doc(db, "employees", id));
     loadEmployees();
   };
-
 </script>
 
 </body>
