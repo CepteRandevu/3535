@@ -1,1042 +1,1335 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cepterandevu | Ana Ekran</title>
-
-  <style>
-    :root {
-      --bg: #050816;
-      --bg-soft: #0b1020;
-      --card: #101528;
-      --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.12);
-      --accent-strong: #16a34a;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --border: rgba(148, 163, 184, 0.3);
-      --danger: #f97373;
-      --radius-lg: 18px;
-      --radius-xl: 24px;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, #111827, #020617 55%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-    }
-
-    .app-shell {
-      width: 100%;
-      max-width: 1120px;
-      padding: 16px 16px 32px;
-    }
-
-    /* HEADER */
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ecfdf5;
-      font-weight: 800;
-      font-size: 18px;
-      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
-    }
-
-    .logo-text-main {
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      font-size: 18px;
-    }
-
-    .logo-text-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 999px;
-      padding: 7px 14px;
-      font-size: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.18s ease-out;
-      white-space: nowrap;
-    }
-
-    .btn-outline {
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--muted);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--accent);
-      color: var(--text);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: #022c22;
-      font-weight: 600;
-      box-shadow: 0 12px 30px rgba(34, 197, 94, 0.45);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-    }
-
-    /* LAYOUT GRID */
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-      gap: 18px;
-    }
-
-    /* HERO / SOL TARAF */
-
-    .card-hero {
-      border-radius: var(--radius-xl);
-      background: radial-gradient(circle at top left, #1e293b, #020617 55%);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-hero::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.16), transparent 55%),
-        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.2), transparent 60%);
-      opacity: 0.8;
-      pointer-events: none;
-    }
-
-    .card-hero-inner {
-      position: relative;
-      z-index: 2;
-    }
-
-    .badge-line {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.82);
-      border-radius: 999px;
-      padding: 4px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      margin-bottom: 10px;
-      backdrop-filter: blur(6px);
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
-    }
-
-    .badge-strong {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.18);
-      color: #bbf7d0;
-    }
-
-    .hero-title {
-      font-size: 24px;
-      line-height: 1.2;
-      margin-bottom: 8px;
-    }
-
-    .hero-title span {
-      color: #bbf7d0;
-    }
-
-    .hero-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 14px;
-      max-width: 420px;
-    }
-
-    .hero-cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .hero-meta {
-      display: flex;
-      gap: 16px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .hero-meta span strong {
-      display: block;
-      color: var(--text);
-      font-size: 13px;
-      margin-bottom: 1px;
-    }
-
-    /* SEARCH PANEL */
-
-    .search-panel {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: var(--radius-lg);
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      backdrop-filter: blur(10px);
-    }
-
-    .search-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .search-header-left h2 {
-      font-size: 13px;
-      margin-bottom: 2px;
-    }
-
-    .search-header-left p {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .search-tag {
-      font-size: 10px;
-      border-radius: 999px;
-      padding: 3px 8px;
-      background: var(--accent-soft);
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.6);
-    }
-
-    .search-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .field-label {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 3px;
-      display: block;
-    }
-
-    select {
-      width: 100%;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.75);
-      background: rgba(15, 23, 42, 0.92);
-      color: var(--text);
-      padding: 7px 10px;
-      font-size: 12px;
-      outline: none;
-      appearance: none;
-      background-image: linear-gradient(135deg, rgba(148, 163, 184, 0.3), transparent);
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 16px 16px;
-    }
-
-    select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.55);
-    }
-
-    .search-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .search-hint {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .search-hint strong {
-      color: #e5e7eb;
-    }
-
-    /* SAĞ TARAF / İŞLETMELER LİSTESİ */
-
-    .card-list {
-      border-radius: var(--radius-xl);
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 12px;
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .list-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .list-header-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .list-header-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .pill {
-      font-size: 10px;
-      border-radius: 999px;
-      padding: 3px 8px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--muted);
-    }
-
-    .business-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .business-empty {
-      flex: 1;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 12px;
-    }
-
-    .business-card {
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), #020617);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 8px 9px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.16s ease-out;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .business-card::before {
-      content: "";
-      position: absolute;
-      inset: -20%;
-      background: radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.15), transparent 60%);
-      opacity: 0;
-      transition: opacity 0.18s ease-out;
-      pointer-events: none;
-    }
-
-    .business-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
-    }
-
-    .business-card:hover::before {
-      opacity: 1;
-    }
-
-    .business-main {
-      min-width: 0;
-    }
-
-    .business-name {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .business-location {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .business-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .business-tag {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--muted);
-    }
-
-    .business-meta {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 4px;
-    }
-
-    .rating-pill {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.16);
-      color: #bbf7d0;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .rating-pill span {
-      font-size: 10px;
-      color: #a7f3d0;
-    }
-
-    .business-meta-bottom {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .slots-chip {
-      font-size: 10px;
-      color: var(--muted);
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-    }
-
-    .btn-mini {
-      border-radius: 999px;
-      border: 0;
-      padding: 5px 9px;
-      font-size: 11px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: #022c22;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.35);
-      transition: all 0.15s ease-out;
-    }
-
-    .btn-mini:hover {
-      filter: brightness(1.06);
-      transform: translateY(-1px);
-    }
-
-    .list-footer {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 10px;
-      color: var(--muted);
-      gap: 8px;
-    }
-
-    .pager {
-      display: flex;
-      gap: 4px;
-    }
-
-    .pager button {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--muted);
-      padding: 3px 7px;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all 0.14s ease-out;
-    }
-
-    .pager button:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-
-    .pager button:not(:disabled):hover {
-      border-color: var(--accent);
-      color: var(--text);
-    }
-
-    /* RESPONSIVE */
-
-    @media (max-width: 840px) {
-      .grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .card-list {
-        order: -1;
-      }
-
-      .app-shell {
-        padding-inline: 12px;
-      }
-
-      header {
-        margin-bottom: 14px;
-      }
-    }
-
-    @media (max-width: 560px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .header-actions {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .search-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .business-card {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .business-meta {
-        align-items: flex-start;
-      }
-
-      .business-meta-bottom {
-        justify-content: flex-start;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cepterandevu | Ana Ekran</title>
+
+    <style>
+        :root {
+            --bg: #050816;
+            --bg-soft: #0b1020;
+            --card: #101528;
+            --accent: #22c55e;
+            --accent-soft: rgba(34, 197, 94, 0.12);
+            --accent-strong: #16a34a;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: rgba(148, 163, 184, 0.3);
+            --danger: #f97373;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                "Segoe UI", Roboto, Arial, sans-serif;
+            background: radial-gradient(circle at top, #111827, #020617 55%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 1120px;
+            padding: 16px 16px 32px;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 14px;
+            background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ecfdf5;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+        }
+
+        .logo-text-main {
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            font-size: 18px;
+        }
+
+        .logo-text-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.18s ease-out;
+            white-space: nowrap;
+        }
+
+        .btn-outline {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--muted);
+            border: 1px solid rgba(148, 163, 184, 0.45);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #022c22;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.45);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        /* HERO */
+        .card-hero {
+            border-radius: var(--radius-xl);
+            background: radial-gradient(circle at top left, #1e293b, #020617 55%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: var(--shadow-soft);
+            padding: 18px 18px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-hero::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.16), transparent 55%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.2), transparent 60%);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .card-hero-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.82);
+            border-radius: 999px;
+            padding: 4px 10px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            margin-bottom: 10px;
+            backdrop-filter: blur(6px);
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+        }
+
+        .badge-strong {
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.18);
+            color: #bbf7d0;
+        }
+
+        .hero-title {
+            font-size: 24px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .hero-title span {
+            color: #bbf7d0;
+        }
+
+        .hero-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 14px;
+            max-width: 420px;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .hero-meta strong {
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* SEARCH PANEL */
+        .search-panel {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: var(--radius-lg);
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .search-header-left h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .search-header-left p {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .search-tag {
+            font-size: 10px;
+            font-weight: 600;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .search-panel select,
+        .search-panel button {
+            width: 100%;
+        }
+
+        .search-panel select {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .search-panel select:focus {
+            outline: none;
+            border-color: var(--accent-strong);
+        }
+
+        .search-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .search-hint {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .search-hint strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+
+        /* LISTE TASARIMI */
+        .card-list {
+            border-radius: var(--radius-xl);
+            background: rgba(15, 23, 42, 0.96);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            box-shadow: var(--shadow-soft);
+            padding: 14px 12px;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            margin-bottom: 12px;
+        }
+
+        .list-header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .list-header-sub {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .pill {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--accent);
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+
+        .business-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .business-empty {
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px dashed rgba(148, 163, 184, 0.3);
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .business-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-soft);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+        }
+
+        .business-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        }
+
+        .business-main {
+            flex-grow: 1;
+        }
+
+        .business-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .business-location {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .business-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .business-tag {
+            font-size: 9px;
+            background: var(--card);
+            color: var(--muted);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .business-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .rating-pill {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fde047;
+            background: #451a03;
+            padding: 3px 7px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-pill span {
+            font-size: 10px;
+            font-weight: 400;
+            color: #a1a1aa;
+            margin-left: 4px;
+        }
+
+        .business-meta-bottom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slots-chip {
+            font-size: 10px;
+            color: var(--accent);
+            background: rgba(34, 197, 94, 0.15);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .btn-mini {
+            border: 0;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 10px;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #022c22;
+            font-weight: 600;
+            transition: transform 0.15s ease-out;
+        }
+
+        .btn-mini:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+        .list-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 8px 4px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .pager button {
+            background: var(--bg-soft);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+
+        .pager button:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .pager button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-hero {
+                padding: 16px 16px 18px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-grid div:nth-child(3) {
+                grid-row: 3;
+            }
+
+            .search-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
 </head>
+
 <body>
-  <div class="app-shell">
-    <header>
-      <div class="logo-group">
-        <div class="logo-mark">C</div>
-        <div>
-          <div class="logo-text-main">Cepterandevu</div>
-          <div class="logo-text-sub">Randevu, dakikalar içinde.</div>
-        </div>
-      </div>
+    <div class="app-shell">
 
-      <div class="header-actions">
-        <button class="btn btn-outline" onclick="window.location.href='business-login.html'">
-          İşletme Girişi
-        </button>
-        <button class="btn btn-primary" onclick="window.location.href='customer-login.html'">
-          Müşteri Girişi
-        </button>
-      </div>
-    </header>
-
-    <main class="grid">
-      <!-- SOL: HERO + ARAMA -->
-      <section class="card-hero">
-        <div class="card-hero-inner">
-          <div class="badge-line">
-            <span class="badge-dot"></span>
-            <span>Online randevu · 7/24 açık</span>
-            <span class="badge-strong">İlk ay işletmelere ücretsiz</span>
-          </div>
-
-          <h1 class="hero-title">
-            <span>Tek panelden</span> tüm randevularını yönet.
-          </h1>
-          <p class="hero-sub">
-            Müşteri telefon trafiğiyle uğraşmasın, işletme kağıt ajandadan kurtulsun.
-            İl & ilçe seç, kayıtlı işletmeleri anında gör, saniyeler içinde randevunu oluştur.
-          </p>
-
-          <div class="hero-cta-row">
-            <button class="btn btn-primary" onclick="scrollToSearch()">
-              Hemen randevu ara
-            </button>
-            <button class="btn btn-outline" onclick="window.location.href='business-register.html'">
-              İşletmemi eklemek istiyorum
-            </button>
-          </div>
-
-          <div class="hero-meta">
-            <span>
-              <strong>3 adımda randevu</strong>
-              İşletme seç · Hizmet seç · Saat onayla
-            </span>
-            <span>
-              <strong>İşletme paneli</strong>
-              Onay/red · bildirim · rapor
-            </span>
-          </div>
-
-          <section id="search-panel" class="search-panel">
-            <div class="search-header">
-              <div class="search-header-left">
-                <h2>İl / ilçe bazlı işletme ara</h2>
-                <p>Kayıtlı işletmeler dışında hiç kimse listelenmez.</p>
-              </div>
-              <div class="search-tag">Gerçek zamanlı listeleme</div>
+        <header>
+            <div class="logo-group">
+                <div class="logo-mark">C</div>
+                <div>
+                    <div class="logo-text-main">Cepterandevu</div>
+                    <div class="logo-text-sub">Randevu, dakikalar içinde.</div>
+                </div>
             </div>
 
-            <div class="search-grid">
-              <div>
-                <label class="field-label" for="citySelect">İl</label>
-                <select id="citySelect">
-                  <option value="">İl seç</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="districtSelect">İlçe</label>
-                <select id="districtSelect" disabled>
-                  <option value="">Önce il seç</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label">&nbsp;</label>
-                <button class="btn btn-primary" style="width: 100%;" id="searchBtn">
-                  İşletmeleri listele
-                </button>
-              </div>
-            </div>
+            <div class="header-actions" id="headerActions">
+                </div>
+        </header>
 
-            <div class="search-actions">
-              <div class="search-hint">
-                <strong>İpucu:</strong> Konumunuza en yakın il / ilçe kombinasyonunu seçerek başlayın.
-              </div>
-            </div>
-          </section>
-        </div>
-      </section>
 
-      <!-- SAĞ: İŞLETME LİSTESİ -->
-      <section class="card-list">
-        <div class="list-header">
-          <div>
-            <div class="list-header-title">Kayıtlı işletmeler</div>
-            <div class="list-header-sub" id="listSubtitle">
-              İl / ilçe seçerek başlayın.
-            </div>
-          </div>
-          <div class="pill" id="businessCountPill">0 işletme</div>
-        </div>
+        <main class="grid">
 
-        <ul class="business-list" id="businessList">
-          <li class="business-empty">
-            Henüz bir filtreleme yapılmadı.<br />
-            Soldan il & ilçe seçip “İşletmeleri listele” butonuna tıklayın.
-          </li>
-        </ul>
+            <section class="card-hero">
+                <div class="card-hero-inner">
 
-        <div class="list-footer">
-          <span id="pageInfo">Sayfa 1 / 1</span>
-          <div class="pager">
-            <button id="prevPageBtn" disabled>Önceki</button>
-            <button id="nextPageBtn" disabled>Sonraki</button>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
+                    <div class="badge-line">
+                        <span class="badge-dot"></span>
+                        <span>Online randevu · 7/24 açık</span>
+                        <span class="badge-strong">İlk ay işletmelere ücretsiz</span>
+                    </div>
 
-  <script>
-    // ŞİMDİLİK DEMO VERİLER
-    // Sonra bunları Firestore veya kendi API'ne bağlarız.
-    const DATA = {
-      cities: [
-        {
-          id: "izmir",
-          name: "İzmir",
-          districts: [
-            { id: "karsiyaka", name: "Karşıyaka" },
-            { id: "bornova", name: "Bornova" },
-            { id: "konak", name: "Konak" }
-          ]
-        },
-        {
-          id: "istanbul",
-          name: "İstanbul",
-          districts: [
-            { id: "kadikoy", name: "Kadıköy" },
-            { id: "besiktas", name: "Beşiktaş" },
-            { id: "uskudar", name: "Üsküdar" }
-          ]
-        }
-      ],
-      businesses: [
-        {
-          id: "b1",
-          name: "Pratik Kuaför & Güzellik",
-          cityId: "izmir",
-          cityName: "İzmir",
-          districtId: "karsiyaka",
-          districtName: "Karşıyaka",
-          tags: ["Kuaför", "Bakım", "Güzellik"],
-          rating: 4.8,
-          reviewCount: 123,
-          freeSlotsToday: 5
-        },
-        {
-          id: "b2",
-          name: "DentPlus Ağız ve Diş Sağlığı",
-          cityId: "izmir",
-          cityName: "İzmir",
-          districtId: "bornova",
-          districtName: "Bornova",
-          tags: ["Diş", "Klinik"],
-          rating: 4.9,
-          reviewCount: 87,
-          freeSlotsToday: 2
-        },
-        {
-          id: "b3",
-          name: "FitLine PT Stüdyo",
-          cityId: "istanbul",
-          cityName: "İstanbul",
-          districtId: "kadikoy",
-          districtName: "Kadıköy",
-          tags: ["Spor", "PT", "Fitness"],
-          rating: 4.7,
-          reviewCount: 64,
-          freeSlotsToday: 4
-        },
-        {
-          id: "b4",
-          name: "Kadıköy Vet Hayvan Kliniği",
-          cityId: "istanbul",
-          cityName: "İstanbul",
-          districtId: "kadikoy",
-          districtName: "Kadıköy",
-          tags: ["Veteriner", "Klinik"],
-          rating: 4.6,
-          reviewCount: 39,
-          freeSlotsToday: 3
-        }
-      ]
-    };
+                    <h1 class="hero-title">
+                        <span>Tek panelden</span> tüm randevularını yönet.
+                    </h1>
 
-    const citySelect = document.getElementById("citySelect");
-    const districtSelect = document.getElementById("districtSelect");
-    const searchBtn = document.getElementById("searchBtn");
-    const listSubtitle = document.getElementById("listSubtitle");
-    const businessList = document.getElementById("businessList");
-    const businessCountPill = document.getElementById("businessCountPill");
-    const pageInfo = document.getElementById("pageInfo");
-    const prevPageBtn = document.getElementById("prevPageBtn");
-    const nextPageBtn = document.getElementById("nextPageBtn");
+                    <p class="hero-sub">
+                        İl & ilçe seç, işletmeleri anında gör, saniyeler içinde randevunu oluştur.
+                    </p>
 
-    const PAGE_SIZE = 5;
-    let currentPage = 1;
-    let filteredBusinesses = [];
+                    <div class="hero-cta-row">
+                        <button class="btn btn-primary" onclick="scrollToSearch()">
+                            Hemen randevu ara
+                        </button>
 
-    function scrollToSearch() {
-      const el = document.getElementById("search-panel");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
+                        <button class="btn btn-outline" onclick="window.location.href='business-register.html'">
+                            İşletmemi eklemek istiyorum
+                        </button>
+                    </div>
 
-    function populateCities() {
-      DATA.cities.forEach((city) => {
-        const opt = document.createElement("option");
-        opt.value = city.id;
-        opt.textContent = city.name;
-        citySelect.appendChild(opt);
-      });
-    }
+                    <div class="hero-meta">
+                        <span>
+                            <strong>3 adımda randevu</strong>
+                            İşletme seç · Hizmet seç · Saat onayla
+                        </span>
+                        <span>
+                            <strong>İşletme paneli</strong>
+                            Onay/red · bildirim · rapor
+                        </span>
+                    </div>
 
-    function populateDistricts(cityId) {
-      districtSelect.innerHTML = "";
-      const defaultOpt = document.createElement("option");
-      if (!cityId) {
-        defaultOpt.value = "";
-        defaultOpt.textContent = "Önce il seç";
-        districtSelect.appendChild(defaultOpt);
-        districtSelect.disabled = true;
-        return;
-      }
 
-      const city = DATA.cities.find((c) => c.id === cityId);
-      if (!city) {
-        defaultOpt.value = "";
-        defaultOpt.textContent = "İl bulunamadı";
-        districtSelect.appendChild(defaultOpt);
-        districtSelect.disabled = true;
-        return;
-      }
+                    <div id="lastAppointmentCard"></div>
 
-      const firstOpt = document.createElement("option");
-      firstOpt.value = "";
-      firstOpt.textContent = "Tüm ilçeler";
-      districtSelect.appendChild(firstOpt);
 
-      city.districts.forEach((d) => {
-        const opt = document.createElement("option");
-        opt.value = d.id;
-        opt.textContent = d.name;
-        districtSelect.appendChild(opt);
-      });
+                    <div id="popularBusinesses"></div>
 
-      districtSelect.disabled = false;
-    }
 
-    function filterBusinesses() {
-      const cityId = citySelect.value;
-      const districtId = districtSelect.value;
+                    <section id="search-panel" class="search-panel">
+                        <div class="search-header">
+                            <div class="search-header-left">
+                                <h2>İl / ilçe bazlı işletme ara</h2>
+                                <p>Kayıtlı işletmeler dışında sonuç gösterilmez.</p>
+                            </div>
 
-      if (!cityId) {
-        filteredBusinesses = [];
-        renderBusinessList();
-        listSubtitle.textContent = "İl seçmeden listeleme yapılamaz.";
-        businessCountPill.textContent = "0 işletme";
-        return;
-      }
+                            <div class="search-tag">Gerçek zamanlı listeleme</div>
+                        </div>
 
-      filteredBusinesses = DATA.businesses.filter((b) => {
-        if (b.cityId !== cityId) return false;
-        if (districtId && b.districtId !== districtId) return false;
-        return true;
-      });
+                        <div class="search-grid">
+                            <div>
+                                <label class="field-label">İl</label>
+                                <select id="citySelect">
+                                    <option value="">İl seç</option>
+                                </select>
+                            </div>
 
-      currentPage = 1;
+                            <div>
+                                <label class="field-label">İlçe</label>
+                                <select id="districtSelect" disabled>
+                                    <option value="">Önce il seç</option>
+                                </select>
+                            </div>
 
-      const city = DATA.cities.find((c) => c.id === cityId);
-      const cityName = city ? city.name : "";
-      let districtName = "Tüm ilçeler";
+                            <div>
+                                <label class="field-label">&nbsp;</label>
+                                <button class="btn btn-primary" style="width: 100%;" id="searchBtn">
+                                    İşletmeleri listele
+                                </button>
+                            </div>
+                        </div>
 
-      if (districtId && city) {
-        const d = city.districts.find((x) => x.id === districtId);
-        if (d) districtName = d.name;
-      }
+                        <div class="search-actions">
+                            <div class="search-hint">
+                                <strong>İpucu:</strong> Konumunuza yakın il/ilçe seçin.
+                            </div>
+                        </div>
+                    </section>
 
-      if (filteredBusinesses.length === 0) {
-        listSubtitle.textContent = `${cityName} / ${districtName} için kayıtlı işletme bulunamadı.`;
-      } else {
-        listSubtitle.textContent = `${cityName} / ${districtName} bölgesinde ${filteredBusinesses.length} işletme bulundu.`;
-      }
+                </div>
+            </section>
 
-      businessCountPill.textContent = `${filteredBusinesses.length} işletme`;
-      renderBusinessList();
-    }
+            <section class="card-list">
+                <div class="list-header">
+                    <div>
+                        <div class="list-header-title">Kayıtlı işletmeler</div>
+                        <div class="list-header-sub" id="listSubtitle">
+                            İl / ilçe seçerek başlayın.
+                        </div>
+                    </div>
 
-    function renderBusinessList() {
-      businessList.innerHTML = "";
+                    <div class="pill" id="businessCountPill">0 işletme</div>
+                </div>
 
-      if (!filteredBusinesses || filteredBusinesses.length === 0) {
-        const empty = document.createElement("li");
-        empty.className = "business-empty";
-        empty.innerHTML =
-          "Bu kriterlere ait kayıtlı işletme bulunamadı.<br/>İl / ilçe seçiminizi değiştirip tekrar deneyebilirsiniz.";
-        businessList.appendChild(empty);
-        updatePager();
-        return;
-      }
+                <ul class="business-list" id="businessList">
+                    <li class="business-empty">
+                        Henüz bir filtreleme yapılmadı.<br />
+                        Soldan il & ilçe seçip "İşletmeleri listele"ye tıklayın.
+                    </li>
+                </ul>
 
-      const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
-      if (currentPage > totalPages) currentPage = totalPages || 1;
+                <div class="list-footer">
+                    <span id="pageInfo">Sayfa 1 / 1</span>
 
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const pageItems = filteredBusinesses.slice(
-        startIndex,
-        startIndex + PAGE_SIZE
-      );
+                    <div class="pager">
+                        <button id="prevPageBtn" disabled>Önceki</button>
+                        <button id="nextPageBtn" disabled>Sonraki</button>
+                    </div>
+                </div>
+            </section>
 
-      pageItems.forEach((b) => {
-        const li = document.createElement("li");
-        li.className = "business-card";
-        li.onclick = () => handleBusinessClick(b);
+        </main>
+    </div>
 
-        const main = document.createElement("div");
-        main.className = "business-main";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            getDoc,
+            query,
+            where,
+            orderBy,
+            limit,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const nameEl = document.createElement("div");
-        nameEl.className = "business-name";
-        nameEl.textContent = b.name;
-
-        const locEl = document.createElement("div");
-        locEl.className = "business-location";
-        locEl.textContent = `${b.cityName} · ${b.districtName}`;
-
-        const tagsEl = document.createElement("div");
-        tagsEl.className = "business-tags";
-        b.tags.forEach((tag) => {
-          const t = document.createElement("span");
-          t.className = "business-tag";
-          t.textContent = tag;
-          tagsEl.appendChild(t);
-        });
-
-        main.appendChild(nameEl);
-        main.appendChild(locEl);
-        main.appendChild(tagsEl);
-
-        const meta = document.createElement("div");
-        meta.className = "business-meta";
-
-        const ratingEl = document.createElement("div");
-        ratingEl.className = "rating-pill";
-        ratingEl.innerHTML = `★ ${b.rating.toFixed(1)} <span>(${b.reviewCount}+)</span>`;
-
-        const bottom = document.createElement("div");
-        bottom.className = "business-meta-bottom";
-
-        const slots = document.createElement("span");
-        slots.className = "slots-chip";
-        slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
-
-        const btn = document.createElement("button");
-        btn.className = "btn-mini";
-        btn.type = "button";
-        btn.textContent = "Randevu al";
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          handleBusinessClick(b);
+        /* 🔧 FIREBASE CONFIG — BURAYI KENDİ PROJENLE DOLDUR */
+        const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:124c2004605d68b32700f1",
         };
 
-        bottom.appendChild(slots);
-        bottom.appendChild(btn);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        meta.appendChild(ratingEl);
-        meta.appendChild(bottom);
+        /* ---------- DOM ELEMANLARI ---------- */
+        const headerActions = document.getElementById("headerActions");
 
-        li.appendChild(main);
-        li.appendChild(meta);
+        const citySelect = document.getElementById("citySelect");
+        const districtSelect = document.getElementById("districtSelect");
+        const searchBtn = document.getElementById("searchBtn");
 
-        businessList.appendChild(li);
-      });
+        const listSubtitle = document.getElementById("listSubtitle");
+        const businessCountPill = document.getElementById("businessCountPill");
+        const businessList = document.getElementById("businessList");
+        const pageInfo = document.getElementById("pageInfo");
+        const prevPageBtn = document.getElementById("prevPageBtn");
+        const nextPageBtn = document.getElementById("nextPageBtn");
 
-      updatePager();
-    }
+        const lastAppointmentCard = document.getElementById("lastAppointmentCard");
+        const popularBusinessesBox = document.getElementById("popularBusinesses");
 
-    function updatePager() {
-      const total = filteredBusinesses.length;
-      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-      pageInfo.textContent = `Sayfa ${currentPage} / ${totalPages}`;
+        /* ---------- GLOBAL DURUMLAR ---------- */
+        let currentUser = null;
+        let currentProfile = null;
 
-      prevPageBtn.disabled = currentPage <= 1;
-      nextPageBtn.disabled = currentPage >= totalPages || total === 0;
-    }
+        let ALL_BUSINESSES = [];
+        let ALL_CITIES = [];
 
-    function handleBusinessClick(business) {
-      // İLERDE:
-      // 1) Eğer kullanıcı login değilse: customer-login.html?businessId=...
-      // 2) Login ise: booking.html?businessId=...
-      //
-      // Şimdilik demo:
-      const targetUrl = `booking.html?businessId=${encodeURIComponent(
-        business.id
-      )}`;
-      window.location.href = targetUrl;
-    }
+        let filteredBusinesses = [];
+        const PAGE_SIZE = 5;
+        let currentPage = 1;
 
-    // EVENTLER & BAŞLATMA
+        /* ---------- HEADER UI (LOGIN / AVATAR) ---------- */
 
-    citySelect.addEventListener("change", () => {
-      populateDistricts(citySelect.value);
-    });
+        function renderLoggedOutHeader() {
+            headerActions.innerHTML = "";
 
-    searchBtn.addEventListener("click", filterBusinesses);
+            const btnBiz = document.createElement("button");
+            btnBiz.className = "btn btn-outline";
+            btnBiz.textContent = "İşletme Girişi";
+            btnBiz.onclick = () => (window.location.href = "business-login.html");
 
-    prevPageBtn.addEventListener("click", () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderBusinessList();
-      }
-    });
+            const btnCust = document.createElement("button");
+            btnCust.className = "btn btn-primary";
+            btnCust.textContent = "Müşteri Girişi";
+            btnCust.onclick = () => (window.location.href = "customer-login.html");
 
-    nextPageBtn.addEventListener("click", () => {
-      const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderBusinessList();
-      }
-    });
+            headerActions.appendChild(btnBiz);
+            headerActions.appendChild(btnCust);
+        }
 
-    // İlk yükleme
-    populateCities();
-  </script>
+        function renderLoggedInHeader() {
+            headerActions.innerHTML = "";
+
+            const name =
+                currentProfile?.name ||
+                currentProfile?.displayName ||
+                currentUser?.email?.split("@")[0] ||
+                "Müşteri";
+
+            const avatarInitial = (name[0] || "M").toUpperCase();
+            const avatarUrl = currentProfile?.photoURL || null;
+
+            const nameSpan = document.createElement("span");
+            nameSpan.style.fontSize = "12px";
+            nameSpan.style.color = "#e5e7eb";
+            nameSpan.textContent = `Hoş geldin, ${name}`;
+
+            const profileBtn = document.createElement("button");
+            profileBtn.className = "btn btn-outline";
+            profileBtn.textContent = "Profilim";
+            profileBtn.onclick = () => (window.location.href = "customer-panel.html");
+
+            const logoutBtn = document.createElement("button");
+            logoutBtn.className = "btn btn-outline";
+            logoutBtn.textContent = "Çıkış";
+            logoutBtn.onclick = async () => {
+                try {
+                    await signOut(auth);
+                } catch (e) {
+                    console.error("Çıkış hatası:", e);
+                }
+            };
+
+            const avatar = document.createElement("div");
+            avatar.style.width = "32px";
+            avatar.style.height = "32px";
+            avatar.style.borderRadius = "999px";
+            avatar.style.display = "flex";
+            avatar.style.alignItems = "center";
+            avatar.style.justifyContent = "center";
+            avatar.style.fontSize = "14px";
+            avatar.style.fontWeight = "600";
+            avatar.style.cursor = "pointer";
+            avatar.style.color = "#ecfdf5";
+            avatar.style.background =
+                "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
+            avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
+            avatar.onclick = () => (window.location.href = "customer-panel.html");
+
+            if (avatarUrl) {
+                avatar.style.backgroundImage = `url(${avatarUrl})`;
+                avatar.style.backgroundSize = "cover";
+                avatar.style.backgroundPosition = "center";
+                avatar.textContent = "";
+            } else {
+                avatar.textContent = avatarInitial;
+            }
+
+            headerActions.appendChild(nameSpan);
+            headerActions.appendChild(profileBtn);
+            headerActions.appendChild(logoutBtn);
+            headerActions.appendChild(avatar);
+        }
+
+        async function loadCurrentProfile() {
+            if (!currentUser) return null;
+
+            // Daha önce senin setup’a göre "customers" veya "users" olabilir
+            const tryCollections = ["customers", "users"];
+
+            for (const col of tryCollections) {
+                try {
+                    const ref = doc(db, col, currentUser.uid);
+                    const snap = await getDoc(ref);
+                    if (snap.exists()) {
+                        return snap.data();
+                    }
+                } catch (e) {
+                    console.warn(col, "koleksiyonundan profil alınamadı:", e);
+                }
+            }
+            return null;
+        }
+
+        /* ---------- ONESIGNAL ENTEGRASYONU ---------- */
+
+        // OneSignal init (appId'yi doldur)
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            try {
+                await OneSignal.init({
+                    appId: "784cba74-0683-49ed-a3c6-e86741fc6aee", // OneSignal appId BURAYA
+                });
+            } catch (e) {
+                console.warn("OneSignal init hatası:", e);
+            }
+        });
+
+        async function setupOneSignalForUser() {
+            if (!currentUser) return;
+            try {
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function (OneSignal) {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        const sub = OneSignal.User.PushSubscription;
+                        const token = sub?.token;
+                        if (!token) return;
+
+                        await setDoc(
+                            doc(db, "userPushTokens", currentUser.uid),
+                            {
+                                uid: currentUser.uid,
+                                email: currentUser.email || null,
+                                token,
+                                updatedAt: serverTimestamp()
+                            },
+                            { merge: true }
+                        );
+                    } catch (e) {
+                        console.warn("OneSignal kullanıcı bağlama hatası:", e);
+                    }
+                });
+            } catch (e) {
+                console.warn("OneSignal global hatası:", e);
+            }
+        }
+
+        /* ---------- BUSINESS / ŞEHİR YÜKLEME ---------- */
+
+        async function loadBusinesses() {
+            try {
+                const snap = await getDocs(collection(db, "businesses"));
+                ALL_BUSINESSES = [];
+                ALL_CITIES = [];
+
+                snap.forEach((docSnap) => {
+                    const d = docSnap.data();
+                    const city = d.city || d.cityName || "";
+                    const district = d.district || d.districtName || "";
+
+                    ALL_BUSINESSES.push({
+                        id: docSnap.id,
+                        name: d.name || "İsimsiz İşletme",
+                        cityId: city,
+                        cityName: city,
+                        districtId: district,
+                        districtName: district,
+                        tags: Array.isArray(d.tags) ? d.tags : [],
+                        rating: typeof d.rating === "number" ? d.rating : 0,
+                        reviewCount:
+                            typeof d.reviewCount === "number" ? d.reviewCount : 0,
+                        freeSlotsToday:
+                            typeof d.freeSlotsToday === "number" ? d.freeSlotsToday : 0
+                    });
+
+                    if (city && !ALL_CITIES.includes(city)) {
+                        ALL_CITIES.push(city);
+                    }
+                });
+
+                ALL_CITIES.sort();
+                populateCities();
+                renderPopularBusinesses();
+            } catch (e) {
+                console.error("İşletme listesi alınamadı:", e);
+            }
+        }
+
+        function populateCities() {
+            citySelect.innerHTML = `<option value="">İl seç</option>`;
+            ALL_CITIES.forEach((c) => {
+                const opt = document.createElement("option");
+                opt.value = c;
+                opt.textContent = c;
+                citySelect.appendChild(opt);
+            });
+
+            // İlçe reset
+            districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+            districtSelect.disabled = true;
+        }
+
+        function populateDistricts(city) {
+            districtSelect.innerHTML = "";
+            if (!city) {
+                districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+                districtSelect.disabled = true;
+                return;
+            }
+
+            const districts = [
+                ...new Set(
+                    ALL_BUSINESSES
+                        .filter((b) => b.cityId === city)
+                        .map((b) => b.districtName)
+                )
+            ].filter(Boolean).sort();
+
+            districtSelect.disabled = false;
+            districtSelect.innerHTML = `<option value="">Tüm ilçeler</option>`;
+
+            districts.forEach((d) => {
+                const opt = document.createElement("option");
+                opt.value = d;
+                opt.textContent = d;
+                districtSelect.appendChild(opt);
+            });
+        }
+
+        /* ---------- FİLTRE / LİSTE ---------- */
+
+        function filterBusinesses() {
+            const city = citySelect.value;
+            const district = districtSelect.value;
+
+            if (!city) {
+                filteredBusinesses = [];
+                renderBusinessList();
+                listSubtitle.textContent = "İl seçmeden listeleme yapılamaz.";
+                businessCountPill.textContent = "0 işletme";
+                return;
+            }
+
+            filteredBusinesses = ALL_BUSINESSES.filter((b) => {
+                if (b.cityId !== city) return false;
+                if (district && b.districtId !== district) return false;
+                return true;
+            });
+
+            currentPage = 1;
+
+            const displayDistrict = district || "Tüm ilçeler";
+            if (filteredBusinesses.length === 0) {
+                listSubtitle.textContent = `${city} / ${displayDistrict} için kayıtlı işletme bulunamadı.`;
+            } else {
+                listSubtitle.textContent = `${city} / ${displayDistrict} bölgesinde ${filteredBusinesses.length} işletme bulundu.`;
+            }
+
+            businessCountPill.textContent = `${filteredBusinesses.length} işletme`;
+            renderBusinessList();
+        }
+
+        function renderBusinessList() {
+            businessList.innerHTML = "";
+
+            if (!filteredBusinesses || filteredBusinesses.length === 0) {
+                const li = document.createElement("li");
+                li.className = "business-empty";
+                li.innerHTML =
+                    'Bu kriterlere ait kayıtlı işletme bulunamadı.<br/>İl / ilçe seçiminizi değiştirip tekrar deneyebilirsiniz.';
+                businessList.appendChild(li);
+                updatePager();
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            const startIndex = (currentPage - 1) * PAGE_SIZE;
+            const pageItems = filteredBusinesses.slice(
+                startIndex,
+                startIndex + PAGE_SIZE
+            );
+
+            pageItems.forEach((b) => {
+                const li = document.createElement("li");
+                li.className = "business-card";
+                li.onclick = () => handleBusinessClick(b);
+
+                const main = document.createElement("div");
+                main.className = "business-main";
+
+                const nameEl = document.createElement("div");
+                nameEl.className = "business-name";
+                nameEl.textContent = b.name;
+
+                const locEl = document.createElement("div");
+                locEl.className = "business-location";
+                locEl.textContent = `${b.cityName} · ${b.districtName}`;
+
+                const tagsEl = document.createElement("div");
+                tagsEl.className = "business-tags";
+                (b.tags || []).forEach((tag) => {
+                    const t = document.createElement("span");
+                    t.className = "business-tag";
+                    t.textContent = tag;
+                    tagsEl.appendChild(t);
+                });
+
+                main.appendChild(nameEl);
+                main.appendChild(locEl);
+                main.appendChild(tagsEl);
+
+                const meta = document.createElement("div");
+                meta.className = "business-meta";
+
+                const ratingEl = document.createElement("div");
+                ratingEl.className = "rating-pill";
+                ratingEl.innerHTML = `★ ${b.rating.toFixed(1)} <span>(${b.reviewCount}+)</span>`;
+
+                const bottom = document.createElement("div");
+                bottom.className = "business-meta-bottom";
+
+                const slots = document.createElement("span");
+                slots.className = "slots-chip";
+                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
+
+                const btn = document.createElement("button");
+                btn.className = "btn-mini";
+                btn.type = "button";
+                btn.textContent = "Randevu al";
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    handleBusinessClick(b);
+                };
+
+                bottom.appendChild(slots);
+                bottom.appendChild(btn);
+
+                meta.appendChild(ratingEl);
+                meta.appendChild(bottom);
+
+                li.appendChild(main);
+                li.appendChild(meta);
+                businessList.appendChild(li);
+            });
+
+            updatePager();
+        }
+
+        function updatePager() {
+            const total = filteredBusinesses.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            pageInfo.textContent = `Sayfa ${currentPage} / ${totalPages}`;
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages || total === 0;
+        }
+
+        prevPageBtn.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderBusinessList();
+            }
+        });
+
+        nextPageBtn.addEventListener("click", () => {
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderBusinessList();
+            }
+        });
+
+        function handleBusinessClick(business) {
+            const bookingUrl = `booking.html?businessId=${encodeURIComponent(
+                business.id
+            )}`;
+
+            if (!currentUser) {
+                // Login yoksa müşteri girişine yönlendir
+                const redirect = encodeURIComponent(bookingUrl);
+                window.location.href = `customer-login.html?redirect=${redirect}`;
+                return;
+            }
+
+            window.location.href = bookingUrl;
+        }
+
+        /* ---------- POPÜLER İŞLETMELER ---------- */
+
+        function renderPopularBusinesses() {
+            popularBusinessesBox.innerHTML = "";
+
+            if (!ALL_BUSINESSES.length) return;
+
+            const sorted = [...ALL_BUSINESSES].sort((a, b) => {
+                const rA = a.rating || 0;
+                const rB = b.rating || 0;
+                if (rB !== rA) return rB - rA;
+                const cA = a.reviewCount || 0;
+                const cB = b.reviewCount || 0;
+                return cB - cA;
+            });
+
+            const top = sorted.slice(0, 3);
+            if (!top.length) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.style.marginBottom = "14px";
+
+            const title = document.createElement("div");
+            title.style.fontSize = "12px";
+            title.style.color = "#9ca3af";
+            title.style.marginBottom = "6px";
+            title.textContent = "Popüler işletmeler";
+
+            wrapper.appendChild(title);
+
+            top.forEach((b) => {
+                const card = document.createElement("div");
+                card.style.borderRadius = "12px";
+                card.style.border = "1px solid rgba(148,163,184,0.45)";
+                card.style.background = "rgba(15,23,42,0.9)";
+                card.style.padding = "8px 10px";
+                card.style.display = "flex";
+                card.style.justifyContent = "space-between";
+                card.style.alignItems = "center";
+                card.style.fontSize = "12px";
+                card.style.marginBottom = "6px";
+                card.style.cursor = "pointer";
+
+                card.onclick = () => handleBusinessClick(b);
+
+                const left = document.createElement("div");
+                left.textContent = b.name;
+
+                const right = document.createElement("div");
+                right.style.fontSize = "11px";
+                right.style.color = "#bbf7d0";
+                right.textContent = `★ ${b.rating.toFixed(1)}`;
+
+                card.appendChild(left);
+                card.appendChild(right);
+                wrapper.appendChild(card);
+            });
+
+            popularBusinessesBox.appendChild(wrapper);
+        }
+
+        /* ---------- SON RANDEVU KARTI ---------- */
+
+        async function loadLastAppointment() {
+            if (!currentUser) {
+                lastAppointmentCard.innerHTML = "";
+                return;
+            }
+
+            try {
+                // createdAt alanın yoksa tarih-saat ile sort eden fallback yazarız
+                let qRef;
+                try {
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid),
+                        orderBy("createdAt", "desc"),
+                        limit(1)
+                    );
+                } catch {
+                    // createdAt yoksa sadece filtre yap
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid)
+                    );
+                }
+
+                const snap = await getDocs(qRef);
+                if (snap.empty) {
+                    lastAppointmentCard.innerHTML = "";
+                    return;
+                }
+
+                let last = null;
+                snap.forEach((d) => {
+                    const data = d.data();
+                    last = { id: d.id, ...data };
+                });
+
+                if (!last) return;
+
+                const bizName = last.businessName || last.businessID || "İşletme";
+                const service = last.serviceName || last.serviceID || "Hizmet";
+                const dateStr = last.date || "-";
+                const timeStr = last.time || "";
+                const status = last.status || "Bilinmiyor";
+
+                const box = document.createElement("div");
+                box.style.marginBottom = "12px";
+                box.style.marginTop = "4px";
+                box.style.borderRadius = "14px";
+                box.style.border = "1px solid rgba(148,163,184,0.5)";
+                box.style.background = "rgba(15,23,42,0.9)";
+                box.style.padding = "8px 10px";
+                box.style.fontSize = "12px";
+
+                box.innerHTML = `
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:4px;">Son randevun</div>
+                <div style="font-weight:600;margin-bottom:2px;">${bizName}</div>
+                <div style="color:#9ca3af;margin-bottom:2px;">
+                    ${service} · ${dateStr} ${timeStr ? "· " + timeStr : ""}
+                </div>
+                <div style="font-size:11px;color:#e5e7eb;margin-bottom:6px;">
+                    Durum: <span style="color:#bbf7d0;">${status}</span>
+                </div>
+            `;
+
+                const btn = document.createElement("button");
+                btn.className = "btn btn-primary";
+                btn.style.padding = "5px 10px";
+                btn.style.fontSize = "11px";
+                btn.textContent = "Tekrar randevu al";
+                btn.onclick = () => {
+                    if (last.businessID) {
+                        handleBusinessClick({ id: last.businessID });
+                    }
+                };
+
+                box.appendChild(btn);
+
+                lastAppointmentCard.innerHTML = "";
+                lastAppointmentCard.appendChild(box);
+            } catch (e) {
+                console.warn("Son randevu getirilemedi:", e);
+            }
+        }
+
+        /* ---------- EVENTLER ---------- */
+
+        citySelect.addEventListener("change", () => {
+            populateDistricts(citySelect.value);
+        });
+
+        searchBtn.addEventListener("click", filterBusinesses);
+
+        // scrollToSearch fonksiyonunu global yap
+        window.scrollToSearch = function () {
+            const el = document.getElementById("search-panel");
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        };
+
+        /* ---------- AUTH DURUMU ---------- */
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user || null;
+
+            if (!currentUser) {
+                currentProfile = null;
+                renderLoggedOutHeader();
+                lastAppointmentCard.innerHTML = "";
+            } else {
+                currentProfile = await loadCurrentProfile();
+                renderLoggedInHeader();
+                loadLastAppointment();
+                setupOneSignalForUser();
+            }
+        });
+
+        /* ---------- BAŞLANGIÇ ---------- */
+
+        // İşletmeleri Firestore'dan çek
+        loadBusinesses();
+    </script>
 </body>
+
 </html>
