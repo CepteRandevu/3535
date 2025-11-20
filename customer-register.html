@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Müşteri Kayıt | Cepterandevu</title>
 
     <style>
-        /* CSS Tanımlamaları */
         :root {
             --bg: #050816;
             --card: #101528;
@@ -16,297 +15,183 @@
             --muted: #9ca3af;
             --border: rgba(148,163,184,0.4);
             --radius-xl: 24px;
-            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+            --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {margin:0;padding:0;box-sizing:border-box;}
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: radial-gradient(circle at top, #111827, #020617 55%);
+            font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+            background: radial-gradient(circle at top,#111827,#020617 55%);
             color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 20px;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
+            padding:40px 20px;
         }
 
         .form-shell {
-            width: 100%;
-            max-width: 420px;
-            background: rgba(15,23,42,0.9);
-            padding: 28px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-soft);
-            backdrop-filter: blur(10px);
+            width:100%;
+            max-width:420px;
+            background:rgba(15,23,42,0.92);
+            padding:28px;
+            border-radius:var(--radius-xl);
+            border:1px solid var(--border);
+            box-shadow:var(--shadow-soft);
+            backdrop-filter:blur(10px);
         }
 
-        h1 {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-
-        p.sub {
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 20px;
-        }
+        h1 {font-size:22px;margin-bottom:6px;}
+        p.sub {font-size:12px;color:var(--muted);margin-bottom:20px;}
 
         label {
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 4px;
-            display: block;
-            user-select: none;
+            font-size:12px;color:var(--muted);
+            margin-bottom:4px;display:block;
         }
 
         input {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(15,23,42,0.85);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 14px;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            width:100%;padding:10px 14px;
+            background:#0b1120;border:1px solid var(--border);
+            border-radius:12px;font-size:14px;color:var(--text);
+            margin-bottom:14px;outline:none;
         }
 
         input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent);
+            border-color:var(--accent);
+            box-shadow:0 0 0 1px var(--accent);
         }
 
         .btn-primary {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-            color: #022c22;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 12px 30px rgba(34,197,94,0.35);
-            margin-top: 6px;
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            width:100%;padding:12px;border:0;
+            border-radius:14px;
+            background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+            color:#022c22;font-weight:700;font-size:14px;
+            cursor:pointer;margin-top:6px;
+            box-shadow:0 12px 30px rgba(34,197,94,0.35);
         }
 
-        .btn-primary:hover {
-            filter: brightness(1.05);
-            transform: translateY(-1px);
-            box-shadow: 0 14px 35px rgba(34,197,94,0.55);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(1px);
-            box-shadow: 0 5px 20px rgba(34,197,94,0.25);
+        .btn-primary:disabled{
+            opacity:0.5;
+            cursor:not-allowed;
         }
 
         .error-box {
-            background: rgba(255, 82, 82, 0.15);
-            border: 1px solid rgba(255, 82, 82, 0.5);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #ffbaba;
-            margin-bottom: 12px;
-            display: none;
-            text-align: center;
+            background:rgba(255,82,82,0.15);
+            border:1px solid rgba(255,82,82,0.5);
+            padding:10px;border-radius:10px;
+            font-size:12px;color:#ffbaba;
+            margin-bottom:12px;display:none;
+            text-align:center;
         }
 
-        .link-row {
-            margin-top: 14px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .link-row a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-            transition: text-decoration 0.2s;
-        }
-
-        .link-row a:hover {
-            text-decoration: underline;
-        }
+        .link-row {margin-top:14px;font-size:12px;text-align:center;}
+        .link-row a {color:var(--accent);text-decoration:none;}
+        .link-row a:hover {text-decoration:underline;}
     </style>
 </head>
 
 <body>
     <div class="form-shell">
-        <h1>Müşteri Kayıt</h1>
-        <p class="sub">Hızlıca hesabını oluştur ve randevu almaya başla.</p>
+        <h1>Müşteri Kaydı</h1>
+        <p class="sub">Telefon numaranızla hızla hesap oluşturun.</p>
 
         <div id="errorBox" class="error-box"></div>
 
-        <label for="firstName">Ad</label>
-        <input type="text" id="firstName" placeholder="Adınızı girin" required />
-
-        <label for="lastName">Soyad</label>
-        <input type="text" id="lastName" placeholder="Soyadınızı girin" required />
+        <label for="name">Ad Soyad</label>
+        <input type="text" id="name" placeholder="Adınız Soyadınız">
 
         <label for="phone">Telefon</label>
-        <input type="tel" id="phone" placeholder="05XXXXXXXXX" required pattern="05\d{9}" title="Telefon numarası 05 ile başlamalı ve 11 hane olmalı." maxlength="11" />
+        <input type="tel" id="phone" placeholder="05XXXXXXXXX" maxlength="11">
 
         <label for="password">Şifre</label>
-        <input type="password" id="password" placeholder="Şifre belirleyin (min. 6 karakter)" required minlength="6" />
+        <input type="password" id="password" placeholder="Şifreniz (min 6 karakter)">
 
-        <button class="btn-primary" id="registerBtn">Kayıt Ol</button>
+        <button id="registerBtn" class="btn-primary">Kayıt Ol</button>
 
         <div class="link-row">
             Zaten hesabınız var mı? <a href="customer-login.html">Giriş Yap</a>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import {
-            getAuth,
-            createUserWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import {
-            getFirestore,
-            doc,
-            setDoc,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<script type="module">
+    import { firebaseConfig } from "./js/firebase-config.js";
 
-        // Firestore ve Auth işlemlerinden önce log seviyesini ayarla
-        setLogLevel('Debug');
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+        getAuth,
+        createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+        getFirestore,
+        doc,
+        setDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Canvas Ortamından Global Değişkenleri Alma
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        // Firebase Uygulamasını Başlatma
-        let app;
-        let auth;
-        let db;
+    const errorBox = document.getElementById("errorBox");
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const passInput = document.getElementById("password");
+    const btn = document.getElementById("registerBtn");
 
-        try {
-            if (Object.keys(firebaseConfig).length === 0) {
-                throw new Error("Firebase yapılandırması eksik.");
-            }
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            console.log("Firebase başarıyla başlatıldı.");
-        } catch (e) {
-            console.error("Firebase başlatılırken hata oluştu:", e);
-            document.getElementById("errorBox").style.display = "block";
-            document.getElementById("errorBox").textContent = "Uygulama sunucuya bağlanamadı. Yapılandırma hatası.";
+    function showError(msg){
+        errorBox.style.display="block";
+        errorBox.textContent = msg;
+    }
+
+    btn.addEventListener("click", async ()=>{
+        errorBox.style.display="none";
+        btn.disabled = true;
+
+        const name = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const pass = passInput.value.trim();
+
+        if(!name || !phone || !pass){
+            btn.disabled = false;
+            return showError("Lütfen tüm alanları doldurun.");
         }
 
-        // Element Referansları
-        const errorBox = document.getElementById("errorBox");
-        const btn = document.getElementById("registerBtn");
-        
-        // Form alanları
-        const firstNameInput = document.getElementById("firstName");
-        const lastNameInput = document.getElementById("lastName");
-        const phoneInput = document.getElementById("phone");
-        const passwordInput = document.getElementById("password");
-
-        /**
-         * Kullanıcıya hata mesajını gösterir.
-         * @param {string} msg Gösterilecek hata mesajı.
-         */
-        function showError(msg) {
-            errorBox.style.display = "block";
-            errorBox.textContent = msg;
-            btn.disabled = false; // Hata durumunda butonu tekrar aktif et
+        const cleanPhone = phone.replace(/\D/g,"");
+        if(!cleanPhone.startsWith("05") || cleanPhone.length !== 11){
+            btn.disabled = false;
+            return showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
         }
 
-        /**
-         * Müşteri kayıt işlemini gerçekleştirir.
-         */
-        async function handleRegister() {
-            if (!db || !auth) {
-                showError("Veritabanı bağlantısı henüz hazır değil.");
-                return;
-            }
-            
-            errorBox.style.display = "none";
-            btn.disabled = true;
-
-            const firstName = firstNameInput.value.trim();
-            const lastName = lastNameInput.value.trim();
-            const phone = phoneInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!firstName || !lastName || !phone || !password) {
-                return showError("Lütfen tüm alanları doldurun.");
-            }
-            
-            // Telefon numarası temizliği ve kontrolü
-            const cleanPhone = phone.replace(/\D/g, "");
-            if (!cleanPhone.startsWith("05") || cleanPhone.length !== 11) {
-                return showError("Telefon numarası geçersiz. Format: 05XXXXXXXXX");
-            }
-            
-            if (password.length < 6) {
-                return showError("Şifre çok zayıf. En az 6 karakter olmalı.");
-            }
-
-            // Firebase Authentication için telefon numarasını e-posta formatına çevir
-            // Güvenlik kuralları: /artifacts/{appId}/users/{userId}/customers/{customerId}
-            const email = cleanPhone + "@" + appId + ".app";
-            
-            try {
-                // 1. Firebase Auth ile yeni kullanıcı oluştur
-                const userCred = await createUserWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-                const uid = userCred.user.uid;
-                const customerData = {
-                    uid,
-                    name: firstName + " " + lastName,
-                    phone: cleanPhone, // Temizlenmiş numarayı kaydet
-                    createdAt: serverTimestamp(),
-                    // Kullanıcının rolünü belirtmek için ek alan
-                    role: 'customer' 
-                };
-
-                // 2. Firestore'a kullanıcı verilerini kaydet (Private Data)
-                // Firestore yolu: /artifacts/{appId}/users/{userId}/customerData/{uid}
-                const customerDocRef = doc(db, 
-                    `artifacts/${appId}/users/${uid}/customerData`, // Collection Path
-                    uid // Document ID
-                );
-
-                await setDoc(customerDocRef, customerData);
-                console.log("Müşteri verileri Firestore'a kaydedildi:", uid);
-
-                // 3. Başarılı kayıt sonrası yönlendirme
-                const params = new URLSearchParams(window.location.search);
-                const redirectUrl = params.get("redirect") || "customer-panel.html";
-                window.location.href = redirectUrl;
-                
-            } catch (err) {
-                console.error("Kayıt hatası:", err.code, err.message);
-                if (err.code === "auth/email-already-in-use") {
-                    showError("Bu telefon numarasıyla kayıt zaten var.");
-                } else if (err.code === "auth/weak-password") {
-                    showError("Şifre çok zayıf. En az 6 karakter olmalı.");
-                } else {
-                    showError("Kayıt sırasında beklenmeyen bir hata oluştu: " + err.message);
-                }
-            } finally {
-                btn.disabled = false;
-            }
+        if(pass.length < 6){
+            btn.disabled = false;
+            return showError("Şifre en az 6 karakter olmalı.");
         }
 
-        // Butonun tıklama olayını ayarla
-        btn.addEventListener('click', handleRegister);
-    </script>
+        const email = cleanPhone + "@customer.app";
+
+        try{
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+
+            await setDoc(doc(db,"customers", cred.user.uid), {
+                name,
+                phone: cleanPhone,
+                createdAt: serverTimestamp()
+            });
+
+            window.location.href = "customer-panel.html";
+        }catch(err){
+            console.error("Kayıt hatası:", err);
+            if(err.code === "auth/email-already-in-use"){
+                showError("Bu telefon numarasıyla zaten hesap var. Giriş yapmayı deneyin.");
+            }else{
+                showError("Kayıt sırasında hata oluştu: " + err.message);
+            }
+        }finally{
+            btn.disabled = false;
+        }
+    });
+</script>
+
 </body>
 </html>
