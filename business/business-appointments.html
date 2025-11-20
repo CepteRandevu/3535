@@ -279,289 +279,351 @@
     </div>
   </main>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  <!-- BURADAN SONRASI 2. PARÇA: SCRIPT -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    onSnapshot,
-    doc,
-    getDoc,
-    updateDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      onSnapshot,
+      doc,
+      getDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  /* Firebase Config (diğer sayfalarla aynı) */
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1"
-  };
+    /* Firebase Config (diğer sayfalarla aynı) */
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+      authDomain: "cepterandevu-35fe4.firebaseapp.com",
+      projectId: "cepterandevu-35fe4",
+      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+      messagingSenderId: "86298180836",
+      appId: "1:86298180836:web:124c2004605d68b32700f1"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  let businessID = null;
+    let businessID = null;
 
-  const bizNameSmall = document.getElementById("bizNameSmall");
-  const pendingListEl = document.getElementById("pendingList");
-  const allListEl = document.getElementById("allList");
-  const pendingCountEl = document.getElementById("pendingCount");
-  const allCountEl = document.getElementById("allCount");
+    const bizNameSmall = document.getElementById("bizNameSmall");
+    const pendingListEl = document.getElementById("pendingList");
+    const allListEl = document.getElementById("allList");
+    const pendingCountEl = document.getElementById("pendingCount");
+    const allCountEl = document.getElementById("allCount");
 
-  // Basit cache’ler (müşteri / hizmet / çalışan isimlerini tekrar tekrar çekmemek için)
-  const userCache = {};
-  const serviceCache = {};
-  const employeeCache = {};
+    // Basit cache’ler (müşteri / hizmet / çalışan isimlerini tekrar tekrar çekmemek için)
+    const userCache = {};
+    const serviceCache = {};
+    const employeeCache = {};
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "/al/business/business-login.html";
-      return;
-    }
-
-    businessID = user.uid;
-    await loadBusinessName();
-    listenAppointmentsRealtime();
-  });
-
-  async function loadBusinessName() {
-    try {
-      const ref = doc(db, "businesses", businessID);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        bizNameSmall.textContent = snap.data().name || "İşletme";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "/al/business/business-login.html";
+        return;
       }
-    } catch (e) {
-      console.error("İşletme ismi okunamadı:", e);
-    }
-  }
 
-  function sortAppointments(list) {
-    return list.slice().sort((a, b) => {
-      if (a.date === b.date) {
-        return a.time.localeCompare(b.time);
-      }
-      return a.date.localeCompare(b.date);
+      businessID = user.uid;
+      await loadBusinessName();
+      listenAppointmentsRealtime();
     });
-  }
 
-  async function enrichAppointments(items) {
-    const result = [];
+    async function loadBusinessName() {
+      try {
+        const ref = doc(db, "businesses", businessID);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          bizNameSmall.textContent = snap.data().name || "İşletme";
+        }
+      } catch (e) {
+        console.error("İşletme ismi okunamadı:", e);
+      }
+    }
 
-    for (const ap of items) {
-      const obj = { ...ap };
+    function sortAppointments(list) {
+      return list.slice().sort((a, b) => {
+        if (a.date === b.date) {
+          return a.time.localeCompare(b.time);
+        }
+        return a.date.localeCompare(b.date);
+      });
+    }
 
-      // Müşteri bilgileri (users koleksiyonu)
-      if (ap.customerUID) {
-        if (!userCache[ap.customerUID]) {
-          try {
-            const usnap = await getDoc(doc(db, "users", ap.customerUID));
-            userCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
-          } catch(e) {
-            console.error("Kullanıcı okunamadı:", e);
+    async function enrichAppointments(items) {
+      const result = [];
+
+      for (const ap of items) {
+        const obj = { ...ap };
+
+        // Müşteri bilgileri (customers/users koleksiyonu)
+        if (ap.customerUID) {
+          if (!userCache[ap.customerUID]) {
+            try {
+              const usnap = await getDoc(doc(db, "customers", ap.customerUID));
+              userCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
+            } catch (e) {
+              console.error("Kullanıcı okunamadı:", e);
+            }
+          }
+          const u = userCache[ap.customerUID];
+          if (u) {
+            obj.customerName = u.name || "";
+            obj.customerPhone = u.phone || "";
           }
         }
-        const u = userCache[ap.customerUID];
-        if (u) {
-          obj.customerName = u.name || "";
-          obj.customerPhone = u.phone || "";
-        }
-      }
 
-      // Hizmet bilgisi
-      if (ap.serviceID) {
-        if (!serviceCache[ap.serviceID]) {
-          try {
-            const ssnap = await getDoc(doc(db, "services", ap.serviceID));
-            serviceCache[ap.serviceID] = ssnap.exists() ? ssnap.data() : null;
-          } catch(e) {
-            console.error("Hizmet okunamadı:", e);
+        // Hizmet bilgisi
+        if (ap.serviceID) {
+          if (!serviceCache[ap.serviceID]) {
+            try {
+              const ssnap = await getDoc(doc(db, "services", ap.serviceID));
+              serviceCache[ap.serviceID] = ssnap.exists() ? ssnap.data() : null;
+            } catch (e) {
+              console.error("Hizmet okunamadı:", e);
+            }
+          }
+          const s = serviceCache[ap.serviceID];
+          if (s) {
+            obj.serviceName = s.name || "";
+            obj.serviceDuration = s.duration || null;
           }
         }
-        const s = serviceCache[ap.serviceID];
-        if (s) {
-          obj.serviceName = s.name || "";
-          obj.serviceDuration = s.duration || null;
-        }
-      }
 
-      // Çalışan bilgisi
-      if (ap.employeeID) {
-        if (!employeeCache[ap.employeeID]) {
-          try {
-            const esnap = await getDoc(doc(db, "employees", ap.employeeID));
-            employeeCache[ap.employeeID] = esnap.exists() ? esnap.data() : null;
-          } catch(e) {
-            console.error("Çalışan okunamadı:", e);
+        // Çalışan bilgisi
+        if (ap.employeeID) {
+          if (!employeeCache[ap.employeeID]) {
+            try {
+              const esnap = await getDoc(doc(db, "employees", ap.employeeID));
+              employeeCache[ap.employeeID] = esnap.exists() ? esnap.data() : null;
+            } catch (e) {
+              console.error("Çalışan okunamadı:", e);
+            }
+          }
+          const emp = employeeCache[ap.employeeID];
+          if (emp) {
+            obj.employeeName = emp.name || "";
           }
         }
-        const emp = employeeCache[ap.employeeID];
-        if (emp) {
-          obj.employeeName = emp.name || "";
-        }
+
+        result.push(obj);
       }
 
-      result.push(obj);
+      return result;
     }
 
-    return result;
-  }
+    function renderAppointments(items) {
+      // Bekleyenler
+      const pending = items.filter(ap => ap.status === "pending");
+      const sortedAll = sortAppointments(items);
+      const sortedPending = sortAppointments(pending);
 
-  function renderAppointments(items) {
-    // Bekleyenler
-    const pending = items.filter(ap => ap.status === "pending");
-    const sortedAll = sortAppointments(items);
-    const sortedPending = sortAppointments(pending);
+      pendingListEl.innerHTML = "";
+      allListEl.innerHTML = "";
 
-    pendingListEl.innerHTML = "";
-    allListEl.innerHTML = "";
+      pendingCountEl.textContent = `${pending.length} adet`;
+      allCountEl.textContent = `${items.length} adet`;
 
-    pendingCountEl.textContent = `${pending.length} adet`;
-    allCountEl.textContent = `${items.length} adet`;
+      if (sortedPending.length === 0) {
+        pendingListEl.innerHTML = `<div class="empty">Şu anda bekleyen randevu yok.</div>`;
+      } else {
+        sortedPending.forEach(ap => {
+          pendingListEl.appendChild(buildAppointmentRow(ap, true));
+        });
+      }
 
-    if (sortedPending.length === 0) {
-      pendingListEl.innerHTML = `<div class="empty">Şu anda bekleyen randevu yok.</div>`;
-    } else {
-      sortedPending.forEach(ap => {
-        pendingListEl.appendChild(buildAppointmentRow(ap, true));
-      });
+      if (sortedAll.length === 0) {
+        allListEl.innerHTML = `<div class="empty">Henüz randevu oluşturulmamış.</div>`;
+      } else {
+        sortedAll.forEach(ap => {
+          allListEl.appendChild(buildAppointmentRow(ap, false));
+        });
+      }
     }
 
-    if (sortedAll.length === 0) {
-      allListEl.innerHTML = `<div class="empty">Henüz randevu oluşturulmamış.</div>`;
-    } else {
-      sortedAll.forEach(ap => {
-        allListEl.appendChild(buildAppointmentRow(ap, false));
-      });
+    function buildAppointmentRow(ap, isPendingSection) {
+      const row = document.createElement("div");
+      row.className = "appt-row";
+
+      const left = document.createElement("div");
+      left.className = "appt-left";
+
+      const mainLine = document.createElement("div");
+      mainLine.className = "appt-main-line";
+
+      const svcText = ap.serviceName ? ap.serviceName : ap.serviceID || "Hizmet";
+      const empText = ap.employeeName ? ap.employeeName : ap.employeeID || "";
+
+      mainLine.textContent = `${svcText} · ${ap.date} ${ap.time}`;
+
+      const sub1 = document.createElement("div");
+      sub1.className = "appt-sub";
+      sub1.textContent = empText ? `Çalışan: ${empText}` : "";
+
+      const sub2 = document.createElement("div");
+      sub2.className = "appt-sub";
+      const cName = ap.customerName || "Müşteri";
+      const cPhone = ap.customerPhone || "";
+      sub2.textContent = cPhone ? `${cName} · ${cPhone}` : cName;
+
+      left.appendChild(mainLine);
+      if (sub1.textContent) left.appendChild(sub1);
+      left.appendChild(sub2);
+
+      const right = document.createElement("div");
+      right.className = "appt-right";
+
+      const statusEl = document.createElement("span");
+      statusEl.className = `status ${ap.status || "pending"}`;
+      statusEl.textContent =
+        ap.status === "pending"   ? "Beklemede" :
+        ap.status === "approved"  ? "Onaylandı" :
+        ap.status === "rejected"  ? "Reddedildi" :
+        ap.status === "cancelled" ? "İptal" : (ap.status || "Durum");
+
+      right.appendChild(statusEl);
+
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent =
+        `Oluşturma: ${ap.createdAt ? new Date(ap.createdAt).toLocaleString("tr-TR") : "-"}`;
+      right.appendChild(tag);
+
+      // Sadece bekleyenler için butonlar
+      if (ap.status === "pending") {
+        const btnRow = document.createElement("div");
+        btnRow.style.display = "flex";
+        btnRow.style.gap = "6px";
+
+        const approveBtn = document.createElement("button");
+        approveBtn.className = "btn-sm btn-approve";
+        approveBtn.textContent = "Onayla";
+        approveBtn.onclick = () =>
+          updateStatus(ap.id, "approved", ap.customerUID, approveBtn);
+
+        const rejectBtn = document.createElement("button");
+        rejectBtn.className = "btn-sm btn-reject";
+        rejectBtn.textContent = "Reddet";
+        rejectBtn.onclick = () =>
+          updateStatus(ap.id, "rejected", ap.customerUID, rejectBtn);
+
+        btnRow.appendChild(approveBtn);
+        btnRow.appendChild(rejectBtn);
+        right.appendChild(btnRow);
+      }
+
+      row.appendChild(left);
+      row.appendChild(right);
+
+      return row;
     }
-  }
 
-  function buildAppointmentRow(ap, isPendingSection) {
-    const row = document.createElement("div");
-    row.className = "appt-row";
+    async function updateStatus(id, newStatus, customerUID, btn) {
+      try {
+        if (btn) btn.disabled = true;
 
-    const left = document.createElement("div");
-    left.className = "appt-left";
+        const ref = doc(db, "appointments", id);
+        await updateDoc(ref, {
+          status: newStatus,
+          updatedAt: Date.now()
+        });
 
-    const mainLine = document.createElement("div");
-    mainLine.className = "appt-main-line";
+        // Durum değişince müşteriye push gönder
+        if (customerUID) {
+          await sendStatusNotification(customerUID, newStatus);
+        }
 
-    const svcText = ap.serviceName ? ap.serviceName : ap.serviceID || "Hizmet";
-    const empText = ap.employeeName ? ap.employeeName : ap.employeeID || "";
-
-    mainLine.textContent = `${svcText} · ${ap.date} ${ap.time}`;
-
-    const sub1 = document.createElement("div");
-    sub1.className = "appt-sub";
-    sub1.textContent = empText ? `Çalışan: ${empText}` : "";
-
-    const sub2 = document.createElement("div");
-    sub2.className = "appt-sub";
-    const cName = ap.customerName || "Müşteri";
-    const cPhone = ap.customerPhone || "";
-    sub2.textContent = cPhone ? `${cName} · ${cPhone}` : cName;
-
-    left.appendChild(mainLine);
-    if (sub1.textContent) left.appendChild(sub1);
-    left.appendChild(sub2);
-
-    const right = document.createElement("div");
-    right.className = "appt-right";
-
-    const statusEl = document.createElement("span");
-    statusEl.className = `status ${ap.status || "pending"}`;
-    statusEl.textContent =
-      ap.status === "pending"   ? "Beklemede" :
-      ap.status === "approved"  ? "Onaylandı" :
-      ap.status === "rejected"  ? "Reddedildi" :
-      ap.status === "cancelled" ? "İptal" : (ap.status || "Durum");
-
-    right.appendChild(statusEl);
-
-    const tag = document.createElement("span");
-    tag.className = "tag";
-    tag.textContent = `Oluşturma: ${ap.createdAt ? new Date(ap.createdAt).toLocaleString("tr-TR") : "-"}`;
-    right.appendChild(tag);
-
-    // Sadece bekleyen ve henüz onaylanmamış/iptal olmamış ise butonlar
-    if (ap.status === "pending") {
-      const btnRow = document.createElement("div");
-      btnRow.style.display = "flex";
-      btnRow.style.gap = "6px";
-
-      const approveBtn = document.createElement("button");
-      approveBtn.className = "btn-sm btn-approve";
-      approveBtn.textContent = "Onayla";
-      approveBtn.onclick = () => updateStatus(ap.id, "approved", approveBtn);
-
-      const rejectBtn = document.createElement("button");
-      rejectBtn.className = "btn-sm btn-reject";
-      rejectBtn.textContent = "Reddet";
-      rejectBtn.onclick = () => updateStatus(ap.id, "rejected", rejectBtn);
-
-      btnRow.appendChild(approveBtn);
-      btnRow.appendChild(rejectBtn);
-      right.appendChild(btnRow);
+      } catch (e) {
+        console.error("Durum güncellenemedi:", e);
+        alert("Durum güncellenirken hata oluştu.");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
-    row.appendChild(left);
-    row.appendChild(right);
+    function listenAppointmentsRealtime() {
+      const qRef = query(
+        collection(db, "appointments"),
+        where("businessID", "==", businessID)
+      );
 
-    return row;
-  }
+      onSnapshot(
+        qRef,
+        async (snap) => {
+          const items = [];
+          snap.forEach(docSnap => {
+            items.push({ id: docSnap.id, ...docSnap.data() });
+          });
 
-  async function updateStatus(id, newStatus, btn) {
-    try {
-      if (btn) btn.disabled = true;
-
-      const ref = doc(db, "appointments", id);
-      await updateDoc(ref, {
-        status: newStatus,
-        updatedAt: Date.now()
-      });
-
-      // Burada istersen OneSignal bildirimi tetiklenir (ileride)
-      // sendStatusNotification(...)
-
-    } catch (e) {
-      console.error("Durum güncellenemedi:", e);
-      alert("Durum güncellenirken hata oluştu.");
-      if (btn) btn.disabled = false;
+          const enriched = await enrichAppointments(items);
+          renderAppointments(enriched);
+        },
+        (err) => {
+          console.error("Randevu dinleme hatası:", err);
+        }
+      );
     }
-  }
 
-  function listenAppointmentsRealtime() {
-    const qRef = query(
-      collection(db, "appointments"),
-      where("businessID", "==", businessID)
-    );
+    /* ----------------- OneSignal Bildirim ----------------- */
 
-    onSnapshot(qRef, async (snap) => {
-      const items = [];
-      snap.forEach(docSnap => {
-        items.push({ id: docSnap.id, ...docSnap.data() });
-      });
+    async function sendStatusNotification(customerUID, newStatus) {
+      try {
+        const cRef = doc(db, "customers", customerUID);
+        const cSnap = await getDoc(cRef);
+        if (!cSnap.exists()) return;
 
-      // Önce ilişkili verileri doldur (müşteri / hizmet / çalışan)
-      const enriched = await enrichAppointments(items);
-      renderAppointments(enriched);
-    }, (err) => {
-      console.error("Randevu dinleme hatası:", err);
-    });
-  }
+        const cData = cSnap.data();
+        if (!cData.playerID) return;  // telefonda OneSignal açılmamış olabilir
 
-</script>
+        const title =
+          newStatus === "approved" ? "Randevun onaylandı" :
+          newStatus === "rejected" ? "Randevun reddedildi" :
+          "Randevu durumun güncellendi";
 
+        const bodyText =
+          newStatus === "approved"
+            ? "Randevun işletme tarafından onaylandı."
+            : newStatus === "rejected"
+              ? "Randevun işletme tarafından reddedildi."
+              : `Randevu durumun: ${newStatus}`;
+
+        await sendOneSignalToPlayer(cData.playerID, title, bodyText);
+      } catch (e) {
+        console.error("Bildirim hazırlanırken hata:", e);
+      }
+    }
+
+    async function sendOneSignalToPlayer(playerId, title, bodyText) {
+      try {
+        const res = await fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            // BURAYA OneSignal "REST API Key" gelecek
+            "Authorization": "os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
+          },
+          body: JSON.stringify({
+            app_id: "784cba74-0683-49ed-a3c6-e86741fc6aee",
+            include_player_ids: [playerId],
+            headings: { tr: title },
+            contents: { tr: bodyText }
+          })
+        });
+
+        const json = await res.json();
+        console.log("OneSignal yanıtı:", json);
+      } catch (e) {
+        console.error("OneSignal isteği başarısız:", e);
+      }
+    }
+
+  </script>
 </body>
 </html>
