@@ -34,26 +34,38 @@
             min-height: 100vh;
         }
 
-        /* --- SIFIRLANAN MOBİL/MASAÜSTÜ BAŞLIK ALANI --- */
+        /* --- YENİ SIFIRLANAN MOBİL/Masaüstü BAŞLIK ALANI --- */
         .top-header {
             width: 100%;
-            text-align: center;
-            padding: 14px 20px;
+            padding-top: 14px;
+            padding-bottom: 0; /* Menü satırı kendi padding'ini verecek */
             position: sticky;
             top: 0;
             z-index: 500;
             background: var(--sidebar);
             border-bottom: 1px solid var(--border);
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column; /* İki satır için dikey düzen */
+            align-items: center; /* Ortadaki logo satırı için */
+            gap: 8px; /* İki satır arasındaki boşluk */
         }
 
-        /* Logo ve yazı ortada */
+        /* Logo ve yazı ortada (Birinci Satır) */
         .top-center {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Menü Butonu Satırı (İkinci Satır) */
+        .top-menu-row {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start; /* Sola hizala */
+            padding-left: 20px; /* Kenardan boşluk */
+            padding-bottom: 14px; /* Header'ın toplam alt boşluğu */
         }
 
         .logo-title {
@@ -63,21 +75,23 @@
         }
         
         /* --- MENÜ BUTONU (SADECE MOBİL İÇİN) --- */
+        /* Yeni buton stilleri, fixed pozisyonu kaldırıldı */
         .menu-btn {
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 999;
             background: var(--accent);
             color: #022c22;
             border: 0;
-            padding: 10px 16px;
+            padding: 9px 15px; /* Daha zarif padding */
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 15px; /* Daha küçük font */
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-            display: block; /* Mobil'de görünür */
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35); /* Yumuşak gölge */
+            display: flex; /* İkon ve yazı için flex */
+            align-items: center;
+            gap: 8px;
+        }
+        .menu-btn i {
+            font-size: 14px;
         }
 
         /* --- SIDEBAR (SADECE MASAÜSTÜ İÇİN) --- */
@@ -157,7 +171,8 @@
             padding: 20px;
             width: 100%;
             min-height: 100vh;
-            padding-top: 75px; /* Mobil header için boşluk */
+            /* Yeni iki satırlı header'a uygun boşluk (yaklaşık 110px) */
+            padding-top: 110px; 
         }
         
         .title {
@@ -207,12 +222,12 @@
         
         /* En Son Randevular Listesi Stilleri */
         .appointment-section {
-            padding: 16px; /* p-4 yerine */
-            background: rgba(16, 21, 40, 0.5); /* bg-gray-900/50 yerine */
-            border-radius: 18px; /* rounded-xl yerine */
-            border: 1px solid rgba(75, 85, 99, 0.35); /* border border-gray-700/50 yerine */
-            margin-top: 24px; /* my-6 yerine */
-            margin-bottom: 24px; /* my-6 yerine */
+            padding: 16px; 
+            background: rgba(16, 21, 40, 0.5); 
+            border-radius: 18px; 
+            border: 1px solid rgba(75, 85, 99, 0.35); 
+            margin-top: 24px; 
+            margin-bottom: 24px; 
         }
         
         .appointment-section h2 {
@@ -224,8 +239,8 @@
         .appointment-list {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* space-y-3 yerine */
-            margin-top: 16px; /* mt-4 yerine */
+            gap: 12px; 
+            margin-top: 16px; 
         }
 
         .appointment-item {
@@ -403,9 +418,8 @@
 
 <body>
 
-    <!-- ÜST MENÜ BUTONU (Sadece mobil için görünür) -->
-    <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
-
+    <!-- ÜST MENÜ BUTONU KALDIRILDI VE HEADER İÇİNE ALINDI -->
+    
     <!-- Soldan Açılan Menü (Drawer) -->
     <div id="drawerOverlay" class="drawer-overlay"></div>
     <div id="drawerMenu" class="drawer-menu">
@@ -422,11 +436,16 @@
         </div>
     </div>
 
-    <!-- MOBİL VE MASAÜSTÜ ÜST BAŞLIĞI (Mobil'de fixed menü butonunun sağında, Masaüstünde gizli) -->
+    <!-- MOBİL VE MASAÜSTÜ ÜST BAŞLIĞI (YENİ YAPILANDIRILMIŞ) -->
     <header class="top-header">
+        <!-- Birinci Satır: Logo ve Başlık (Ortalanmış) -->
         <div class="top-center">
             <div class="logo-mark">C</div>
             <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
+        </div>
+        <!-- İkinci Satır: Menü Butonu (Sola Hizalanmış) -->
+        <div class="top-menu-row">
+            <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
         </div>
     </header>
 
