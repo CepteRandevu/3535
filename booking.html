@@ -68,6 +68,25 @@
       color:var(--muted);
     }
 
+    /* LOGO KUTUSU (YENİ) */
+    .biz-logo-box{
+      width:86px;
+      height:86px;
+      border-radius:14px;
+      background:#020617;
+      border:1px solid rgba(148,163,184,0.35);
+      margin-bottom:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .biz-logo-box img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
     .card-grid{
       display:grid;
       grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
@@ -151,22 +170,14 @@
       transform:none;
     }
 
-    .pill{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:999px;
-      background:var(--accent-soft);
-      color:#bbf7d0;
-      font-size:11px;
-      border:1px solid rgba(34,197,94,0.45);
-      margin-top:6px;
-    }
-
-    .loading{
-      text-align:center;
-      padding:30px;
+    .info-box{
+      background:rgba(148,163,184,0.12);
+      border:1px solid rgba(148,163,184,0.4);
       color:var(--muted);
-      font-size:14px;
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:12px;
+      margin-bottom:10px;
     }
 
     .error-box{
@@ -179,15 +190,6 @@
       margin-bottom:10px;
       display:none;
     }
-    .info-box{
-      background:rgba(148,163,184,0.12);
-      border:1px solid rgba(148,163,184,0.4);
-      color:var(--muted);
-      padding:8px 10px;
-      border-radius:12px;
-      font-size:12px;
-      margin-bottom:10px;
-    }
 
     @media (max-width:768px){
       .card-grid{
@@ -196,7 +198,6 @@
     }
   </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -218,9 +219,16 @@
     <!-- SOL: İşletme özet -->
     <section class="card">
       <h2>İşletme Bilgisi</h2>
+
+      <!-- LOGO (YENİ EKLENDİ) -->
+      <div class="biz-logo-box">
+        <img id="bizLogo" src="">
+      </div>
+
       <div class="biz-name" id="bizName">İşletme</div>
       <div class="biz-location" id="bizLocation"></div>
       <div class="biz-meta" id="bizMeta"></div>
+
       <div id="bizHint" class="info-box" style="margin-top:12px;">
         Hizmet ve çalışan seçerek sağ taraftan randevunuzu oluşturabilirsiniz.
       </div>
@@ -250,31 +258,29 @@
       <select id="timeSelect"></select>
 
       <button id="createBtn" class="btn-primary">Randevuyu Oluştur</button>
-
-      <div style="margin-top:10px;font-size:11px;color:var(--muted);">
-        Randevu talebiniz önce <b>beklemede</b> olarak oluşturulur. İşletme onayladığında
-        durumunuz "onaylandı" olarak güncellenir.
-      </div>
     </section>
 
   </div>
 
 </div>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getFirestore, doc, getDoc,
     collection, query, where, getDocs, addDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  import {
-    getAuth, onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  /* --- DEFAULT LOGO --- */
+  const DEFAULT_BIZ_LOGO =
+    'data:image/svg+xml;utf8,' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+    '<rect width="256" height="256" fill="%23020a1b"/>' +
+    '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+    '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+    'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+    '</svg>';
 
-  /* ---------------------------------------------------
-     1) FIREBASE CONFIG
-  ----------------------------------------------------- */
   const firebaseConfig = {
     apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
     authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -288,149 +294,61 @@
   const db    = getFirestore(app);
   const auth  = getAuth(app);
 
-  /* ---------------------------------------------------
-     2) DOM ELEMANLARI
-  ----------------------------------------------------- */
-  const urlParams       = new URLSearchParams(window.location.search);
-  const businessId      = urlParams.get("businessId");
+  const urlParams = new URLSearchParams(window.location.search);
+  const businessId = urlParams.get("businessId");
 
-  const loadingEl       = document.getElementById("loading");
-  const bookingWrap     = document.getElementById("bookingWrap");
+  const bizLogoEl  = document.getElementById("bizLogo");
+  const bizNameEl  = document.getElementById("bizName");
+  const bizLocationEl = document.getElementById("bizLocation");
+  const bizMetaEl  = document.getElementById("bizMeta");
+  const loadingEl  = document.getElementById("loading");
+  const bookingWrap= document.getElementById("bookingWrap");
 
-  const bizNameEl       = document.getElementById("bizName");
-  const bizLocationEl   = document.getElementById("bizLocation");
-  const bizMetaEl       = document.getElementById("bizMeta");
-  const slotInfoEl      = document.getElementById("slotInfo");
-  const errorBox        = document.getElementById("errorBox");
+  let currentCustomer = null;
 
-  const serviceSelect   = document.getElementById("serviceSelect");
-  const employeeSelect  = document.getElementById("employeeSelect");
-  const dateInput       = document.getElementById("dateInput");
-  const timeSelect      = document.getElementById("timeSelect");
-  const createBtn       = document.getElementById("createBtn");
-
-  /* ---------------------------------------------------
-     3) SABİT SAAT SEÇENEKLERİ
-  ----------------------------------------------------- */
-  const hours = [
-    "09:00","09:30","10:00","10:30",
-    "11:00","11:30","13:00","13:30",
-    "14:00","14:30","15:00","15:30",
-    "16:00","16:30","17:00"
-  ];
-
-  function fillTimeSelect(){
-    timeSelect.innerHTML = "";
-    hours.forEach(h=>{
-      const opt = document.createElement("option");
-      opt.value = h;
-      opt.textContent = h;
-      timeSelect.appendChild(opt);
-    });
-  }
-  fillTimeSelect();
-
-  // Tarihi bugünden itibaren seçilebilir yap
-  const today = new Date();
-  const yyyy  = today.getFullYear();
-  const mm    = String(today.getMonth()+1).padStart(2,"0");
-  const dd    = String(today.getDate()).padStart(2,"0");
-  dateInput.min = `${yyyy}-${mm}-${dd}`;
-
-  /* ---------------------------------------------------
-     4) GLOBAL DURUMLAR
-  ----------------------------------------------------- */
-  let currentUID        = null;
-  let currentCustomer   = null;
-  let businessDocCache  = null;  // işletme belgesini 2 kez okumamak için
-  let servicesCache     = {};    // serviceId -> {name,duration,price}
-
-  /* ---------------------------------------------------
-     5) HATA GÖSTER
-  ----------------------------------------------------- */
-  function showError(msg){
-    errorBox.style.display = "block";
-    errorBox.textContent   = msg;
-  }
-  function clearError(){
-    errorBox.style.display = "none";
-    errorBox.textContent   = "";
-  }
-
-  /* ---------------------------------------------------
-     6) LOGIN KONTROLÜ
-  ----------------------------------------------------- */
-  onAuthStateChanged(auth, async (user)=>{
-    if (!businessId){
-      loadingEl.textContent = "businessId parametresi bulunamadı.";
-      return;
-    }
-
+  onAuthStateChanged(auth, async(user)=>{
     if(!user){
-      // login yoksa → müşteri girişine, redirect param ile geri dönsün
-      const redirect = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/al/customer-login.html?redirect=${redirect}`;
+      const redirect = encodeURIComponent(location.href);
+      location.href = `/al/customer-login.html?redirect=${redirect}`;
       return;
     }
-
-    currentUID = user.uid;
-    await loadCustomerProfile();
-    await loadBusinessAndInit();
+    await loadCustomerProfile(user.uid);
+    await loadBusiness();
   });
 
-  /* ---------------------------------------------------
-     7) MÜŞTERİ PROFİLİNİ ÇEK (isteğe bağlı, bildirim için)
-  ----------------------------------------------------- */
-  async function loadCustomerProfile(){
+  async function loadCustomerProfile(uid){
     try{
-      const userRef = doc(db,"users",currentUID);
-      const snap    = await getDoc(userRef);
-      if(snap.exists()){
-        currentCustomer = snap.data();
-      }
-    }catch(e){
-      console.error("Müşteri profili okunamadı:", e);
-    }
-  }
-
-  /* ---------------------------------------------------
-     8) İŞLETME BİLGİSİ + HİZMETLER
-  ----------------------------------------------------- */
-  async function loadBusinessAndInit(){
-    try{
-      // İşletme bilgisi
-      const ref  = doc(db,"businesses",businessId);
+      const ref = doc(db,"users",uid);
       const snap = await getDoc(ref);
-
-      if(!snap.exists()){
-        loadingEl.textContent = "İşletme bulunamadı.";
-        return;
-      }
-
-      const biz = snap.data();
-      businessDocCache = { id: businessId, ...biz };
-
-      bizNameEl.textContent     = biz.name || "İşletme";
-      bizLocationEl.textContent = `${biz.city || ""} ${biz.district ? " · " + biz.district : ""}`;
-      bizMetaEl.textContent     = biz.phone ? `İletişim: ${biz.phone}` : "";
-
-      // Form kısmını aç
-      loadingEl.style.display = "none";
-      bookingWrap.style.display = "grid";
-
-      // Hizmetleri yükle
-      await loadServices();
-    }catch(e){
-      console.error(e);
-      loadingEl.textContent = "İşletme bilgileri yüklenirken hata oluştu.";
-    }
+      if(snap.exists()) currentCustomer = snap.data();
+    }catch{}
   }
 
-  /* ---------------------------------------------------
-     9) HİZMETLERİ ÇEK
-  ----------------------------------------------------- */
-  async function loadServices(){
-    serviceSelect.innerHTML = "<option value=''>Hizmetler yükleniyor...</option>";
+  async function loadBusiness(){
+    const ref = doc(db,"businesses",businessId);
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()){
+      loadingEl.textContent = "İşletme bulunamadı.";
+      return;
+    }
+
+    const biz = snap.data();
+
+    bizLogoEl.src = biz.logoBase64 || DEFAULT_BIZ_LOGO;
+    bizNameEl.textContent = biz.name || "İşletme";
+    bizLocationEl.textContent = `${biz.city || ""}${biz.district ? " · "+biz.district : ""}`;
+    bizMetaEl.textContent = biz.phone || "";
+
+    loadingEl.style.display = "none";
+    bookingWrap.style.display = "grid";
+
+    await loadServices(biz);
+  }
+
+  async function loadServices(biz){
+    const serviceSelect = document.getElementById("serviceSelect");
+    const employeeSelect = document.getElementById("employeeSelect");
 
     const qRef = query(
       collection(db,"services"),
@@ -438,35 +356,22 @@
     );
     const snap = await getDocs(qRef);
 
-    servicesCache = {};
     serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
 
-    if (snap.empty){
-      serviceSelect.innerHTML = "<option value=''>Bu işletme için hizmet tanımlanmamış</option>";
-      return;
-    }
-
-    snap.forEach(docSnap=>{
-      const data = docSnap.data();
-      servicesCache[docSnap.id] = data;
-
-      const opt      = document.createElement("option");
-      opt.value      = docSnap.id;
-      opt.textContent= `${data.name} (${data.duration} dk)`;
+    snap.forEach(s=>{
+      const d = s.data();
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = `${d.name} (${d.duration} dk)`;
       serviceSelect.appendChild(opt);
     });
+
+    serviceSelect.addEventListener("change", ()=> loadEmployees(serviceSelect.value));
   }
 
-  /* ---------------------------------------------------
-     10) ÇALIŞANLARI HİZMETE GÖRE LİSTELE
-  ----------------------------------------------------- */
-  async function loadEmployeesForService(serviceId){
-    employeeSelect.innerHTML = "<option value=''>Çalışanlar yükleniyor...</option>";
-
-    if(!serviceId){
-      employeeSelect.innerHTML = "<option value=''>Önce hizmet seçin</option>";
-      return;
-    }
+  async function loadEmployees(serviceId){
+    const employeeSelect = document.getElementById("employeeSelect");
+    employeeSelect.innerHTML = "<option>Çalışanlar yükleniyor...</option>";
 
     const qRef = query(
       collection(db,"employees"),
@@ -476,187 +381,16 @@
 
     employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
 
-    if (snap.empty){
-      employeeSelect.innerHTML = "<option value=''>Bu hizmet için çalışan bulunamadı</option>";
-      return;
-    }
-
-    let count = 0;
-
-    snap.forEach(docSnap=>{
-      const emp = docSnap.data();
-      const serviceList = emp.services || [];
-
-      // Çalışan bu hizmeti veriyor mu?
-      if (Array.isArray(serviceList) && serviceList.includes(serviceId)){
-        const opt    = document.createElement("option");
-        opt.value    = docSnap.id;
-        opt.textContent = emp.name;
+    snap.forEach(e=>{
+      const d = e.data();
+      if(Array.isArray(d.services) && d.services.includes(serviceId)){
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = d.name;
         employeeSelect.appendChild(opt);
-        count++;
       }
     });
-
-    if (count === 0){
-      employeeSelect.innerHTML = "<option value=''>Bu hizmet için atanmış çalışan yok</option>";
-    }
   }
-
-  serviceSelect.addEventListener("change", ()=>{
-    const serviceId = serviceSelect.value;
-    loadEmployeesForService(serviceId);
-  });
-
-  /* ---------------------------------------------------
-     11) ZAMAN DOLU MU KONTROL (opsiyonel basit kontrol)
-  ----------------------------------------------------- */
-  async function checkSlotAvailability(businessID, employeeID, date, time){
-    // Aynı işletme + aynı çalışan + aynı tarih+saat
-    const qRef = query(
-      collection(db,"appointments"),
-      where("businessID","==", businessID),
-      where("employeeID","==", employeeID),
-      where("date","==", date),
-      where("time","==", time)
-    );
-
-    const snap = await getDocs(qRef);
-    // pending veya approved varsa dolu say
-    let busy = false;
-    snap.forEach(docSnap=>{
-      const ap = docSnap.data();
-      if (ap.status === "pending" || ap.status === "approved"){
-        busy = true;
-      }
-    });
-
-    return busy;
-  }
-
-  /* ---------------------------------------------------
-     12) OneSignal → İşletmeye BİLDİRİM GÖNDER
-  ----------------------------------------------------- */
-  const ONE_SIGNAL_APP_ID   = "784cba74-0683-49ed-a3c6-e86741fc6aee";
-  const ONE_SIGNAL_REST_KEY = "os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli";
-
-  async function sendBusinessNotification(appointmentData){
-    try{
-      if (!businessDocCache){
-        return;
-      }
-      const playerID = businessDocCache.playerID; // business-settings.html'de kaydettiğimiz alan
-      if (!playerID){
-        console.log("İşletme için OneSignal playerID yok, bildirim atlanıyor.");
-        return;
-      }
-
-      const serviceInfo = servicesCache[appointmentData.serviceID] || {};
-      const serviceName = serviceInfo.name || "Yeni hizmet";
-
-      const customerName  = currentCustomer?.name  || "Müşteri";
-      const customerPhone = currentCustomer?.phone || "";
-
-      const headings = { tr: "Yeni randevu talebi" };
-      const contents = {
-        tr: `${customerName} ${appointmentData.date} ${appointmentData.time} için "${serviceName}" randevusu oluşturdu.${customerPhone ? " Tel: " + customerPhone : ""}`
-      };
-
-      const body = {
-        app_id: ONE_SIGNAL_APP_ID,
-        include_player_ids: [playerID],
-        headings,
-        contents,
-        data: {
-          type: "new_appointment",
-          businessID: appointmentData.businessID
-        }
-      };
-
-      await fetch("https://api.onesignal.com/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "Authorization": "Basic " + ONE_SIGNAL_REST_KEY
-        },
-        body: JSON.stringify(body)
-      });
-    }catch(e){
-      console.error("OneSignal bildirimi gönderilemedi:", e);
-    }
-  }
-
-  /* ---------------------------------------------------
-     13) RANDEVU OLUŞTUR
-  ----------------------------------------------------- */
-  createBtn.addEventListener("click", async ()=>{
-    clearError();
-
-    if (!currentUID){
-      showError("Lütfen önce müşteri girişi yapın.");
-      return;
-    }
-    if (!businessId){
-      showError("İşletme bulunamadı. Sayfayı kapatıp tekrar deneyin.");
-      return;
-    }
-
-    const serviceId = serviceSelect.value;
-    const empId     = employeeSelect.value;
-    const date      = dateInput.value;
-    const time      = timeSelect.value;
-
-    if (!serviceId || !empId || !date || !time){
-      showError("Lütfen tüm alanları doldurun.");
-      return;
-    }
-
-    createBtn.disabled = true;
-    createBtn.textContent = "Randevu oluşturuluyor...";
-
-    try{
-      // Aynı saat dolu mu diye basit kontrol
-      const busy = await checkSlotAvailability(businessId, empId, date, time);
-      if (busy){
-        showError("Bu çalışan için seçtiğiniz saat dolu. Lütfen farklı bir saat veya tarih seçin.");
-        createBtn.disabled = false;
-        createBtn.textContent = "Randevuyu Oluştur";
-        return;
-      }
-
-      // Randevu belgesini oluştur
-      const docRef = await addDoc(collection(db,"appointments"), {
-        businessID:  businessId,
-        serviceID:   serviceId,
-        employeeID:  empId,
-        customerUID: currentUID,
-        date:        date,
-        time:        time,
-        status:      "pending",
-        createdAt:   Date.now()
-      });
-
-      // OneSignal ile işletmeye bildirim gönder
-      await sendBusinessNotification({
-        id:         docRef.id,
-        businessID: businessId,
-        serviceID:  serviceId,
-        employeeID: empId,
-        date,
-        time
-      });
-
-      alert("Randevu talebiniz oluşturuldu. Onay için işletmenin yanıtını bekleyin.");
-      // İstersen redirect:
-      // window.location.href = "/al/customer-panel.html";
-
-    }catch(e){
-      console.error(e);
-      showError("Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
-    }finally{
-      createBtn.disabled = false;
-      createBtn.textContent = "Randevuyu Oluştur";
-    }
-  });
 
 </script>
 
