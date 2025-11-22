@@ -30,6 +30,7 @@
     flex-direction:column;
   }
 
+  /* Drawer (mobil) */
   .drawer-overlay{
     position:fixed;top:0;left:0;width:100%;height:100%;
     background:rgba(0,0,0,0.55);
@@ -62,6 +63,7 @@
     background:var(--accent);color:#022c22;font-weight:600;
   }
 
+  /* Mobil üst bar */
   .top-header{
     background:#0b1120;border-bottom:1px solid var(--border);
     padding:10px 0 10px;position:sticky;top:0;z-index:900;
@@ -86,6 +88,7 @@
     cursor:pointer;font-size:14px;
   }
 
+  /* Sidebar (desktop) */
   .sidebar{
     width:240px;background:var(--sidebar);padding:24px 18px;
     border-right:1px solid var(--border);position:fixed;top:0;bottom:0;
@@ -137,13 +140,41 @@
   .row-two{display:flex;gap:10px;flex-wrap:wrap;}
   .row-two > div{flex:1 1 0;min-width:140px;}
 
-  .logo-preview{
-    width:90px;height:90px;border-radius:12px;
-    border:2px solid var(--accent);
-    object-fit:cover;margin-bottom:8px;background:#020617;
+  /* LOGO alanı */
+  .logo-upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
   }
 
-  .logo-hint{font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .logo-preview{
+    width:100px;
+    height:100px;
+    border-radius:14px;
+    border:2px solid var(--accent);
+    object-fit:cover;
+    margin-bottom:4px;
+    background:#020617;
+    box-shadow:0 6px 14px rgba(0,0,0,0.35);
+  }
+
+  .upload-btn {
+    background: linear-gradient(135deg,var(--accent),var(--accent-strong));
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    color:#022c22;
+    font-weight:700;
+    font-size:14px;
+    display:inline-block;
+    box-shadow:0 10px 22px rgba(34,197,94,0.45);
+    transition:0.25s;
+  }
+  .upload-btn:hover { transform:scale(1.03); }
+
+  .logo-hint{font-size:11px;color:var(--muted);margin-top:2px;}
 
   .btn-primary{
     width:100%;background:linear-gradient(135deg,var(--accent),var(--accent-strong));
@@ -185,6 +216,7 @@
   </div>
 </div>
 
+<!-- Mobil üst header -->
 <header class="top-header">
   <div class="top-center">
     <div class="logo-mark">C</div>
@@ -195,6 +227,7 @@
   </div>
 </header>
 
+<!-- Desktop sidebar -->
 <aside class="sidebar">
   <div class="logo-box">
     <div class="logo-mark">C</div>
@@ -212,14 +245,22 @@
 <main class="main-area">
   <h1 class="page-title">Ayarlar</h1>
 
+  <!-- İşletme Bilgileri -->
   <section class="card">
     <h3>İşletme Bilgileri</h3>
 
     <label>Logo</label>
-    <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png" alt="Logo">
-    <input type="file" id="logoInput" accept="image/*">
-    <div class="logo-hint">
-      Küçük boyutlu kare logo yükle (ör. 256x256). Yüklemeden önce otomatik sıkıştırıyoruz.
+    <div class="logo-upload-box">
+      <img id="logoPreview" class="logo-preview"
+           src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png"
+           alt="Logo">
+
+      <label for="logoInput" class="upload-btn">📁 Logo Seç</label>
+      <input type="file" id="logoInput" accept="image/*" hidden>
+
+      <div class="logo-hint">
+        Kare (256x256) ve küçük boyutlu logo yüklemen önerilir. Yüklemeden önce otomatik sıkıştırılır.
+      </div>
     </div>
 
     <label>İşletme Adı</label>
@@ -252,6 +293,7 @@
     <button id="saveBizBtn" class="btn-primary">İşletme Bilgilerini Kaydet</button>
   </section>
 
+  <!-- Şifre -->
   <section class="card">
     <h3>Şifre Değiştir</h3>
     <label>Yeni Şifre</label>
@@ -266,6 +308,7 @@
 </main>
 
 <script>
+  // Drawer aç/kapat
   const drawer = document.getElementById("drawerMenu");
   const overlay = document.getElementById("drawerOverlay");
   const menuBtn = document.getElementById("menuBtn");
@@ -285,6 +328,7 @@
   overlay.addEventListener("click", closeDrawer);
 </script>
 
+<!-- Firebase & Ayarlar Script -->
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
 
@@ -304,21 +348,22 @@
 
   const bizNameSmall = document.getElementById("bizNameSmall");
   const bizNameMobile = document.getElementById("bizNameMobile");
-  const logoPreview = document.getElementById("logoPreview");
-  const logoInput = document.getElementById("logoInput");
+  const logoPreview  = document.getElementById("logoPreview");
+  const logoInput    = document.getElementById("logoInput");
 
-  const bizNameInput = document.getElementById("bizNameInput");
-  const bizPhoneInput = document.getElementById("bizPhoneInput");
+  const bizNameInput    = document.getElementById("bizNameInput");
+  const bizPhoneInput   = document.getElementById("bizPhoneInput");
   const bizAddressInput = document.getElementById("bizAddressInput");
-  const bizAboutInput = document.getElementById("bizAboutInput");
-  const citySelect = document.getElementById("citySelect");
-  const districtSelect = document.getElementById("districtSelect");
+  const bizAboutInput   = document.getElementById("bizAboutInput");
+  const citySelect      = document.getElementById("citySelect");
+  const districtSelect  = document.getElementById("districtSelect");
 
-  const saveBizBtn = document.getElementById("saveBizBtn");
-  const savePassBtn = document.getElementById("savePassBtn");
+  const saveBizBtn   = document.getElementById("saveBizBtn");
+  const savePassBtn  = document.getElementById("savePassBtn");
   const newPassInput = document.getElementById("newPassInput");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutBtn    = document.getElementById("logoutBtn");
 
+  // İl / ilçe data
   const CITIES_JSON_URL = "/al/js/turkey-cities.json";
   let citiesData = [];
   let cityFromDB = "";
@@ -340,6 +385,7 @@
 
   function fillCitySelect(){
     citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
+
     citiesData.forEach(c=>{
       const opt = document.createElement("option");
       opt.value = c.name;
@@ -388,6 +434,7 @@
     fillDistrictSelect(citySelect.value, "");
   });
 
+  // Logo sıkıştırma (max 256px)
   function resizeImage(file, maxSize = 256){
     return new Promise((resolve, reject)=>{
       const reader = new FileReader();
@@ -423,49 +470,72 @@
     });
   }
 
+  // LOGO YÜKLEME → Cloudflare Worker → Uploadcare
   logoInput.addEventListener("change", async ()=>{
     const file = logoInput.files[0];
     if(!file || !BUSINESS_ID) return;
 
+    const user = auth.currentUser;
+    if(!user){
+      alert("Oturum süren dolmuş. Lütfen tekrar giriş yap.");
+      window.location.href = "business-login.html";
+      return;
+    }
+
+    // Anlık önizleme
     logoPreview.src = URL.createObjectURL(file);
     saveBizBtn.disabled = true;
 
     try{
+      // Küçült
       const compressed = await resizeImage(file, 256);
+      const idToken = await user.getIdToken();
 
       const form = new FormData();
-      form.append("file", compressed);
-      form.append("UPLOADCARE_PUB_KEY", "bc2bc00269f8815e0222");
-      form.append("UPLOADCARE_STORE", "auto");
+      form.append("file", compressed, "logo.jpg");
+      form.append("uid", BUSINESS_ID);
+      form.append("apiKey", firebaseConfig.apiKey);
+      form.append("idToken", idToken);
 
-      const res = await fetch("https://upload.uploadcare.com/base/", {
+      const res = await fetch("https://upload-proxy.adb-toc.workers.dev/", {
         method: "POST",
         body: form
       });
 
-      const data = await res.json();
-      if(!data.file){
-        alert("Logo yüklenemedi!");
+      if(!res.ok){
+        console.error("Worker hata:", await res.text());
+        alert("Logo yüklenemedi (worker).");
         return;
       }
 
-      const logoURL = `https://ucarecdn.com/${data.file}/`;
+      const data = await res.json();
+      if(!data.success || !data.url){
+        console.error("Worker cevabı:", data);
+        alert("Logo yüklenemedi.");
+        return;
+      }
+
+      // Uploadcare URL düzeltme  (…uuid… → …uuid/-/preview/)
+      let clean = data.url;
+      if(clean.endsWith("/")) clean = clean.slice(0,-1);
+      clean = clean + "/-/preview/";
 
       await setDoc(doc(db,"businesses",BUSINESS_ID),{
-        logoURL: logoURL
+        logoURL: clean
       },{merge:true});
 
-      logoPreview.src = logoURL;
-      alert("Logo başarıyla güncellendi.");
+      logoPreview.src = clean;
+      alert("Logo güncellendi.");
 
     }catch(err){
       console.error(err);
-      alert("Logo yükleme hatası!");
+      alert("Logo yüklenirken hata oluştu.");
     }finally{
       saveBizBtn.disabled = false;
     }
   });
 
+  // Firebase Auth
   onAuthStateChanged(auth, async (user)=>{
     if(!user){
       window.location.href = "business-login.html";
@@ -473,8 +543,8 @@
     }
 
     BUSINESS_ID = user.uid;
-    await loadCitiesJson();
-    await loadBusiness();
+    await loadCitiesJson();   // il/ilçe datası
+    await loadBusiness();     // işletme bilgilerini çek
   });
 
   async function loadBusiness(){
@@ -487,17 +557,17 @@
     const d = snap.data();
 
     const name = d.name || "İşletme";
-    bizNameSmall.textContent = name;
+    bizNameSmall.textContent  = name;
     bizNameMobile.textContent = name;
-    bizNameInput.value = name;
+    bizNameInput.value        = name;
 
-    bizPhoneInput.value = d.phone || "";
+    bizPhoneInput.value   = d.phone   || "";
     bizAddressInput.value = d.address || "";
-    bizAboutInput.value = d.about || "";
-    cityFromDB = d.city || "";
-    districtFromDB = d.district || "";
+    bizAboutInput.value   = d.about   || "";
+    cityFromDB            = d.city    || "";
+    districtFromDB        = d.district|| "";
 
-    if (d.logoURL && d.logoURL.trim() !== "") {
+    if(d.logoURL && d.logoURL.trim() !== ""){
       logoPreview.src = d.logoURL;
     }
 
@@ -507,6 +577,7 @@
     }
   }
 
+  // İşletme bilgilerini kaydet
   saveBizBtn.addEventListener("click", async ()=>{
     if(!BUSINESS_ID) return;
 
@@ -531,6 +602,7 @@
     }
   });
 
+  // Şifre güncelle
   savePassBtn.addEventListener("click", async ()=>{
     const pass = newPassInput.value;
     if(pass.length < 6){
@@ -548,6 +620,7 @@
     }
   });
 
+  // Çıkış
   logoutBtn.addEventListener("click", async ()=>{
     await signOut(auth);
     window.location.href = "business-login.html";
