@@ -374,7 +374,7 @@
             padding: 24px;
             border-radius: var(--radius-lg);
             background: rgba(15, 23, 42, 0.85);
-            border: 1px dashed rgba(148, 163, 184, 0.3);
+            border: 1 dashed rgba(148, 163, 184, 0.3);
             margin: 10px 0;
             line-height: 1.6;
         }
@@ -383,6 +383,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px; /* logo + içerik için */
             padding: 10px 12px;
             border-radius: 12px;
             margin-bottom: 8px;
@@ -517,7 +518,6 @@
             cursor: not-allowed;
         }
 
-
         /* RESPONSIVE */
         @media (max-width: 900px) {
             .grid {
@@ -554,7 +554,6 @@
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 
 </head>
-
 <body>
     <div class="app-shell">
 
@@ -567,10 +566,8 @@
                 </div>
             </div>
 
-            <div class="header-actions" id="headerActions">
-                </div>
+            <div class="header-actions" id="headerActions"></div>
         </header>
-
 
         <main class="grid">
 
@@ -612,12 +609,9 @@
                         </span>
                     </div>
 
-
                     <div id="lastAppointmentCard"></div>
 
-
                     <div id="popularBusinesses"></div>
-
 
                     <section id="search-panel" class="search-panel">
                         <div class="search-header">
@@ -693,7 +687,6 @@
 
         </main>
     </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
@@ -715,14 +708,24 @@
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        /* 🔧 FIREBASE CONFIG — BURAYI KENDİ PROJENLE DOLDUR */
+        /* ---- DEFAULT BUSINESS LOGO ---- */
+        const DEFAULT_BIZ_LOGO =
+          'data:image/svg+xml;utf8,' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+          '<rect width="256" height="256" fill="%23020a1b"/>' +
+          '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+          '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+          'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+          '</svg>';
+
+        /* 🔧 FIREBASE CONFIG */
         const firebaseConfig = {
-  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-  authDomain: "cepterandevu-35fe4.firebaseapp.com",
-  projectId: "cepterandevu-35fe4",
-  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-  messagingSenderId: "86298180836",
-  appId: "1:86298180836:web:124c2004605d68b32700f1",
+            apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+            authDomain: "cepterandevu-35fe4.firebaseapp.com",
+            projectId: "cepterandevu-35fe4",
+            storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+            messagingSenderId: "86298180836",
+            appId: "1:86298180836:web:124c2004605d68b32700f1",
         };
 
         const app = initializeApp(firebaseConfig);
@@ -843,7 +846,6 @@
         async function loadCurrentProfile() {
             if (!currentUser) return null;
 
-            // Daha önce senin setup’a göre "customers" veya "users" olabilir
             const tryCollections = ["customers", "users"];
 
             for (const col of tryCollections) {
@@ -862,12 +864,11 @@
 
         /* ---------- ONESIGNAL ENTEGRASYONU ---------- */
 
-        // OneSignal init (appId'yi doldur)
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         window.OneSignalDeferred.push(async function (OneSignal) {
             try {
                 await OneSignal.init({
-                    appId: "784cba74-0683-49ed-a3c6-e86741fc6aee", // OneSignal appId BURAYA
+                    appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
                 });
             } catch (e) {
                 console.warn("OneSignal init hatası:", e);
@@ -929,7 +930,8 @@
                         reviewCount:
                             typeof d.reviewCount === "number" ? d.reviewCount : 0,
                         freeSlotsToday:
-                            typeof d.freeSlotsToday === "number" ? d.freeSlotsToday : 0
+                            typeof d.freeSlotsToday === "number" ? d.freeSlotsToday : 0,
+                        logoBase64: d.logoBase64 || null
                     });
 
                     if (city && !ALL_CITIES.includes(city)) {
@@ -954,7 +956,6 @@
                 citySelect.appendChild(opt);
             });
 
-            // İlçe reset
             districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
             districtSelect.disabled = true;
         }
@@ -1046,6 +1047,17 @@
                 li.className = "business-card";
                 li.onclick = () => handleBusinessClick(b);
 
+                const logo = document.createElement("img");
+                logo.src = b.logoBase64 || DEFAULT_BIZ_LOGO;
+                logo.style.width = "54px";
+                logo.style.height = "54px";
+                logo.style.borderRadius = "12px";
+                logo.style.objectFit = "contain";
+                logo.style.background = "#020617";
+                logo.style.border = "1px solid rgba(148,163,184,0.35)";
+                logo.style.marginRight = "12px";
+                logo.style.flexShrink = "0";
+
                 const main = document.createElement("div");
                 main.className = "business-main";
 
@@ -1099,8 +1111,10 @@
                 meta.appendChild(ratingEl);
                 meta.appendChild(bottom);
 
+                li.appendChild(logo);
                 li.appendChild(main);
                 li.appendChild(meta);
+
                 businessList.appendChild(li);
             });
 
@@ -1136,7 +1150,6 @@
             )}`;
 
             if (!currentUser) {
-                // Login yoksa müşteri girişine yönlendir
                 const redirect = encodeURIComponent(bookingUrl);
                 window.location.href = `customer-login.html?redirect=${redirect}`;
                 return;
@@ -1215,7 +1228,6 @@
             }
 
             try {
-                // createdAt alanın yoksa tarih-saat ile sort eden fallback yazarız
                 let qRef;
                 try {
                     qRef = query(
@@ -1225,7 +1237,6 @@
                         limit(1)
                     );
                 } catch {
-                    // createdAt yoksa sadece filtre yap
                     qRef = query(
                         collection(db, "appointments"),
                         where("customerUID", "==", currentUser.uid)
@@ -1300,7 +1311,6 @@
 
         searchBtn.addEventListener("click", filterBusinesses);
 
-        // scrollToSearch fonksiyonunu global yap
         window.scrollToSearch = function () {
             const el = document.getElementById("search-panel");
             if (el) {
@@ -1327,7 +1337,6 @@
 
         /* ---------- BAŞLANGIÇ ---------- */
 
-        // İşletmeleri Firestore'dan çek
         loadBusinesses();
     </script>
 </body>
