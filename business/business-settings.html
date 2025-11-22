@@ -216,65 +216,75 @@
     <h3>İşletme Bilgileri</h3>
 
     <label>Logo</label>
-    <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png">
+    <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png" alt="Logo">
     <input type="file" id="logoInput" accept="image/*">
-    <div class="logo-hint">256x256 küçük logo önerilir.</div>
+    <div class="logo-hint">
+      Küçük boyutlu kare logo yükle (ör. 256x256). Yüklemeden önce otomatik sıkıştırıyoruz.
+    </div>
 
     <label>İşletme Adı</label>
-    <input id="bizNameInput">
+    <input id="bizNameInput" placeholder="Örn: KG Barber & Style">
 
     <div class="row-two">
       <div>
         <label>İl</label>
-        <select id="citySelect"><option value="">İl seçiniz</option></select>
+        <select id="citySelect">
+          <option value="">İl seçiniz</option>
+        </select>
       </div>
       <div>
         <label>İlçe</label>
-        <select id="districtSelect"><option value="">Önce il seçiniz</option></select>
+        <select id="districtSelect">
+          <option value="">Önce il seçiniz</option>
+        </select>
       </div>
     </div>
 
     <label>Telefon</label>
-    <input id="bizPhoneInput">
+    <input id="bizPhoneInput" placeholder="Örn: 05xx xxx xx xx">
 
     <label>Adres</label>
-    <textarea id="bizAddressInput"></textarea>
+    <textarea id="bizAddressInput" placeholder="Açık adres"></textarea>
 
     <label>Açıklama</label>
-    <textarea id="bizAboutInput"></textarea>
+    <textarea id="bizAboutInput" placeholder="Örn: Uzman berberlik, saç & sakal bakımı..."></textarea>
 
     <button id="saveBizBtn" class="btn-primary">İşletme Bilgilerini Kaydet</button>
   </section>
 
   <section class="card">
     <h3>Şifre Değiştir</h3>
-
     <label>Yeni Şifre</label>
-    <input type="password" id="newPassInput">
+    <input type="password" id="newPassInput" placeholder="En az 6 karakter">
     <button id="savePassBtn" class="btn-primary">Şifreyi Güncelle</button>
-
     <div class="small-text">
-      Eski oturum süresi dolmuşsa Firebase yeniden giriş isteyebilir.
+      Güvenlik gereği Firebase bazen son oturum süresi eskiyse tekrar giriş isteyebilir.
     </div>
   </section>
 
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 </main>
 
-
 <script>
-// Drawer
-const drawer = document.getElementById("drawerMenu");
-const overlay = document.getElementById("drawerOverlay");
-const menuBtn = document.getElementById("menuBtn");
+  // Drawer aç/kapat
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
 
-function openDrawer(){ drawer.classList.add("drawer-open"); overlay.style.display="block"; }
-function closeDrawer(){ drawer.classList.remove("drawer-open"); overlay.style.display="none"; }
+  function openDrawer(){
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
+  function closeDrawer(){
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
 
-if(menuBtn){ menuBtn.addEventListener("click", openDrawer); }
-overlay.addEventListener("click", closeDrawer);
+  if(menuBtn){
+    menuBtn.addEventListener("click", openDrawer);
+  }
+  overlay.addEventListener("click", closeDrawer);
 </script>
-
 
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
@@ -283,19 +293,13 @@ overlay.addEventListener("click", closeDrawer);
   import {
     getAuth, onAuthStateChanged, updatePassword, signOut
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
   import {
-    getFirestore, doc, getDoc, updateDoc, setDoc
+    getFirestore, doc, getDoc, setDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  import {
-    getStorage, ref, uploadBytes, getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const storage = getStorage(app);
 
   let BUSINESS_ID = null;
 
@@ -313,13 +317,11 @@ overlay.addEventListener("click", closeDrawer);
 
   const saveBizBtn = document.getElementById("saveBizBtn");
   const savePassBtn = document.getElementById("savePassBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
   const newPassInput = document.getElementById("newPassInput");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-
-  // ✔ Doğru JSON yolu
+  // İl / ilçe JSON
   const CITIES_JSON_URL = "/al/js/turkey-cities.json";
-
   let citiesData = [];
   let cityFromDB = "";
   let districtFromDB = "";
@@ -327,10 +329,14 @@ overlay.addEventListener("click", closeDrawer);
   async function loadCitiesJson(){
     try{
       const res = await fetch(CITIES_JSON_URL);
+      if(!res.ok){
+        console.error("İl/ilçe JSON okunamadı:", res.status);
+        return;
+      }
       citiesData = await res.json();
       fillCitySelect();
-    }catch(e){
-      console.error("İl/ilçe okunamadı:", e);
+    }catch(err){
+      console.error("İl/ilçe verisi hatası:", err);
     }
   }
 
@@ -349,7 +355,7 @@ overlay.addEventListener("click", closeDrawer);
     }
   }
 
-  function fillDistrictSelect(cityName, selectedDistrict=""){
+  function fillDistrictSelect(cityName, selectedDistrict = ""){
     districtSelect.innerHTML = "";
 
     if(!cityName){
@@ -357,26 +363,26 @@ overlay.addEventListener("click", closeDrawer);
       return;
     }
 
-    const cityObj = citiesData.find(c=>c.name===cityName);
-    if(!cityObj){
+    const cityObj = citiesData.find(c=> c.name === cityName);
+    if(!cityObj || !Array.isArray(cityObj.districts)){
       districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
       return;
     }
 
     const placeholder = document.createElement("option");
-    placeholder.value="";
-    placeholder.textContent="İlçe seçiniz";
+    placeholder.value = "";
+    placeholder.textContent = "İlçe seçiniz";
     districtSelect.appendChild(placeholder);
 
     cityObj.districts.forEach(d=>{
       const opt = document.createElement("option");
-      opt.value=d;
-      opt.textContent=d;
+      opt.value = d;
+      opt.textContent = d;
       districtSelect.appendChild(opt);
     });
 
     if(selectedDistrict){
-      districtSelect.value=selectedDistrict;
+      districtSelect.value = selectedDistrict;
     }
   }
 
@@ -384,8 +390,8 @@ overlay.addEventListener("click", closeDrawer);
     fillDistrictSelect(citySelect.value, "");
   });
 
-
-  function resizeImage(file, maxSize=256){
+  // Logo sıkıştırma (max 256px)
+  function resizeImage(file, maxSize = 256){
     return new Promise((resolve, reject)=>{
       const reader = new FileReader();
       reader.onload = e=>{
@@ -394,64 +400,95 @@ overlay.addEventListener("click", closeDrawer);
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
 
-          let w=img.width, h=img.height;
-          const longSide = Math.max(w,h);
-          if(longSide > maxSize){
-            const scale = maxSize / longSide;
+          let w = img.width;
+          let h = img.height;
+          const longerSide = Math.max(w,h);
+          if(longerSide > maxSize){
+            const scale = maxSize / longerSide;
             w = Math.round(w*scale);
             h = Math.round(h*scale);
           }
 
-          canvas.width=w; canvas.height=h;
+          canvas.width = w;
+          canvas.height = h;
           ctx.drawImage(img,0,0,w,h);
 
           canvas.toBlob(blob=>{
             if(blob) resolve(blob);
-            else reject("Blob oluşturulamadı");
+            else reject(new Error("Blob oluşturulamadı"));
           },"image/jpeg",0.7);
         };
+        img.onerror = reject;
         img.src = e.target.result;
       };
+      reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-
+  // LOGO YÜKLEME → CLOUDFLARE WORKER ÜZERİNDEN
   logoInput.addEventListener("change", async ()=>{
     const file = logoInput.files[0];
     if(!file || !BUSINESS_ID) return;
 
+    const user = auth.currentUser;
+    if(!user){
+      alert("Oturum süren dolmuş. Lütfen tekrar giriş yap.");
+      window.location.href = "business-login.html";
+      return;
+    }
+
     saveBizBtn.disabled = true;
 
     try{
-      const compressed = await resizeImage(file);
+      const compressed = await resizeImage(file, 256);
+      const idToken = await user.getIdToken();
 
-      const storageRef = ref(storage, `logos/${BUSINESS_ID}.jpg`);
-      await uploadBytes(storageRef, compressed, {contentType:"image/jpeg"});
+      const form = new FormData();
+      form.append("file", compressed, "logo.jpg");
+      form.append("uid", BUSINESS_ID);
+      form.append("apiKey", firebaseConfig.apiKey);
+      form.append("idToken", idToken);
 
-      const url = await getDownloadURL(storageRef);
+      const res = await fetch("https://upload-proxy.adb-toc.workers.dev/", {
+        method: "POST",
+        body: form
+      });
 
-      // ✔ updateDoc yerine SETDOC MERGE
+      if(!res.ok){
+        const txt = await res.text();
+        console.error("Worker hata:", txt);
+        alert("Logo yükleme hatası (worker).");
+        return;
+      }
+
+      const data = await res.json();
+      if(!data.success || !data.url){
+        console.error("Worker cevabı:", data);
+        alert("Logo yüklenemedi.");
+        return;
+      }
+
+      const url = data.url;
+
       await setDoc(doc(db,"businesses",BUSINESS_ID),{
         logoURL:url
       },{merge:true});
 
       logoPreview.src = url;
       alert("Logo güncellendi.");
-    }
-    catch(e){
-      console.error(e);
-      alert("Logo yüklenemedi.");
-    }
-    finally{
-      saveBizBtn.disabled=false;
+    }catch(err){
+      console.error(err);
+      alert("Logo yüklenirken hata oluştu.");
+    }finally{
+      saveBizBtn.disabled = false;
     }
   });
 
-
-  onAuthStateChanged(auth, async user=>{
+  // Firebase Auth
+  onAuthStateChanged(auth, async (user)=>{
     if(!user){
-      location.href="business-login.html";
+      window.location.href = "business-login.html";
       return;
     }
 
@@ -460,20 +497,21 @@ overlay.addEventListener("click", closeDrawer);
     await loadBusiness();
   });
 
-
   async function loadBusiness(){
     if(!BUSINESS_ID) return;
 
     const refBiz = doc(db,"businesses",BUSINESS_ID);
     const snap = await getDoc(refBiz);
-
-    if(!snap.exists()) return;
+    if(!snap.exists()){
+      return;
+    }
 
     const d = snap.data();
 
-    bizNameSmall.textContent = d.name || "İşletme";
-    bizNameMobile.textContent = d.name || "İşletme";
-    bizNameInput.value = d.name || "";
+    const name = d.name || "İşletme";
+    bizNameSmall.textContent = name;
+    bizNameMobile.textContent = name;
+    bizNameInput.value = name;
 
     bizPhoneInput.value = d.phone || "";
     bizAddressInput.value = d.address || "";
@@ -481,7 +519,9 @@ overlay.addEventListener("click", closeDrawer);
     cityFromDB = d.city || "";
     districtFromDB = d.district || "";
 
-    if(d.logoURL) logoPreview.src = d.logoURL;
+    if(d.logoURL){
+      logoPreview.src = d.logoURL;
+    }
 
     if(citiesData.length && cityFromDB){
       citySelect.value = cityFromDB;
@@ -489,34 +529,32 @@ overlay.addEventListener("click", closeDrawer);
     }
   }
 
-
-  // ✔ updateDoc yerine setDoc merge(true)
+  // İşletme bilgilerini kaydet
   saveBizBtn.addEventListener("click", async ()=>{
     if(!BUSINESS_ID) return;
+
     saveBizBtn.disabled = true;
 
     try{
       await setDoc(doc(db,"businesses",BUSINESS_ID),{
-        name:bizNameInput.value.trim(),
-        phone:bizPhoneInput.value.trim(),
-        address:bizAddressInput.value.trim(),
-        about:bizAboutInput.value.trim(),
-        city:citySelect.value,
-        district:districtSelect.value
+        name: bizNameInput.value.trim(),
+        phone: bizPhoneInput.value.trim(),
+        address: bizAddressInput.value.trim(),
+        about: bizAboutInput.value.trim(),
+        city: citySelect.value,
+        district: districtSelect.value
       },{merge:true});
 
-      alert("Bilgiler güncellendi.");
-    }
-    catch(err){
+      alert("İşletme bilgileri güncellendi.");
+    }catch(err){
       console.error(err);
-      alert("Kaydetme hatası.");
-    }
-    finally{
+      alert("Bilgiler kaydedilirken hata oluştu.");
+    }finally{
       saveBizBtn.disabled = false;
     }
   });
 
-
+  // Şifre güncelle
   savePassBtn.addEventListener("click", async ()=>{
     const pass = newPassInput.value;
     if(pass.length < 6){
@@ -527,22 +565,24 @@ overlay.addEventListener("click", closeDrawer);
     savePassBtn.disabled = true;
     try{
       await updatePassword(auth.currentUser, pass);
-      alert("Şifre değiştirildi.");
-      newPassInput.value="";
-    }
-    catch(e){
-      console.error(e);
-      alert("Şifre değiştirilemedi.");
-    }
-    finally{
+      alert("Şifre güncellendi.");
+      newPassInput.value = "";
+    }catch(err){
+      console.error(err);
+      if(err.code === "auth/requires-recent-login"){
+        alert("Şifreyi değiştirmek için tekrar giriş yapman gerekiyor.");
+      }else{
+        alert("Şifre güncellenemedi: " + err.message);
+      }
+    }finally{
       savePassBtn.disabled = false;
     }
   });
 
-
+  // Çıkış
   logoutBtn.addEventListener("click", async ()=>{
     await signOut(auth);
-    location.href="business-login.html";
+    window.location.href = "business-login.html";
   });
 
 </script>
