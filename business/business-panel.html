@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>İşletme Paneli | Cepterandevu</title>
+    <title id="pageTitle">İşletme Paneli | Cepterandevu</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -210,25 +210,51 @@
              background: rgba(34, 197, 94, 0.1);
         }
 
-        /* Ikon yer tutucusu (Profesyonel bir görünüm için Font Awesome'dan yararlanalım) */
-        .nav-icon {
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            font-size: 18px;
-        }
-        
-        /* İkonlar - Sadece yer tutucu olarak */
-        #nav-dashboard .nav-icon::before { content: "\f0e4"; } /* Tachometer Alt */
-        #nav-services .nav-icon::before { content: "\f0ad"; } /* Wrench */
-        #nav-employees .nav-icon::before { content: "\f007"; } /* User */
-        #nav-appointments .nav-icon::before { content: "\f073"; } /* Calendar */
-        #nav-settings .nav-icon::before { content: "\f013"; } /* Cog */
-
-
         .mobile-nav button.active {
             color: #22c55e;
             font-weight: 700;
         }
+
+        /* En Son Randevular Listesi Stilleri */
+        .appointment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .appointment-details strong {
+            color: var(--text);
+            font-weight: 600;
+            display: block;
+            font-size: 15px;
+        }
+
+        .appointment-details span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: rgba(251, 191, 36, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-approved {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #10b981;
+        }
+
 
         /* --- DESKTOP VIEW (Min 768px) --- */
         @media (min-width: 768px) {
@@ -277,15 +303,12 @@
              .main-area {
                 margin-bottom: 62px; /* Alt navigasyon kadar boşluk bırak */
              }
-             .logo-box {
-                /* Sidebar'daki logo-box'ı mobil'de gizlemek gerekmez, çünkü sidebar zaten gizli */
-             }
         }
     </style>
-    <!-- Font Awesome Icons for better mobile nav -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <!-- Firebase -->
+    <!-- Firebase SDK'ları -->
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
@@ -300,7 +323,6 @@
             <div class="logo-mark">C</div>
             <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
         </div>
-        <!-- Mobil menü açma/kapama butonu artık gerekmiyor, alt navigasyon var -->
     </header>
 
     <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
@@ -311,6 +333,7 @@
         </div>
 
         <div class="menu">
+            <!-- Tıklama olayları simülasyon amaçlıdır, gerçekte sayfayı değiştirir -->
             <button class="active" onclick="handleNavigation('business-panel.html')"><i class="fas fa-tachometer-alt"></i> Panel</button>
             <button onclick="handleNavigation('business-services.html')"><i class="fas fa-wrench"></i> Hizmetler</button>
             <button onclick="handleNavigation('business-employees.html')"><i class="fas fa-users"></i> Çalışanlar</button>
@@ -323,6 +346,7 @@
     <main class="main-area">
         <h1 class="title" id="bizTitle">İşletme Paneli</h1>
 
+        <!-- İSTATİSTİK KARTLARI -->
         <div class="cards">
             <div class="card">
                 <h3>Bugün Randevu</h3>
@@ -345,12 +369,12 @@
             </div>
         </div>
         
-        <!-- Diğer dashboard içeriği burada yer alabilir -->
+        <!-- EN SON RANDEVULAR -->
         <section class="p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 my-6">
              <h2 class="text-lg font-semibold mb-3">En Son Randevular</h2>
-             <p class="text-sm text-gray-400">Gerçek zamanlı randevu listesi buraya gelecek.</p>
              <div id="latestAppointmentsList" class="space-y-3 mt-4">
-                <!-- Randevu Listesi buraya eklenecek -->
+                 <!-- Randevular buraya JS ile yüklenecek -->
+                 <p class="text-sm text-gray-400" id="loadingMessage">Randevu verileri yükleniyor...</p>
              </div>
         </section>
 
@@ -359,23 +383,23 @@
     <!-- MOBILE BOTTOM NAVIGATION (Sadece mobil için görünür) -->
     <div class="mobile-nav">
         <button id="nav-dashboard" class="active" onclick="handleNavigation('business-panel.html')">
-            <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
+            <i class="fas fa-tachometer-alt"></i>
             Panel
         </button>
         <button id="nav-services" onclick="handleNavigation('business-services.html')">
-            <span class="nav-icon"><i class="fas fa-wrench"></i></span>
+            <i class="fas fa-wrench"></i>
             Hizmetler
         </button>
         <button id="nav-employees" onclick="handleNavigation('business-employees.html')">
-            <span class="nav-icon"><i class="fas fa-users"></i></span>
+            <i class="fas fa-users"></i>
             Çalışanlar
         </button>
         <button id="nav-appointments" onclick="handleNavigation('business-appointments.html')">
-            <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
+            <i class="fas fa-calendar-alt"></i>
             Randevular
         </button>
         <button id="nav-settings" onclick="handleNavigation('business-settings.html')">
-            <span class="nav-icon"><i class="fas fa-cog"></i></span>
+            <i class="fas fa-cog"></i>
             Ayarlar
         </button>
     </div>
@@ -383,12 +407,9 @@
 <script>
     // Sayfa değiştirme simülasyonu (Gerçek uygulamada bu bir router tarafından yapılacaktır)
     function handleNavigation(url) {
-        // Normalde: window.location.href = url;
-        // Simülasyon: Aktif butonu değiştir.
-        console.log("Navigasyon Simülasyonu: " + url);
         // Bu sayfada kalıyoruz ve sadece aktif menüyü güncelliyoruz
         updateActiveMenu(url.split('/').pop()); 
-        // Gerçek bir uygulamada, bu fonksiyon sadece sayfayı yönlendirir.
+        // Gerçek bir uygulamada: window.location.href = url;
     }
 
     // Aktif menü butonunu belirleme
@@ -406,7 +427,8 @@
         // Sidebar menüsünü güncelle
         document.querySelectorAll('.sidebar .menu button').forEach(btn => {
             btn.classList.remove("active");
-            if (btn.getAttribute('onclick').includes(currentPath)) {
+            // Basit bir kontrol ile sayfa adını içeren butonu bul
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(currentPath)) {
                 btn.classList.add('active');
             }
         });
@@ -423,6 +445,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Sayfa yüklendiğinde mevcut yolu aktif et
         const path = window.location.pathname.split('/').pop();
         updateActiveMenu(path);
     });
@@ -444,7 +467,7 @@
         where,
         doc,
         getDoc,
-        onSnapshot, // Gerçek zamanlı dinleme için
+        onSnapshot,
         setLogLevel
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -465,18 +488,31 @@
     const db = getFirestore(app);
 
     let businessID = null;
-    let isAuthReady = false; // Auth durumunun yüklenip yüklenmediğini takip et
+    let isAuthReady = false; 
 
+    // DOM Elementleri
+    const pageTitle = document.getElementById("pageTitle");
     const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
     const bizNameMobile = document.getElementById("bizNameMobile");
     const bizTitle = document.getElementById("bizTitle");
-    
     const statToday = document.getElementById("statToday");
     const statPending = document.getElementById("statPending");
     const statApproved = document.getElementById("statApproved");
     const statServices = document.getElementById("statServices");
+    const latestAppointmentsList = document.getElementById("latestAppointmentsList");
     
-    // 1. Kimlik Doğrulama
+    // Yardımcı Fonksiyonlar
+    function getStatusBadgeHtml(status) {
+        const statusMap = {
+            'pending': { text: 'Beklemede', class: 'status-pending' },
+            'approved': { text: 'Onaylandı', class: 'status-approved' },
+            // Diğer statüleri de buraya ekleyebilirsiniz (örn: cancelled, completed)
+        };
+        const s = statusMap[status] || { text: status, class: 'bg-gray-500/20 text-gray-400' };
+        return `<span class="status-badge ${s.class}">${s.text}</span>`;
+    }
+
+    // --- 1. Kimlik Doğrulama ---
     async function authenticate() {
         try {
             if (initialAuthToken) {
@@ -491,35 +527,17 @@
         }
     }
     
-    // 2. Auth Durumu Değişikliğini Dinle ve Verileri Yükle
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            // Gerçek uygulamada burası login sayfasına yönlendirilir:
-            // window.location.href = "business-login.html";
-            console.warn("Kullanıcı oturumu kapalı veya kimlik doğrulanamadı.");
-            isAuthReady = true; // Auth kontrolü tamamlandı, ancak kullanıcı yok
-            return;
-        }
+    // --- 2. İşletme Adını Yükle (Ayarlar'dan) ---
+    async function loadBusinessName(uid) {
+        const defaultName = "İşletme (" + uid.substring(0, 8) + "...)";
+        bizNameSmallSidebar.textContent = defaultName;
+        bizNameMobile.textContent = "İşletme Paneli";
+        bizTitle.textContent = "İşletme Paneli";
+        pageTitle.textContent = "Panel | " + defaultName;
 
-        businessID = user.uid;
-        isAuthReady = true; // Auth kontrolü tamamlandı ve kullanıcı var
-
-        // Veri yükleme işlemlerini başlat
-        loadBusinessName(); // Tek seferlik okuma
-        setupRealtimeListeners(); // Gerçek zamanlı dinlemeleri kur
-    });
-    
-    // Auth token'ı mevcutsa manuel olarak oturum açmayı dene
-    if (!auth.currentUser) {
-        authenticate();
-    }
-
-
-    // İşletme adını yükle (Genellikle tek seferlik okunur)
-    async function loadBusinessName() {
         try {
-            // Önerilen Canvas Security Rules yolu: /artifacts/{appId}/users/{userId}/settings/profile
-            const businessRef = doc(db, "artifacts", appId, "users", businessID, "settings", "profile");
+            // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/settings/profile
+            const businessRef = doc(db, "artifacts", appId, "users", uid, "settings", "profile");
             const snap = await getDoc(businessRef);
 
             if (snap.exists() && snap.data().name) {
@@ -527,31 +545,27 @@
                 bizNameSmallSidebar.textContent = name;
                 bizNameMobile.textContent = name;
                 bizTitle.textContent = name + " Paneli";
+                pageTitle.textContent = "Panel | " + name;
             } else {
-                console.warn("İşletme kaydı veya adı bulunamadı. UID:", businessID);
-                bizNameSmallSidebar.textContent = "İşletme (" + businessID.substring(0, 8) + "...)";
-                bizNameMobile.textContent = "İşletme Paneli";
-                bizTitle.textContent = "İşletme Paneli";
+                console.warn("İşletme adı Ayarlar'da bulunamadı. UID:", uid);
             }
         } catch (error) {
             console.error("İşletme adını yüklerken hata:", error);
         }
     }
     
-    // İstatistikler için gerçek zamanlı dinlemeleri kur
-    function setupRealtimeListeners() {
-        if (!isAuthReady || !businessID) return;
+    // --- 3. İstatistikler ve Randevular İçin Gerçek Zamanlı Dinlemeleri Kur ---
+    function setupRealtimeListeners(uid) {
+        if (!uid) return;
 
-        // Bugünün tarihini YYYY-MM-DD formatında al
+        // Bugünün tarihini YYYY-MM-DD formatında al (UTC yerine yerel saat baz alınır)
         const today = new Date().toISOString().split("T")[0];
         
-        // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/appointments
-        const appointmentsCollectionRef = collection(db, "artifacts", appId, "users", businessID, "appointments");
-        
-        // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/services
-        const servicesCollectionRef = collection(db, "artifacts", appId, "users", businessID, "services");
+        // Collection Yolları
+        const appointmentsCollectionRef = collection(db, "artifacts", appId, "users", uid, "appointments");
+        const servicesCollectionRef = collection(db, "artifacts", appId, "users", uid, "services");
 
-        // --- 1. Bugün Randevu Sayısı ---
+        // --- Stat 1: Bugün Randevu Sayısı ---
         const qToday = query(
             appointmentsCollectionRef,
             where("date", "==", today)
@@ -560,29 +574,109 @@
             statToday.textContent = snapshot.size;
         }, (error) => console.error("Bugünkü randevuları dinleme hatası:", error));
         
-        // --- 2. Bekleyen Randevu Sayısı ---
-        const qPending = query(
-            appointmentsCollectionRef,
-            where("status", "==", "pending")
-        );
-        onSnapshot(qPending, (snapshot) => {
-            statPending.textContent = snapshot.size;
-        }, (error) => console.error("Bekleyen randevuları dinleme hatası:", error));
+        // --- Stat 2 & 3: Bekleyen ve Onaylanan Randevu Sayıları ---
+        const qAllAppointments = query(appointmentsCollectionRef);
+        onSnapshot(qAllAppointments, (snapshot) => {
+            let pendingCount = 0;
+            let approvedCount = 0;
+            let latestAppointments = [];
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.status === "pending") {
+                    pendingCount++;
+                } else if (data.status === "approved") {
+                    approvedCount++;
+                }
+                
+                // En son 5 randevuyu almak için listeye ekle
+                latestAppointments.push({ id: doc.id, ...data });
+            });
+
+            statPending.textContent = pendingCount;
+            statApproved.textContent = approvedCount;
+
+            // En son randevuları tarihe göre sırala (Yeni randevular en üstte)
+            latestAppointments.sort((a, b) => {
+                // date ve time alanlarını birleştirerek karşılaştırma yap
+                const dateA = new Date(`${a.date}T${a.time}:00`);
+                const dateB = new Date(`${b.date}T${b.time}:00`);
+                return dateB.getTime() - dateA.getTime();
+            });
+
+            renderLatestAppointments(latestAppointments.slice(0, 5)); // Sadece en son 5 tanesini göster
+            
+        }, (error) => console.error("Tüm randevuları dinleme hatası:", error));
         
-        // --- 3. Onaylanan Randevu Sayısı ---
-        const qApproved = query(
-            appointmentsCollectionRef,
-            where("status", "==", "approved")
-        );
-        onSnapshot(qApproved, (snapshot) => {
-            statApproved.textContent = snapshot.size;
-        }, (error) => console.error("Onaylanan randevuları dinleme hatası:", error));
-        
-        // --- 4. Toplam Hizmet Sayısı ---
+        // --- Stat 4: Toplam Hizmet Sayısı ---
         const qServices = query(servicesCollectionRef);
         onSnapshot(qServices, (snapshot) => {
             statServices.textContent = snapshot.size;
         }, (error) => console.error("Hizmetleri dinleme hatası:", error));
+    }
+    
+    // --- 4. En Son Randevuları Ekrana Yazdır ---
+    function renderLatestAppointments(appointments) {
+        latestAppointmentsList.innerHTML = ''; // Listeyi temizle
+        const loadingMessage = document.getElementById("loadingMessage");
+        if (loadingMessage) {
+            loadingMessage.remove(); // Yükleniyor mesajını kaldır
+        }
+
+        if (appointments.length === 0) {
+            latestAppointmentsList.innerHTML = '<p class="text-sm text-gray-500 p-2">Henüz hiç randevu yok.</p>';
+            return;
+        }
+
+        appointments.forEach(app => {
+            const appointmentDiv = document.createElement('div');
+            appointmentDiv.className = 'appointment-item';
+            
+            // Tarih ve Saati okunabilir formata dönüştür
+            const dateParts = app.date ? app.date.split('-') : ["", "", ""];
+            const formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; // DD.MM.YYYY
+            
+            const timeText = app.time || "Belirtilmemiş";
+            
+            appointmentDiv.innerHTML = `
+                <div class="appointment-details">
+                    <strong>${app.clientName || 'İsimsiz Müşteri'}</strong>
+                    <span>${app.serviceName || 'Hizmet Bilgisi Yok'}</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-sm text-gray-300 font-semibold block">${formattedDate} ${timeText}</span>
+                    ${getStatusBadgeHtml(app.status)}
+                </div>
+            `;
+            latestAppointmentsList.appendChild(appointmentDiv);
+        });
+    }
+
+
+    // --- 5. Auth Değişikliği Dinleyicisi ---
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            businessID = user.uid;
+            isAuthReady = true;
+
+            // Yükleme sırası: İsim yükle, sonra gerçek zamanlı dinlemeleri kur
+            await loadBusinessName(businessID); 
+            setupRealtimeListeners(businessID); 
+            
+        } else {
+            console.warn("Kullanıcı oturumu kapalı. Anonim giriş bekleniyor.");
+            isAuthReady = true;
+            // Eğer auth.currentUser null ise ve anonim giriş yapılmadıysa, tekrar dene
+            if (initialAuthToken || !auth.currentUser) {
+                // Anonim giriş veya custom token ile oturum açmayı dene
+                authenticate();
+            }
+        }
+    });
+
+    // Oturum açma işlemini başlat (onAuthStateChanged tetiklenecektir)
+    if (!auth.currentUser) {
+        authenticate();
     }
 
 </script>
