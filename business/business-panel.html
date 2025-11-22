@@ -1,835 +1,808 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">İşletme Paneli | Cepterandevu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">İşletme Paneli | Cepterandevu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <style>
-        :root {
-            --bg: #050816;
-            --sidebar: #0b1120;
-            --card: #101528;
-            --accent: #22c55e;
-            --accent-strong: #16a34a;
-            --text: #f9fafb;
-            --muted: #9ca3af;
-            --border: rgba(148,163,184,0.35);
-            --radius-xl: 18px; /* Daha modern bir yuvarlaklık */
-            --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
-        }
+  <style>
+    :root {
+      --bg: #050816;
+      --sidebar: #0b1120;
+      --card: #101528;
+      --accent: #22c55e;
+      --accent-strong: #16a34a;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: rgba(148,163,184,0.35);
+      --radius-xl: 18px;
+      --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            display: flex;
-            flex-direction: column;
-            /* Hafif bir degrade arka plan */
-            background: radial-gradient(circle at top, #111827, #020617 55%);
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            color: var(--text);
-            min-height: 100vh;
-        }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top, #111827, #020617 55%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-        /* --- YENİ SIFIRLANAN MOBİL/Masaüstü BAŞLIK ALANI --- */
-        .top-header {
-            width: 100%;
-            padding-top: 14px;
-            padding-bottom: 0; /* Menü satırı kendi padding'ini verecek */
-            position: sticky;
-            top: 0;
-            z-index: 500;
-            background: var(--sidebar);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            flex-direction: column; /* İki satır için dikey düzen */
-            align-items: center; /* Ortadaki logo satırı için */
-            gap: 8px; /* İki satır arasındaki boşluk */
-        }
+    /* --- ÜST BAŞLIK (MOBİL + DESKTOP) --- */
+    .top-header {
+      width: 100%;
+      padding-top: 14px;
+      padding-bottom: 0;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      background: var(--sidebar);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
 
-        /* Logo ve yazı ortada (Birinci Satır) */
-        .top-center {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            width: 100%;
-        }
+    .top-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
 
-        /* Menü Butonu Satırı (İkinci Satır) */
-        .top-menu-row {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start; /* Sola hizala */
-            padding-left: 20px; /* Kenardan boşluk */
-            padding-bottom: 14px; /* Header'ın toplam alt boşluğu */
-        }
+    .top-menu-row {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 20px;
+      padding-bottom: 14px;
+    }
 
-        .logo-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text);
-        }
-        
-        /* --- MENÜ BUTONU (SADECE MOBİL İÇİN) --- */
-        /* Yeni buton stilleri, fixed pozisyonu kaldırıldı */
-        .menu-btn {
-            background: var(--accent);
-            color: #022c22;
-            border: 0;
-            padding: 9px 15px; /* Daha zarif padding */
-            border-radius: 12px;
-            font-size: 15px; /* Daha küçük font */
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35); /* Yumuşak gölge */
-            display: flex; /* İkon ve yazı için flex */
-            align-items: center;
-            gap: 8px;
-        }
-        .menu-btn i {
-            font-size: 14px;
-        }
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #ecfdf5;
+      box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+    }
 
-        /* --- SIDEBAR (SADECE MASAÜSTÜ İÇİN) --- */
-        .sidebar {
-            width: 240px;
-            background: var(--sidebar);
-            padding: 24px 18px;
-            border-right: 1px solid var(--border);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            display: none; /* Mobil'de varsayılan olarak gizli */
-            flex-direction: column;
-            gap: 14px;
-            z-index: 1000;
-        }
+    .logo-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
 
-        .logo-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            justify-content: flex-start;
-        }
+    .menu-btn {
+      background: var(--accent);
+      color: #022c22;
+      border: 0;
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .menu-btn i {
+      font-size: 14px;
+    }
 
-        .logo-mark {
-            width: 36px;
-            height: 36px;
-            border-radius: 14px;
-            background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 18px;
-            color: #ecfdf5;
-            box-shadow: 0 6px 20px rgba(34,197,94,0.4);
-        }
+    /* --- SIDEBAR (DESKTOP) --- */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1000;
+    }
 
-        .biz-name-small {
-            font-size: 16px;
-            font-weight: 700;
-        }
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: flex-start;
+    }
 
-        .menu button {
-            width: 100%;
-            padding: 12px 14px;
-            background: transparent;
-            border: 0;
-            text-align: left;
-            color: var(--muted);
-            cursor: pointer;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s, color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .biz-name-small {
+      font-size: 16px;
+      font-weight: 700;
+    }
 
-        .menu button:hover {
-            background: rgba(34, 197, 94, 0.1);
-            color: var(--text);
-        }
+    .menu button {
+      width: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      border: 0;
+      text-align: left;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .menu button.active {
-            background: var(--accent);
-            color: #022c22;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-        }
+    .menu button:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--text);
+    }
 
-        /* --- MAIN AREA --- */
-        .main-area {
-            flex: 1;
-            padding: 20px;
-            width: 100%;
-            min-height: 100vh;
-            /* Yeni iki satırlı header'a uygun boşluk (yaklaşık 110px) */
-            padding-top: 110px; 
-        }
-        
-        .title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--text);
-            /* Masaüstünde üst header gizlendiği için başlık gösterilir */
-            display: none; 
-        }
+    .menu button.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
 
-        /* --- CARDS --- */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
+    /* --- MAIN AREA --- */
+    .main-area {
+      flex: 1;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: 110px;
+    }
 
-        .card {
-            background: var(--card);
-            padding: 20px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-soft);
-            transition: transform 0.2s;
-        }
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text);
+      display: none;
+    }
 
-        .card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent);
-        }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
 
-        .card h3 {
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
-        }
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s;
+    }
 
-        .stat {
-            font-size: 28px;
-            font-weight: 800;
-            margin-top: 4px;
-            color: var(--accent);
-        }
-        
-        /* En Son Randevular Listesi Stilleri */
-        .appointment-section {
-            padding: 16px; 
-            background: rgba(16, 21, 40, 0.5); 
-            border-radius: 18px; 
-            border: 1px solid rgba(75, 85, 99, 0.35); 
-            margin-top: 24px; 
-            margin-bottom: 24px; 
-        }
-        
-        .appointment-section h2 {
-             font-size: 18px;
-             font-weight: 600;
-             margin-bottom: 12px;
-        }
-        
-        .appointment-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; 
-            margin-top: 16px; 
-        }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+    }
 
-        .appointment-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--card);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
+    .card h3 {
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+    }
 
-        .appointment-details strong {
-            color: var(--text);
-            font-weight: 600;
-            display: block;
-            font-size: 15px;
-        }
+    .stat {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 4px;
+      color: var(--accent);
+    }
 
-        .appointment-details span {
-            color: var(--muted);
-            font-size: 12px;
-        }
+    /* EN SON RANDEVULAR BÖLÜMÜ */
+    .appointment-section {
+      padding: 16px;
+      background: rgba(16, 21, 40, 0.5);
+      border-radius: 18px;
+      border: 1px solid rgba(75, 85, 99, 0.35);
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
 
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
+    .appointment-section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
 
-        .status-pending {
-            background-color: rgba(251, 191, 36, 0.2);
-            color: #f59e0b;
-        }
+    .appointment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
 
-        .status-approved {
-            background-color: rgba(34, 197, 94, 0.2);
-            color: #10b981;
-        }
-        
-        /* Kalan statü renklerini ekleyelim */
-        .status-cancelled { 
-            background-color: rgba(239, 68, 68, 0.2); 
-            color: #f87171; 
-        }
-        .status-completed { 
-            background-color: rgba(59, 130, 246, 0.2); 
-            color: #60a5fa; 
-        }
+    .appointment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
 
-        /* --- YENİ MOBİL ÇEKMECE (DRAWER) STİLLERİ --- */
+    .appointment-details strong {
+      color: var(--text);
+      font-weight: 600;
+      display: block;
+      font-size: 15px;
+    }
 
-        /* Menü Arkası */
-        .drawer-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(2px);
-            display: none;
-            z-index: 998;
-        }
+    .appointment-details span {
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-        /* Açılan Menü */
-        .drawer-menu {
-            position: fixed;
-            top: 0; left: 0;
-            width: 250px;
-            height: 100%;
-            background: #0b1120;
-            transform: translateX(-100%);
-            transition: transform 0.28s ease;
-            z-index: 9999;
-            padding: 20px;
-            border-right: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-        }
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
 
-        /* Açık hali */
-        .drawer-open {
-            transform: translateX(0);
-        }
+    .status-pending {
+      background-color: rgba(251, 191, 36, 0.2);
+      color: #f59e0b;
+    }
 
-        /* Başlık */
-        .drawer-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+    .status-approved {
+      background-color: rgba(34, 197, 94, 0.2);
+      color: #10b981;
+    }
 
-        /* Linkler */
-        .drawer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .drawer-links a {
-            display: block;
-            padding: 12px 10px;
-            color: #e2e8f0;
-            font-size: 15px;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
+    .status-rejected {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
 
-        .drawer-links a:hover, .drawer-links a.active {
-            background: var(--accent);
-            color: #022c22;
-            font-weight: 600;
-        }
-        
-        .loading-message {
-            font-size: 14px;
-            color: var(--muted);
-            padding: 8px;
-        }
+    .status-cancelled {
+      background-color: rgba(148, 163, 184, 0.2);
+      color: #e5e7eb;
+    }
 
+    .loading-message {
+      font-size: 14px;
+      color: var(--muted);
+      padding: 8px;
+    }
 
-        /* --- DESKTOP VIEW (Min 768px) --- */
-        @media (min-width: 768px) {
-            body {
-                flex-direction: row;
-            }
+    /* DRAWER (MOBİL MENÜ) */
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 998;
+    }
 
-            .sidebar {
-                display: flex; /* Masaüstünde sidebar'ı göster */
-            }
-            
-            .top-header {
-                display: none; /* Masaüstünde üst header'ı gizle */
-            }
-            
-            .menu-btn {
-                display: none; /* Masaüstünde mobil butonu gizle */
-            }
+    .drawer-menu {
+      position: fixed;
+      top: 0; left: 0;
+      width: 250px;
+      height: 100%;
+      background: #0b1120;
+      transform: translateX(-100%);
+      transition: transform 0.28s ease;
+      z-index: 9999;
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
 
-            .main-area {
-                margin-left: 240px; /* Sabit sidebar kadar boşluk bırak */
-                padding: 32px;
-                padding-top: 32px; /* Artık mobil header yok */
-            }
-            
-            .title {
-                display: block; /* Masaüstü başlığını göster */
-            }
+    .drawer-open {
+      transform: translateX(0);
+    }
 
-            .cards {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 24px;
-            }
+    .drawer-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
 
-            .card h3 {
-                font-size: 15px;
-            }
+    .drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-            .stat {
-                font-size: 32px;
-            }
-        }
-    </style>
+    .drawer-links a {
+      display: block;
+      padding: 12px 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
 
-    <!-- Firebase SDK'ları -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    .drawer-links a:hover,
+    .drawer-links a.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
 
+    /* RESPONSIVE - DESKTOP */
+    @media (min-width: 768px) {
+      body {
+        flex-direction: row;
+      }
+
+      .sidebar {
+        display: flex;
+      }
+
+      .top-header {
+        display: none;
+      }
+
+      .menu-btn {
+        display: none;
+      }
+
+      .main-area {
+        margin-left: 240px;
+        padding: 32px;
+        padding-top: 32px;
+      }
+
+      .title {
+        display: block;
+      }
+
+      .cards {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+      }
+
+      .card h3 {
+        font-size: 15px;
+      }
+
+      .stat {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- ÜST MENÜ BUTONU KALDIRILDI VE HEADER İÇİNE ALINDI -->
-    
-    <!-- Soldan Açılan Menü (Drawer) -->
-    <div id="drawerOverlay" class="drawer-overlay"></div>
-    <div id="drawerMenu" class="drawer-menu">
-        <div class="drawer-header">
-            <span class="drawer-title">Cepterandevu</span>
-        </div>
-        <div class="drawer-links" id="drawerLinks">
-            <!-- Menü linkleri burada -->
-            <a href="#" data-path="business-panel.html" onclick="handleNavigation(this)"><i class="fas fa-tachometer-alt"></i> Panel</a>
-            <a href="#" data-path="business-services.html" onclick="handleNavigation(this)"><i class="fas fa-wrench"></i> Hizmetler</a>
-            <a href="#" data-path="business-employees.html" onclick="handleNavigation(this)"><i class="fas fa-users"></i> Çalışanlar</a>
-            <a href="#" data-path="business-appointments.html" onclick="handleNavigation(this)"><i class="fas fa-calendar-alt"></i> Randevular</a>
-            <a href="#" data-path="business-settings.html" onclick="handleNavigation(this)"><i class="fas fa-cog"></i> Ayarlar</a>
-        </div>
+  <!-- DRAWER -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="drawerMenu" class="drawer-menu">
+    <div class="drawer-header">
+      <span class="drawer-title">Cepterandevu</span>
+    </div>
+    <div class="drawer-links" id="drawerLinks">
+      <a href="javascript:void(0)" data-path="/al/business/business-panel.html" onclick="handleNavigation(this)">
+        <i class="fas fa-tachometer-alt"></i> Panel
+      </a>
+      <a href="javascript:void(0)" data-path="/al/business/business-services.html" onclick="handleNavigation(this)">
+        <i class="fas fa-wrench"></i> Hizmetler
+      </a>
+      <a href="javascript:void(0)" data-path="/al/business/business-employees.html" onclick="handleNavigation(this)">
+        <i class="fas fa-users"></i> Çalışanlar
+      </a>
+      <a href="javascript:void(0)" data-path="/al/business/business-appointments.html" onclick="handleNavigation(this)">
+        <i class="fas fa-calendar-alt"></i> Randevular
+      </a>
+      <a href="javascript:void(0)" data-path="/al/business/business-settings.html" onclick="handleNavigation(this)">
+        <i class="fas fa-cog"></i> Ayarlar
+      </a>
+    </div>
+  </div>
+
+  <!-- MOBİL ÜST BAŞLIK -->
+  <header class="top-header">
+    <div class="top-center">
+      <div class="logo-mark">C</div>
+      <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
+    </div>
+    <div class="top-menu-row">
+      <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR (DESKTOP) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-box">
+      <div class="logo-mark">C</div>
+      <div class="biz-name-small" id="bizNameSmallSidebar">Yükleniyor...</div>
     </div>
 
-    <!-- MOBİL VE MASAÜSTÜ ÜST BAŞLIĞI (YENİ YAPILANDIRILMIŞ) -->
-    <header class="top-header">
-        <!-- Birinci Satır: Logo ve Başlık (Ortalanmış) -->
-        <div class="top-center">
-            <div class="logo-mark">C</div>
-            <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
-        </div>
-        <!-- İkinci Satır: Menü Butonu (Sola Hizalanmış) -->
-        <div class="top-menu-row">
-            <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
-        </div>
-    </header>
+    <div class="menu">
+      <button class="active" onclick="handleNavigation(this)" data-path="/al/business/business-panel.html">
+        <i class="fas fa-tachometer-alt"></i> Panel
+      </button>
+      <button onclick="handleNavigation(this)" data-path="/al/business/business-services.html">
+        <i class="fas fa-wrench"></i> Hizmetler
+      </button>
+      <button onclick="handleNavigation(this)" data-path="/al/business/business-employees.html">
+        <i class="fas fa-users"></i> Çalışanlar
+      </button>
+      <button onclick="handleNavigation(this)" data-path="/al/business/business-appointments.html">
+        <i class="fas fa-calendar-alt"></i> Randevular
+      </button>
+      <button onclick="handleNavigation(this)" data-path="/al/business/business-settings.html">
+        <i class="fas fa-cog"></i> Ayarlar
+      </button>
+    </div>
+  </aside>
 
-    <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo-box">
-            <div class="logo-mark">C</div>
-            <div class="biz-name-small" id="bizNameSmallSidebar">Yükleniyor...</div>
-        </div>
+  <!-- MAIN CONTENT -->
+  <main class="main-area">
+    <h1 class="title" id="bizTitle">İşletme Paneli</h1>
 
-        <div class="menu">
-            <!-- Tıklama olayları simülasyon amaçlıdır -->
-            <button class="active" onclick="handleNavigation(this)" data-path="business-panel.html"><i class="fas fa-tachometer-alt"></i> Panel</button>
-            <button onclick="handleNavigation(this)" data-path="business-services.html"><i class="fas fa-wrench"></i> Hizmetler</button>
-            <button onclick="handleNavigation(this)" data-path="business-employees.html"><i class="fas fa-users"></i> Çalışanlar</button>
-            <button onclick="handleNavigation(this)" data-path="business-appointments.html"><i class="fas fa-calendar-alt"></i> Randevular</button>
-            <button onclick="handleNavigation(this)" data-path="business-settings.html"><i class="fas fa-cog"></i> Ayarlar</button>
-        </div>
-    </aside>
+    <!-- İSTATİSTİK KARTLARI -->
+    <div class="cards">
+      <div class="card">
+        <h3>Bugün Randevu</h3>
+        <div class="stat" id="statToday">0</div>
+      </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-area">
-        <!-- Masaüstü Başlığı -->
-        <h1 class="title" id="bizTitle">İşletme Paneli</h1>
+      <div class="card">
+        <h3>Bekleyenler</h3>
+        <div class="stat" id="statPending">0</div>
+      </div>
 
-        <!-- İSTATİSTİK KARTLARI -->
-        <div class="cards">
-            <div class="card">
-                <h3>Bugün Randevu</h3>
-                <div class="stat" id="statToday">0</div>
-            </div>
+      <div class="card">
+        <h3>Onaylananlar</h3>
+        <div class="stat" id="statApproved">0</div>
+      </div>
 
-            <div class="card">
-                <h3>Bekleyenler</h3>
-                <div class="stat" id="statPending">0</div>
-            </div>
+      <div class="card">
+        <h3>Toplam Hizmet</h3>
+        <div class="stat" id="statServices">0</div>
+      </div>
+    </div>
 
-            <div class="card">
-                <h3>Onaylananlar</h3>
-                <div class="stat" id="statApproved">0</div>
-            </div>
+    <!-- EN SON RANDEVULAR -->
+    <section class="appointment-section">
+      <h2>En Son Randevular</h2>
+      <div id="latestAppointmentsList" class="appointment-list">
+        <p class="loading-message" id="loadingMessage">Randevu verileri yükleniyor...</p>
+      </div>
+    </section>
+  </main>
 
-            <div class="card">
-                <h3>Toplam Hizmet</h3>
-                <div class="stat" id="statServices">0</div>
-            </div>
-        </div>
-        
-        <!-- EN SON RANDEVULAR -->
-        <section class="appointment-section">
-             <h2>En Son Randevular</h2>
-             <div id="latestAppointmentsList" class="appointment-list">
-                 <!-- Randevular buraya JS ile yüklenecek -->
-                 <p class="loading-message" id="loadingMessage">Randevu verileri yükleniyor...</p>
-             </div>
-        </section>
-
-    </main>
-
-
+<!-- NAV / DRAWER SCRIPT (MODULE DEĞİL) -->
 <script>
-    // **********************************************
-    // --- UI/NAVIGATION LOGIC (Pure JS) ---
-    // **********************************************
-    
-    const drawer = document.getElementById("drawerMenu");
-    const overlay = document.getElementById("drawerOverlay");
-    const menuBtn = document.getElementById("menuBtn");
-    
-    // Drawer'ı açma/kapama fonksiyonları
-    function openDrawer() {
-        drawer.classList.add("drawer-open");
-        overlay.style.display = "block";
-    }
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
 
-    function closeDrawer() {
-        drawer.classList.remove("drawer-open");
-        overlay.style.display = "none";
-    }
+  function openDrawer() {
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
 
-    // Mobil Menü Olay Dinleyicileri
+  function closeDrawer() {
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
+
+  if (menuBtn) {
     menuBtn.addEventListener("click", openDrawer);
+  }
+  if (overlay) {
     overlay.addEventListener("click", closeDrawer);
-    
+  }
 
-    // Sayfa değiştirme simülasyonu ve menü aktifliği güncellemesi
-    function handleNavigation(element) {
-        let path;
-        
-        // Gelen öğe bir buton (masaüstü sidebar) veya anchor (mobil drawer) olabilir
-        if (element.tagName === 'BUTTON') {
-            path = element.getAttribute('data-path');
-        } else if (element.tagName === 'A') {
-            path = element.getAttribute('data-path');
-        } else {
-            // Eğer string olarak çağrılırsa (eski kod uyumu için)
-            path = element;
-        }
+  function handleNavigation(el) {
+    const path = el.getAttribute("data-path");
+    if (!path) return;
+    window.location.href = path;
+  }
 
-        if (!path) return;
-
-        // 1. Aktif Menü Güncellemesi
-        updateActiveMenu(path);
-
-        // 2. Mobil Çekmeceyi Kapat (Mobil'de ise)
-        if (window.innerWidth < 768) {
-            closeDrawer();
-        }
-
-        // Gerçek bir uygulamada: window.location.href = path;
-        // Simülasyon olduğu için sadece logluyoruz.
-        console.log("Navigating to (simulated): " + path);
-    }
-
-    // Aktif menü butonunu belirleme
-    function updateActiveMenu(path) {
-        const currentPath = path || "business-panel.html";
-
-        // Sidebar menüsünü güncelle (Button elementleri)
-        document.querySelectorAll('.sidebar .menu button').forEach(btn => {
-            btn.classList.remove("active");
-            if (btn.getAttribute('data-path') === currentPath) {
-                btn.classList.add('active');
-            }
-        });
-
-        // Mobil Drawer menüsünü güncelle (Anchor elementleri)
-        document.querySelectorAll('.drawer-links a').forEach(link => {
-            link.classList.remove("active");
-            if (link.getAttribute('data-path') === currentPath) {
-                link.classList.add('active');
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Sayfa yüklendiğinde varsayılan yolu aktif et
-        updateActiveMenu("business-panel.html"); 
+  function updateActiveMenu(currentPath) {
+    const sidebarButtons = document.querySelectorAll(".sidebar .menu button");
+    sidebarButtons.forEach(btn => {
+      const p = btn.getAttribute("data-path");
+      if (p === currentPath) btn.classList.add("active");
+      else btn.classList.remove("active");
     });
+
+    const drawerLinks = document.querySelectorAll(".drawer-links a");
+    drawerLinks.forEach(a => {
+      const p = a.getAttribute("data-path");
+      if (p === currentPath) a.classList.add("active");
+      else a.classList.remove("active");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const currentPath = window.location.pathname;
+    updateActiveMenu(currentPath);
+  });
 </script>
 
+<!-- FIREBASE / PANEL LOGİĞİ -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-        getAuth,
-        onAuthStateChanged,
-        signInWithCustomToken,
-        signInAnonymously
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { firebaseConfig } from "../js/firebase-config.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    onSnapshot,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    import {
-        getFirestore,
-        collection,
-        query,
-        where,
-        doc,
-        getDoc,
-        onSnapshot,
-        setLogLevel
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  let app, auth, db;
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (e) {
+    console.error("Firebase başlatılamadı:", e);
+    const msgEl = document.getElementById("loadingMessage");
+    if (msgEl) msgEl.textContent = "Veritabanı bağlantı hatası.";
+  }
 
-    // Firestore ve Auth işlemlerinden önce log seviyesini ayarla
-    setLogLevel('Debug');
+  let businessID = null;
 
-    // Canvas Ortamından Global Değişkenleri Alma
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+  const pageTitle = document.getElementById("pageTitle");
+  const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+  const bizNameMobile = document.getElementById("bizNameMobile");
+  const bizTitle = document.getElementById("bizTitle");
+  const statToday = document.getElementById("statToday");
+  const statPending = document.getElementById("statPending");
+  const statApproved = document.getElementById("statApproved");
+  const statServices = document.getElementById("statServices");
+  const latestAppointmentsList = document.getElementById("latestAppointmentsList");
+  const loadingMessage = document.getElementById("loadingMessage");
 
-    if (!firebaseConfig.apiKey) {
-        console.error("HATA: Firebase yapılandırması eksik.");
+  const customerCache = {};
+  const serviceCache = {};
+  const employeeCache = {};
+
+  function getStatusBadgeHtml(status) {
+    switch (status) {
+      case "pending":
+        return '<span class="status-badge status-pending">Beklemede</span>';
+      case "approved":
+        return '<span class="status-badge status-approved">Onaylandı</span>';
+      case "rejected":
+        return '<span class="status-badge status-rejected">Reddedildi</span>';
+      case "cancelled":
+        return '<span class="status-badge status-cancelled">İptal Edildi</span>';
+      default:
+        return `<span class="status-badge">${status || "-"}</span>`;
     }
-    
-    // Hata durumunda uygulama başlatılmasını engellemek için basic kontrol
-    let app, auth, db;
-    if (firebaseConfig.apiKey) {
-        app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-    } else {
-        console.error("Firebase API Key bulunamadığı için uygulama başlatılamadı.");
-        // UI'da yükleniyor mesajını güncelle
-        document.getElementById("loadingMessage").textContent = "Veritabanı bağlantı hatası.";
+  }
+
+  async function loadBusinessName(uid) {
+    try {
+      const ref = doc(db, "businesses", uid);
+      const snap = await getDoc(ref);
+      let name = "İşletme";
+
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.name) name = data.name;
+      }
+
+      bizNameSmallSidebar.textContent = name;
+      bizNameMobile.textContent = name;
+      bizTitle.textContent = name + " Paneli";
+      pageTitle.textContent = "İşletme Paneli | " + name;
+    } catch (e) {
+      console.error("İşletme adı okunamadı:", e);
+      bizNameSmallSidebar.textContent = "İşletme";
+      bizNameMobile.textContent = "İşletme Paneli";
+      bizTitle.textContent = "İşletme Paneli";
     }
+  }
 
+  async function enrichAppointments(list) {
+    const result = [];
 
-    let businessID = null;
-    let isAuthReady = false; 
+    for (const ap of list) {
+      const obj = { ...ap };
 
-    // DOM Elementleri
-    const pageTitle = document.getElementById("pageTitle");
-    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
-    const bizNameMobile = document.getElementById("bizNameMobile");
-    const bizTitle = document.getElementById("bizTitle");
-    const statToday = document.getElementById("statToday");
-    const statPending = document.getElementById("statPending");
-    const statApproved = document.getElementById("statApproved");
-    const statServices = document.getElementById("statServices");
-    const latestAppointmentsList = document.getElementById("latestAppointmentsList");
-    
-    // Yardımcı Fonksiyonlar
-    function getStatusBadgeHtml(status) {
-        const statusMap = {
-            'pending': { text: 'Beklemede', class: 'status-pending' },
-            'approved': { text: 'Onaylandı', class: 'status-approved' },
-            'cancelled': { text: 'İptal Edildi', class: 'status-cancelled' },
-            'completed': { text: 'Tamamlandı', class: 'status-completed' },
-        };
-        const s = statusMap[status] || { text: status, class: 'bg-gray-500/20 text-gray-400' };
-        return `<span class="status-badge ${s.class}">${s.text}</span>`;
-    }
-
-    // --- 1. Kimlik Doğrulama ---
-    async function authenticate() {
-        if (!auth) return;
-        try {
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-                console.log("Custom token ile oturum açıldı.");
-            } else {
-                await signInAnonymously(auth);
-                console.log("Anonim olarak oturum açıldı.");
-            }
-        } catch (error) {
-            console.error("Kimlik doğrulama hatası:", error);
+      if (ap.customerUID) {
+        if (!customerCache[ap.customerUID]) {
+          try {
+            const usnap = await getDoc(doc(db, "customers", ap.customerUID));
+            customerCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
+          } catch (e) {
+            console.warn("Müşteri okunamadı:", e);
+          }
         }
-    }
-    
-    // --- 2. İşletme Adını Yükle (Ayarlar'dan) ---
-    async function loadBusinessName(uid) {
-        if (!db) return;
-        const defaultName = "İşletme (" + uid.substring(0, 8) + "...)";
-        bizNameSmallSidebar.textContent = defaultName;
-        bizNameMobile.textContent = "İşletme Paneli";
-        bizTitle.textContent = "İşletme Paneli";
-        pageTitle.textContent = "Panel | " + defaultName;
-
-        try {
-            // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/settings/profile
-            const businessRef = doc(db, "artifacts", appId, "users", uid, "settings", "profile");
-            const snap = await getDoc(businessRef);
-
-            if (snap.exists() && snap.data().name) {
-                const name = snap.data().name;
-                bizNameSmallSidebar.textContent = name;
-                bizNameMobile.textContent = name;
-                bizTitle.textContent = name + " Paneli";
-                pageTitle.textContent = "Panel | " + name;
-            } else {
-                console.warn("İşletme adı Ayarlar'da bulunamadı. UID:", uid);
-            }
-        } catch (error) {
-            console.error("İşletme adını yüklerken hata:", error);
+        const u = customerCache[ap.customerUID];
+        if (u) {
+          obj.customerName = u.name || "Müşteri";
         }
-    }
-    
-    // --- 3. İstatistikler ve Randevular İçin Gerçek Zamanlı Dinlemeleri Kur ---
-    function setupRealtimeListeners(uid) {
-        if (!uid || !db) return;
+      }
 
-        // Bugünün tarihini YYYY-MM-DD formatında al
-        const today = new Date().toISOString().split("T")[0];
-        
-        // Collection Yolları (Özel Veriler)
-        const appointmentsCollectionRef = collection(db, "artifacts", appId, "users", uid, "appointments");
-        const servicesCollectionRef = collection(db, "artifacts", appId, "users", uid, "services");
-
-        // --- Stat 1: Bugün Randevu Sayısı ---
-        // Randevu sayısı için sorgu (yalnızca bugüne ait)
-        const qToday = query(
-            appointmentsCollectionRef,
-            where("date", "==", today)
-        );
-        onSnapshot(qToday, (snapshot) => {
-            statToday.textContent = snapshot.size;
-        }, (error) => console.error("Bugünkü randevuları dinleme hatası:", error));
-        
-        // --- Stat 2, 3 ve En Son Randevular: Tüm Randevuları Dinle ---
-        // Tüm randevular için sorgu (sonradan JS'de filtrelenecek/sıralanacak)
-        const qAllAppointments = query(appointmentsCollectionRef);
-        onSnapshot(qAllAppointments, (snapshot) => {
-            let pendingCount = 0;
-            let approvedCount = 0;
-            let latestAppointments = [];
-
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                data.docId = doc.id; // Document ID'yi de ekle
-                
-                if (data.status === "pending") {
-                    pendingCount++;
-                } else if (data.status === "approved") {
-                    approvedCount++;
-                }
-                
-                // En son randevular için listeye ekle
-                latestAppointments.push({ id: doc.id, ...data });
-            });
-
-            statPending.textContent = pendingCount;
-            statApproved.textContent = approvedCount;
-
-            // Randevuları tarihe göre sırala (En yeniler başta)
-            // Not: Firestore'da orderBy kullanmak yerine JS'de sıralama yapıyoruz
-            // (Firestore'da index sorunlarını önlemek için)
-            latestAppointments.sort((a, b) => {
-                const dateA = new Date(`${a.date || '1970-01-01'}T${a.time || '00:00'}:00`);
-                const dateB = new Date(`${b.date || '1970-01-01'}T${b.time || '00:00'}:00`);
-                return dateB.getTime() - dateA.getTime();
-            });
-
-            renderLatestAppointments(latestAppointments.slice(0, 5)); // Sadece en son 5 tanesini göster
-            
-        }, (error) => console.error("Tüm randevuları dinleme hatası:", error));
-        
-        // --- Stat 4: Toplam Hizmet Sayısı ---
-        const qServices = query(servicesCollectionRef);
-        onSnapshot(qServices, (snapshot) => {
-            statServices.textContent = snapshot.size;
-        }, (error) => console.error("Hizmetleri dinleme hatası:", error));
-    }
-    
-    // --- 4. En Son Randevuları Ekrana Yazdır ---
-    function renderLatestAppointments(appointments) {
-        latestAppointmentsList.innerHTML = ''; // Listeyi temizle
-        
-        if (appointments.length === 0) {
-            latestAppointmentsList.innerHTML = '<p class="loading-message">Henüz hiç randevu yok.</p>';
-            return;
+      if (ap.serviceID) {
+        if (!serviceCache[ap.serviceID]) {
+          try {
+            const ssnap = await getDoc(doc(db, "services", ap.serviceID));
+            serviceCache[ap.serviceID] = ssnap.exists() ? ssnap.data() : null;
+          } catch (e) {
+            console.warn("Hizmet okunamadı:", e);
+          }
         }
+        const s = serviceCache[ap.serviceID];
+        if (s) {
+          obj.serviceName = s.name || "Hizmet";
+        }
+      }
 
-        appointments.forEach(app => {
-            const appointmentDiv = document.createElement('div');
-            appointmentDiv.className = 'appointment-item';
-            
-            // Tarih ve Saati okunabilir formata dönüştür
-            const dateParts = app.date ? app.date.split('-') : ["", "", ""];
-            // YYYY-MM-DD -> DD.MM.YYYY
-            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : "Tarih Bilgisi Yok";
-            
-            const timeText = app.time || "Belirtilmemiş";
-            
-            appointmentDiv.innerHTML = `
-                <div class="appointment-details">
-                    <strong>${app.clientName || 'İsimsiz Müşteri'}</strong>
-                    <span>${app.serviceName || 'Hizmet Bilgisi Yok'} - ${app.employeeName || 'Çalışan Bilgisi Yok'}</span>
-                </div>
-                <div class="text-right">
-                    <span class="text-sm text-gray-300 font-semibold block">${formattedDate} ${timeText}</span>
-                    ${getStatusBadgeHtml(app.status)}
-                </div>
-            `;
-            latestAppointmentsList.appendChild(appointmentDiv);
-        });
+      if (ap.employeeID) {
+        if (!employeeCache[ap.employeeID]) {
+          try {
+            const esnap = await getDoc(doc(db, "employees", ap.employeeID));
+            employeeCache[ap.employeeID] = esnap.exists() ? esnap.data() : null;
+          } catch (e) {
+            console.warn("Çalışan okunamadı:", e);
+          }
+        }
+        const emp = employeeCache[ap.employeeID];
+        if (emp) {
+          obj.employeeName = emp.name || "Çalışan";
+        }
+      }
+
+      result.push(obj);
     }
 
+    return result;
+  }
 
-    // --- 5. Auth Değişikliği Dinleyicisi ---
-    if (auth) {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                businessID = user.uid;
-                isAuthReady = true;
+  function renderLatestAppointments(list) {
+    latestAppointmentsList.innerHTML = "";
 
-                // Yükleme sırası: İsim yükle, sonra gerçek zamanlı dinlemeleri kur
-                await loadBusinessName(businessID); 
-                setupRealtimeListeners(businessID); 
-                
-            } else {
-                console.warn("Kullanıcı oturumu kapalı. Anonim giriş bekleniyor.");
-                isAuthReady = true;
-                // Eğer auth.currentUser null ise ve anonim giriş yapılmadıysa, tekrar dene
-                if (initialAuthToken || !auth.currentUser) {
-                    // Anonim giriş veya custom token ile oturum açmayı dene
-                    authenticate();
-                }
-            }
+    if (!list.length) {
+      latestAppointmentsList.innerHTML =
+        '<p class="loading-message">Henüz randevu yok.</p>';
+      return;
+    }
+
+    list.forEach(ap => {
+      const div = document.createElement("div");
+      div.className = "appointment-item";
+
+      const datestr = ap.date || "-";
+      const time = ap.time || "";
+      let formattedDate = datestr;
+      const parts = datestr.split("-");
+      if (parts.length === 3) {
+        formattedDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
+      }
+
+      const customerName = ap.customerName || "Müşteri";
+      const serviceName = ap.serviceName || "Hizmet";
+      const employeeName = ap.employeeName || "Çalışan";
+
+      div.innerHTML = `
+        <div class="appointment-details">
+          <strong>${customerName}</strong>
+          <span>${serviceName} · ${employeeName}</span>
+        </div>
+        <div class="text-right" style="text-align:right;">
+          <span class="text-sm text-gray-300 font-semibold block">${formattedDate} ${time}</span>
+          ${getStatusBadgeHtml(ap.status)}
+        </div>
+      `;
+
+      latestAppointmentsList.appendChild(div);
+    });
+  }
+
+  function setupRealtime(uid) {
+    if (!db) return;
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const apptRef = collection(db, "appointments");
+    const qAppt = query(apptRef, where("businessID", "==", uid));
+
+    onSnapshot(
+      qAppt,
+      async (snap) => {
+        if (loadingMessage) loadingMessage.textContent = "Randevular listeleniyor...";
+
+        const items = [];
+        let countToday = 0;
+        let countPending = 0;
+        let countApproved = 0;
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const ap = { id: docSnap.id, ...data };
+          items.push(ap);
+
+          if (data.date === todayStr) countToday++;
+          if (data.status === "pending") countPending++;
+          if (data.status === "approved") countApproved++;
         });
 
-        // Oturum açma işlemini başlat (onAuthStateChanged tetiklenecektir)
-        if (!auth.currentUser) {
-            authenticate();
-        }
-    }
+        statToday.textContent = countToday;
+        statPending.textContent = countPending;
+        statApproved.textContent = countApproved;
+
+        items.sort((a, b) => {
+          const da = new Date(`${a.date || "1970-01-01"}T${a.time || "00:00"}:00`);
+          const dbb = new Date(`${b.date || "1970-01-01"}T${b.time || "00:00"}:00`);
+          return dbb.getTime() - da.getTime();
+        });
+
+        const latest = items.slice(0, 5);
+        const enriched = await enrichAppointments(latest);
+        renderLatestAppointments(enriched);
+      },
+      (err) => {
+        console.error("Randevular dinlenirken hata:", err);
+        if (loadingMessage) loadingMessage.textContent = "Randevular yüklenemedi.";
+      }
+    );
+
+    const servicesRef = collection(db, "services");
+    const qServices = query(servicesRef, where("businessID", "==", uid));
+    onSnapshot(
+      qServices,
+      (snap) => {
+        statServices.textContent = snap.size;
+      },
+      (err) => console.error("Hizmet dinleme hatası:", err)
+    );
+  }
+
+  if (auth && db) {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "/al/business/business-login.html";
+        return;
+      }
+      businessID = user.uid;
+      await loadBusinessName(businessID);
+      setupRealtime(businessID);
+    });
+  }
 </script>
 
 </body>
