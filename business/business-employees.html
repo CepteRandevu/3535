@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Çalışan Yönetimi | Cepterandevu</title>
+  <title>Çalışanlar | Cepterandevu</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -15,38 +17,50 @@
       --text: #f9fafb;
       --muted: #9ca3af;
       --border: rgba(148,163,184,0.35);
-      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
-      --radius-xl: 22px;
+      --radius-xl: 18px;
+      --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       display: flex;
+      flex-direction: column;
       background: radial-gradient(circle at top, #111827, #020617 55%);
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
       min-height: 100vh;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
+    .top-header {
+      width: 100%;
+      padding-top: 14px;
+      padding-bottom: 0;
+      position: sticky;
+      top: 0;
+      z-index: 500;
       background: var(--sidebar);
-      padding: 24px 18px;
-      border-right: 1px solid var(--border);
-      position: fixed;
-      top: 0; bottom: 0;
+      border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .logo-box {
+    .top-center {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .top-menu-row {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 20px;
+      padding-bottom: 14px;
     }
 
     .logo-mark {
@@ -60,43 +74,99 @@
       font-weight: 800;
       font-size: 18px;
       color: #ecfdf5;
-      box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+      box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+    }
+
+    .logo-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .menu-btn {
+      background: var(--accent);
+      color: #022c22;
+      border: 0;
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .menu-btn i { font-size: 14px; }
+
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1000;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
     .biz-name-small {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
     }
 
     .menu button {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 14px;
       background: transparent;
       border: 0;
       text-align: left;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu button:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--text);
     }
 
     .menu button.active {
       background: var(--accent);
       color: #022c22;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
     }
 
-    /* MAIN */
     .main-area {
-      margin-left: 240px;
       flex: 1;
-      padding: 24px;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: 110px;
     }
 
     .title {
       font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      display: none;
     }
 
     .card {
@@ -109,7 +179,7 @@
     }
 
     label {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       margin-bottom: 4px;
       display: block;
@@ -123,6 +193,8 @@
       border: 1px solid var(--border);
       color: var(--text);
       margin-bottom: 10px;
+      outline: none;
+      font-size: 13px;
     }
 
     input:focus {
@@ -136,13 +208,13 @@
       gap: 6px;
       padding: 10px 0;
       margin-bottom: 10px;
+      font-size: 13px;
     }
 
     .checkbox-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 14px;
     }
 
     .btn-primary {
@@ -150,7 +222,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
       border: 0;
       padding: 12px;
-      font-size: 15px;
+      font-size: 14px;
       border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -165,11 +237,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
 
     .emp-info {
       display: flex;
       flex-direction: column;
+      gap: 2px;
     }
 
     .emp-name {
@@ -191,174 +265,348 @@
       color: white;
       cursor: pointer;
     }
+
+    .delete-btn:hover { filter: brightness(1.15); }
+
+    .empty {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 2px;
+    }
+
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 998;
+    }
+
+    .drawer-menu {
+      position: fixed;
+      top: 0; left: 0;
+      width: 250px;
+      height: 100%;
+      background: #0b1120;
+      transform: translateX(-100%);
+      transition: transform 0.28s ease;
+      z-index: 9999;
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-open { transform: translateX(0); }
+
+    .drawer-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-links a {
+      display: block;
+      padding: 12px 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .drawer-links a:hover,
+    .drawer-links a.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    @media (min-width: 768px) {
+      body { flex-direction: row; }
+      .sidebar { display: flex; }
+      .top-header { display: none; }
+      .main-area {
+        margin-left: 240px;
+        padding: 32px;
+        padding-top: 32px;
+      }
+      .title { display: block; }
+    }
   </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-
 <body>
+  <!-- Drawer -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="drawerMenu" class="drawer-menu">
+    <div class="drawer-title">Cepterandevu</div>
+    <div class="drawer-links">
+      <a href="business-panel.html">Panel</a>
+      <a href="business-services.html">Hizmetler</a>
+      <a href="business-employees.html" class="active">Çalışanlar</a>
+      <a href="business-appointments.html">Randevular</a>
+      <a href="business-settings.html">Ayarlar</a>
+    </div>
+  </div>
 
-  <!-- SIDEBAR -->
+  <!-- Üst Header -->
+  <header class="top-header">
+    <div class="top-center">
+      <div class="logo-mark">C</div>
+      <span class="logo-title" id="bizNameMobile">Çalışanlar</span>
+    </div>
+    <div class="top-menu-row">
+      <button id="menuBtn" class="menu-btn">
+        <i class="fas fa-bars"></i> Menü
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo-box">
       <div class="logo-mark">C</div>
-      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+      <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
     </div>
-
     <div class="menu">
-      <button onclick="location.href='business-panel.html'">Panel</button>
-      <button onclick="location.href='business-services.html'">Hizmetler</button>
-      <button class="active">Çalışanlar</button>
-      <button onclick="location.href='business-appointments.html'">Randevular</button>
-      <button onclick="location.href='business-settings.html'">Ayarlar</button>
+      <button onclick="location.href='business-panel.html'"><i class="fas fa-tachometer-alt"></i> Panel</button>
+      <button onclick="location.href='business-services.html'"><i class="fas fa-wrench"></i> Hizmetler</button>
+      <button class="active" onclick="location.href='business-employees.html'"><i class="fas fa-users"></i> Çalışanlar</button>
+      <button onclick="location.href='business-appointments.html'"><i class="fas fa-calendar-alt"></i> Randevular</button>
+      <button onclick="location.href='business-settings.html'"><i class="fas fa-cog"></i> Ayarlar</button>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="main-area">
-    <h1 class="title">Çalışan Yönetimi</h1>
+    <h1 class="title" id="bizTitle">Çalışan Yönetimi</h1>
 
     <div class="card">
-      <h3 style="margin-bottom:10px;">Yeni Çalışan Ekle</h3>
-
+      <h2 style="margin-bottom:10px;">Yeni Çalışan Ekle</h2>
       <label>Çalışan Adı</label>
-      <input type="text" id="empNameInput">
+      <input type="text" id="empNameInput" placeholder="Örn: Mehmet Usta">
 
       <label>Bağlı Hizmetler</label>
       <div id="servicesCheckbox" class="checkbox-list">Yükleniyor...</div>
 
-      <button class="btn-primary" id="addEmpBtn">Ekle</button>
+      <button class="btn-primary" id="addEmpBtn">Çalışanı Kaydet</button>
     </div>
 
     <div class="card">
-      <h3 style="margin-bottom:10px;">Mevcut Çalışanlar</h3>
-      <div id="empList">Yükleniyor...</div>
+      <h2 style="margin-bottom:10px;">Mevcut Çalışanlar</h2>
+      <div id="empList" class="empty">Yükleniyor...</div>
     </div>
   </main>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc, query, where,
-    getDocs, deleteDoc, doc, getDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <script>
+    const drawer = document.getElementById("drawerMenu");
+    const overlay = document.getElementById("drawerOverlay");
+    const menuBtn = document.getElementById("menuBtn");
 
-  /* Firebase Config */
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  let businessID = null;
-  let SERVICES = {};
-
-  const servicesCheckbox = document.getElementById("servicesCheckbox");
-  const empListEl = document.getElementById("empList");
-  const empNameInput = document.getElementById("empNameInput");
-  const bizNameSmall = document.getElementById("bizNameSmall");
-
-  /* LOGIN KONTROLÜ */
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) return location.href = "business-login.html";
-
-    businessID = user.uid;
-
-    await loadBusinessName();
-    await loadServices();
-    await loadEmployees();
-  });
-
-  async function loadBusinessName() {
-    const snap = await getDoc(doc(db, "businesses", businessID));
-    if (snap.exists()) bizNameSmall.textContent = snap.data().name || "İşletme";
-  }
-
-  /* HİZMETLERİ LİSTELE */
-  async function loadServices() {
-    servicesCheckbox.textContent = "Yükleniyor...";
-
-    const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
-    const snap = await getDocs(qRef);
-
-    SERVICES = {};
-    servicesCheckbox.innerHTML = "";
-
-    snap.forEach((docSnap) => {
-      const data = docSnap.data();
-      SERVICES[docSnap.id] = data;
-
-      servicesCheckbox.innerHTML += `
-        <div class="checkbox-item">
-          <input type="checkbox" value="${docSnap.id}">
-          <label>${data.name} (${data.duration} dk)</label>
-        </div>
-      `;
-    });
-
-    if (snap.empty) servicesCheckbox.textContent = "Önce hizmet ekleyin.";
-  }
-
-  /* ÇALIŞAN EKLE */
-  document.getElementById("addEmpBtn").onclick = async () => {
-    const name = empNameInput.value.trim();
-    if (!name) return alert("Çalışan adı gerekli.");
-
-    const selected = [...servicesCheckbox.querySelectorAll("input:checked")].map(i => i.value);
-    if (selected.length === 0) return alert("En az bir hizmet seçin.");
-
-    await addDoc(collection(db, "employees"), {
-      businessID,
-      name,
-      services: selected
-    });
-
-    empNameInput.value = "";
-    await loadEmployees();
-  };
-
-  /* ÇALIŞANLARI LİSTELE */
-  async function loadEmployees() {
-    empListEl.textContent = "Yükleniyor...";
-
-    const qRef = query(collection(db, "employees"), where("businessID", "==", businessID));
-    const snap = await getDocs(qRef);
-
-    empListEl.innerHTML = "";
-
-    if (snap.empty) {
-      empListEl.textContent = "Henüz çalışan eklenmemiş.";
-      return;
+    function openDrawer() {
+      drawer.classList.add("drawer-open");
+      overlay.style.display = "block";
+    }
+    function closeDrawer() {
+      drawer.classList.remove("drawer-open");
+      overlay.style.display = "none";
     }
 
-    snap.forEach((docSnap) => {
-      const d = docSnap.data();
-      const services = d.services.map(id => SERVICES[id]?.name || id).join(", ");
+    menuBtn.addEventListener("click", openDrawer);
+    overlay.addEventListener("click", closeDrawer);
+  </script>
 
-      empListEl.innerHTML += `
-        <div class="emp-row">
-          <div class="emp-info">
-            <div class="emp-name">${d.name}</div>
-            <div class="emp-meta">${services}</div>
-          </div>
-          <button class="delete-btn" onclick="deleteEmployee('${docSnap.id}')">Sil</button>
-        </div>
-      `;
+  <script type="module">
+    import { firebaseConfig } from "../js/firebase-config.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      getDocs,
+      deleteDoc,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let businessID = null;
+    let SERVICES = {};
+
+    const servicesCheckbox = document.getElementById("servicesCheckbox");
+    const empListEl = document.getElementById("empList");
+    const empNameInput = document.getElementById("empNameInput");
+    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+    const bizNameMobile = document.getElementById("bizNameMobile");
+    const bizTitle = document.getElementById("bizTitle");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "business-login.html";
+        return;
+      }
+
+      businessID = user.uid;
+      await loadBusinessName();
+      await loadServices();
+      await loadEmployees();
     });
-  }
 
-  /* ÇALIŞAN SİL */
-  window.deleteEmployee = async (id) => {
-    await deleteDoc(doc(db, "employees", id));
-    loadEmployees();
-  };
-</script>
+    async function loadBusinessName() {
+      try {
+        const ref = doc(db, "businesses", businessID);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const name = snap.data().name || "İşletme";
+          bizNameSmallSidebar.textContent = name;
+          bizNameMobile.textContent = "Çalışanlar · " + name;
+          bizTitle.textContent = name + " · Çalışanlar";
+        }
+      } catch (e) {
+        console.error("İşletme adı okunamadı:", e);
+      }
+    }
 
+    async function loadServices() {
+      servicesCheckbox.textContent = "Yükleniyor...";
+
+      try {
+        const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
+        const snap = await getDocs(qRef);
+
+        SERVICES = {};
+        servicesCheckbox.innerHTML = "";
+
+        if (snap.empty) {
+          servicesCheckbox.innerHTML = `<div class="empty">Önce hizmet ekleyin.</div>`;
+          return;
+        }
+
+        snap.forEach((docSnap) => {
+          const data = docSnap.data();
+          SERVICES[docSnap.id] = data;
+
+          const div = document.createElement("div");
+          div.className = "checkbox-item";
+          div.innerHTML = `
+            <input type="checkbox" value="${docSnap.id}">
+            <span>${data.name} (${data.duration} dk)</span>
+          `;
+          servicesCheckbox.appendChild(div);
+        });
+      } catch (e) {
+        console.error("Hizmetler çekilemedi:", e);
+        servicesCheckbox.innerHTML = `<div class="empty">Hizmetler yüklenirken hata oluştu.</div>`;
+      }
+    }
+
+    document.getElementById("addEmpBtn").onclick = async () => {
+      const name = empNameInput.value.trim();
+      if (!name) {
+        alert("Çalışan adı gerekli.");
+        return;
+      }
+
+      const selectedServices = Array.from(
+        servicesCheckbox.querySelectorAll("input[type='checkbox']:checked")
+      ).map(i => i.value);
+
+      if (selectedServices.length === 0) {
+        alert("En az bir hizmet seçin.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "employees"), {
+          businessID,
+          name,
+          services: selectedServices
+        });
+
+        empNameInput.value = "";
+        servicesCheckbox.querySelectorAll("input").forEach(c => c.checked = false);
+
+        await loadEmployees();
+      } catch (e) {
+        console.error("Çalışan eklenemedi:", e);
+        alert("Çalışan eklenirken hata oluştu.");
+      }
+    };
+
+    async function loadEmployees() {
+      empListEl.textContent = "Yükleniyor...";
+
+      try {
+        const qRef = query(collection(db, "employees"), where("businessID", "==", businessID));
+        const snap = await getDocs(qRef);
+
+        empListEl.innerHTML = "";
+
+        if (snap.empty) {
+          empListEl.innerHTML = `<div class="empty">Henüz çalışan eklenmemiş.</div>`;
+          return;
+        }
+
+        snap.forEach((docSnap) => {
+          const data = docSnap.data();
+
+          const row = document.createElement("div");
+          row.className = "emp-row";
+
+          let serviceNames = (data.services || [])
+            .map(id => SERVICES[id]?.name || id)
+            .join(", ");
+
+          row.innerHTML = `
+            <div class="emp-info">
+              <div class="emp-name">${data.name}</div>
+              <div class="emp-meta">${serviceNames}</div>
+            </div>
+            <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
+          `;
+
+          empListEl.appendChild(row);
+        });
+
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.onclick = async () => {
+            if (!confirm("Bu çalışanı silmek istediğinize emin misiniz?")) return;
+            try {
+              await deleteDoc(doc(db, "employees", btn.dataset.id));
+              await loadEmployees();
+            } catch (e) {
+              console.error("Çalışan silinemedi:", e);
+              alert("Çalışan silinirken hata oluştu.");
+            }
+          };
+        });
+      } catch (e) {
+        console.error("Çalışanlar yüklenemedi:", e);
+        empListEl.innerHTML = `<div class="empty">Çalışanlar yüklenirken hata oluştu.</div>`;
+      }
+    }
+  </script>
 </body>
 </html>
