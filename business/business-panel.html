@@ -23,14 +23,14 @@
 
         body {
             display: flex;
-            flex-direction: column; /* Mobile first: main content on top, then the body content */
+            flex-direction: column; 
             background: radial-gradient(circle at top, #111827, #020617 55%);
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             color: var(--text);
             min-height: 100vh;
         }
 
-        /* --- SIDEBAR (Mobile First: Hidden by default) --- */
+        /* --- SIDEBAR (SADECE MASAÜSTÜ İÇİN) --- */
         .sidebar {
             width: 240px;
             background: var(--sidebar);
@@ -42,13 +42,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            z-index: 1000; /* Overlay other content */
-            transition: transform 0.3s ease-out;
-            transform: translateX(-100%); /* Start position: hidden off-screen */
-        }
-        
-        .sidebar.open {
-            transform: translateX(0); /* Open position: visible */
+            z-index: 1000;
         }
         
         .logo-box {
@@ -56,8 +50,7 @@
             align-items: center;
             gap: 12px;
             margin-bottom: 20px;
-            /* Added space for close button on mobile */
-            justify-content: space-between; 
+            justify-content: flex-start;
         }
 
         .logo-mark {
@@ -97,33 +90,20 @@
             color: #022c22;
             font-weight: 600;
         }
-
-        .menu-toggle {
-            background: transparent;
-            border: none;
-            color: var(--text);
-            font-size: 24px;
-            cursor: pointer;
+        
+        /* Mobil menü açma/kapama butonları desktop'ta gizlensin */
+        .menu-toggle, .menu-close-btn {
+            display: none;
         }
 
-        .menu-close-btn {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            font-size: 30px;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
-
-        /* --- MAIN AREA (Mobile First: Full width) --- */
+        /* --- MAIN AREA --- */
         .main-area {
             flex: 1;
-            padding: 20px; /* Mobile Padding */
+            padding: 20px; 
             width: 100%;
         }
         
-        /* --- MOBILE HEADER --- */
+        /* --- MOBILE HEADER (SADECE MOBİL İÇİN) --- */
         .mobile-header {
             display: flex;
             align-items: center;
@@ -137,22 +117,22 @@
         }
         
         .mobile-header .header-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
-            margin-left: -20px; /* Center title better */
+            color: var(--text);
         }
         
         .title {
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 16px;
-            display: none; /* Hide desktop title on mobile */
         }
 
-        /* --- CARDS (Mobile First: Min 150px wide) --- */
+        /* --- CARDS --- */
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            /* Mobil için daha küçük kartlar */
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -167,40 +147,85 @@
 
         .card h3 {
             margin-bottom: 8px;
-            font-size: 15px; /* Smaller font for mobile */
+            font-size: 15px; 
             color: var(--muted);
         }
 
         .stat {
-            font-size: 24px; /* Slightly smaller stat for mobile */
+            font-size: 24px; 
             font-weight: 700;
             margin-top: 4px;
             color: var(--accent);
         }
         
+        /* ------------------------------ */
+        /* MOBİL BOTTOM NAV BAR       */
+        /* ------------------------------ */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 62px;
+            background: #0b1120;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: grid; /* Mobil için varsayılan olarak göster */
+            grid-template-columns: repeat(5, 1fr);
+            z-index: 9999;
+        }
+
+        .mobile-nav button {
+            background: none;
+            border: 0;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        /* Ikon yer tutucusu */
+        .mobile-nav button::before {
+            content: "•"; /* Basit bir ikon yer tutucusu */
+            font-size: 18px;
+        }
+
+        .mobile-nav button.active {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+
         /* --- DESKTOP VIEW (Min 768px) --- */
         @media (min-width: 768px) {
             body {
-                flex-direction: row; /* Desktop: side-by-side layout */
+                flex-direction: row; 
             }
 
             .sidebar {
-                transform: translateX(0); /* Always visible */
+                display: flex; /* Masaüstünde sidebar'ı göster */
+                transform: translateX(0); 
                 position: fixed;
                 height: 100%;
             }
             
             .mobile-header {
-                display: none; /* Hide mobile header */
+                display: none; /* Masaüstünde mobil başlığı gizle */
             }
 
             .main-area {
-                margin-left: 240px; /* Offset for the fixed sidebar */
-                padding: 24px; /* Desktop Padding */
+                margin-left: 240px; /* Sabit sidebar kadar boşluk bırak */
+                padding: 24px; 
+                margin-bottom: 0; /* Alt boşluğu kaldır */
             }
             
             .title {
-                display: block; /* Show desktop title */
+                display: block; /* Masaüstü başlığını göster */
                 font-size: 22px;
             }
 
@@ -217,13 +242,23 @@
             .stat {
                 font-size: 26px;
             }
-
-            .logo-box {
-                justify-content: flex-start; /* No close button needed on desktop */
+            
+            .mobile-nav {
+                display: none; /* Masaüstünde alt navigasyonu gizle */
             }
-            .menu-close-btn {
-                display: none;
-            }
+            
+            /* Mobil header'ı sildiğimiz için bizNameMobile'ı gizlemeye gerek yok */
+        }
+        
+        /* Ekran 768px'den küçükse (Mobil) */
+        @media (max-width: 767px) {
+             .sidebar {
+                display: none !important; /* Yan menüyü tamamen gizle */
+             }
+             .main-area {
+                margin-left: 0 !important;
+                margin-bottom: 62px; /* Alt navigasyon kadar boşluk bırak */
+             }
         }
     </style>
 
@@ -236,33 +271,32 @@
 
 <body>
 
-    <!-- MOBILE HEADER (Görünür sadece mobil) -->
+    <!-- MOBILE HEADER (Sadece mobil için görünür) -->
     <header class="mobile-header">
-        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-        <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
-        <div></div> <!-- Spacer -->
+        <div class="logo-box">
+            <div class="logo-mark">C</div>
+            <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
+        </div>
     </header>
 
-    <!-- SIDEBAR (Gizli/Açılabilir) -->
+    <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
     <aside class="sidebar" id="sidebar">
         <div class="logo-box">
             <div class="logo-mark">C</div>
             <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
-            <!-- Mobil menüyü kapatma butonu -->
-            <button class="menu-close-btn" onclick="toggleSidebar()">&times;</button>
         </div>
 
         <div class="menu">
-            <button class="active">Panel</button>
-            <!-- Menüdeki yönlendirmeler için tıklama olayına toggleSidebar() eklenmeli -->
-            <button onclick="location.href='business-services.html'; toggleSidebar();">Hizmetler</button>
-            <button onclick="location.href='business-employees.html'; toggleSidebar();">Çalışanlar</button>
-            <button onclick="location.href='business-appointments.html'; toggleSidebar();">Randevular</button>
-            <button onclick="location.href='business-settings.html'; toggleSidebar();">Ayarlar</button>
+            <!-- Sidebar'daki menü elemanlarına toggleSidebar() kaldırıldı, çünkü artık mobil için alt menü var -->
+            <button class="active" onclick="location.href='business-panel.html'">Panel</button>
+            <button onclick="location.href='business-services.html'">Hizmetler</button>
+            <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+            <button onclick="location.href='business-appointments.html'">Randevular</button>
+            <button onclick="location.href='business-settings.html'">Ayarlar</button>
         </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="main-area">
         <h1 class="title" id="bizTitle">İşletme Paneli</h1>
 
@@ -292,11 +326,49 @@
 
     </main>
 
+    <!-- MOBILE BOTTOM NAVIGATION (Sadece mobil için görünür) -->
+    <div class="mobile-nav">
+        <button onclick="location.href='business-panel.html'" id="nav-dashboard">Panel</button>
+        <button onclick="location.href='business-services.html'" id="nav-services">Hizmetler</button>
+        <button onclick="location.href='business-employees.html'" id="nav-employees">Çalışanlar</button>
+        <button onclick="location.href='business-appointments.html'" id="nav-appointments">Randevular</button>
+        <button onclick="location.href='business-settings.html'" id="nav-settings">Ayarlar</button>
+    </div>
+
+<script>
+    // Sayfaya göre alt navigasyonda hangi butonun aktif olacağını belirle
+    document.addEventListener('DOMContentLoaded', () => {
+        const path = window.location.pathname.split('/').pop();
+
+        const pages = {
+            "business-panel.html": "nav-dashboard",
+            "business-services.html": "nav-services",
+            "business-employees.html": "nav-employees",
+            "business-appointments.html": "nav-appointments",
+            "business-settings.html": "nav-settings"
+        };
+        
+        // Bu sayfa "business-panel.html" olduğu için default olarak aktif yapalım.
+        // Diğer sayfalarda da bu script olacağı için doğru butonu aktif edecektir.
+        const currentPageKey = path || "business-panel.html"; 
+        
+        if(pages[currentPageKey]){
+            const activeNavButton = document.getElementById(pages[currentPageKey]);
+            if(activeNavButton) {
+                activeNavButton.classList.add("active");
+            }
+        }
+    });
+</script>
+
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import {
         getAuth,
-        onAuthStateChanged
+        onAuthStateChanged,
+        signInWithCustomToken,
+        signInAnonymously
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     import {
@@ -314,23 +386,20 @@
     setLogLevel('Debug');
 
     // Canvas Ortamından Global Değişkenleri Alma
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-        // Not: Burada API anahtarlarınızı hardcode etmeyin, ancak test amaçlı eklenmiş.
-        apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-        authDomain: "cepterandevu-35fe4.firebaseapp.com",
-        projectId: "cepterandevu-35fe4",
-        storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-        messagingSenderId: "86298180836",
-        appId: "1:86298180836:web:124c2004605d68b32700f1"
-    };
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+    if (!firebaseConfig.apiKey) {
+        console.error("HATA: Firebase yapılandırması eksik. Uygulama çalışmayabilir.");
+    }
+    
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     let businessID = null;
 
-    const sidebar = document.getElementById("sidebar");
     const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
     const bizNameMobile = document.getElementById("bizNameMobile");
     const bizTitle = document.getElementById("bizTitle");
@@ -339,76 +408,105 @@
     const statPending = document.getElementById("statPending");
     const statApproved = document.getElementById("statApproved");
     const statServices = document.getElementById("statServices");
-
-    // Mobil menü açma/kapama işlevi
-    window.toggleSidebar = function() {
-        sidebar.classList.toggle('open');
+    
+    // 1. Kimlik Doğrulama
+    async function authenticate() {
+        try {
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+                console.log("Custom token ile oturum açıldı.");
+            } else {
+                await signInAnonymously(auth);
+                console.log("Anonim olarak oturum açıldı.");
+            }
+        } catch (error) {
+            console.error("Kimlik doğrulama hatası:", error);
+        }
     }
-
-    // Başlangıçta kimlik doğrulama durumunu kontrol et
+    
+    // 2. Auth Durumu Değişikliğini Dinle ve Verileri Yükle
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
-            // Yönlendirme hatasını önlemek için sadece dosya adını kullanıyoruz
+            // Eğer kimlik doğrulama başarısız olursa veya kullanıcı çıkış yaparsa login sayfasına yönlendir.
             window.location.href = "business-login.html"; 
             return;
         }
 
+        // Kullanıcının UID'sini al (Bu, işletme ID'si olarak kabul ediliyor)
         businessID = user.uid;
 
-        // İstatistikleri yüklemeden önce bekle
+        // Veri yükleme işlemlerini başlat
         await loadBusinessName();
         await loadStats();
     });
+    
+    // Auth token'ı mevcutsa manuel olarak oturum açmayı dene (Canvas ortamı için)
+    if (!auth.currentUser) {
+        authenticate();
+    }
+
 
     // İşletme adını yükle
     async function loadBusinessName() {
-        // Varsayılan koleksiyon adını kullanıyoruz. Eğer 'artifacts' yapısı gerekiyorsa yol buna göre ayarlanmalıdır.
-        const ref = doc(db, "businesses", businessID); 
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-            const name = snap.data().name || "İşletme";
-            bizNameSmallSidebar.textContent = name;
-            bizNameMobile.textContent = name; // Mobile header'ı güncelle
-            bizTitle.textContent = name + " Paneli";
+        try {
+            // Firestore yapısına göre "businesses" koleksiyonundan işletme ID'sine göre belgeyi oku
+            // NOT: Firebase Security Rules'a göre "artifacts/default-app-id/users/{userId}/..." yolu kullanılmalıdır.
+            // Ancak mevcut kodunuz 'businesses' ana koleksiyonunu kullanıyor, bu yüzden o yapıyı koruyorum.
+            const ref = doc(db, "businesses", businessID); 
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                const name = snap.data().name || "İşletme";
+                bizNameSmallSidebar.textContent = name;
+                bizNameMobile.textContent = name; // Mobile header
+                bizTitle.textContent = name + " Paneli";
+            } else {
+                 console.warn("İşletme kaydı bulunamadı.");
+            }
+        } catch (error) {
+            console.error("İşletme adını yüklerken hata:", error);
         }
     }
 
     // İstatistikleri yükle
     async function loadStats() {
-        // Bugünün tarihini YYYY-MM-DD formatında al
-        const today = new Date().toISOString().split("T")[0];
-
-        // Bugün
-        const qToday = query(
-            collection(db, "appointments"),
-            where("businessID", "==", businessID),
-            where("date", "==", today)
-        );
-        const todaySnap = await getDocs(qToday);
-        statToday.textContent = todaySnap.size;
-
-        // Bekleyen
-        const qPending = query(
-            collection(db, "appointments"),
-            where("businessID", "==", businessID),
-            where("status", "==", "pending")
-        );
-        statPending.textContent = (await getDocs(qPending)).size;
-
-        // Onaylanmış
-        const qApproved = query(
-            collection(db, "appointments"),
-            where("businessID", "==", businessID),
-            where("status", "==", "approved")
-        );
-        statApproved.textContent = (await getDocs(qApproved)).size;
-
-        // Hizmetler
-        const qServices = query(
-            collection(db, "services"),
-            where("businessID", "==", businessID)
-        );
-        statServices.textContent = (await getDocs(qServices)).size;
+        try {
+            // Bugünün tarihini YYYY-MM-DD formatında al
+            const today = new Date().toISOString().split("T")[0];
+    
+            // Bugün
+            const qToday = query(
+                collection(db, "appointments"),
+                where("businessID", "==", businessID),
+                where("date", "==", today)
+            );
+            const todaySnap = await getDocs(qToday);
+            statToday.textContent = todaySnap.size;
+    
+            // Bekleyen
+            const qPending = query(
+                collection(db, "appointments"),
+                where("businessID", "==", businessID),
+                where("status", "==", "pending")
+            );
+            statPending.textContent = (await getDocs(qPending)).size;
+    
+            // Onaylanmış
+            const qApproved = query(
+                collection(db, "appointments"),
+                where("businessID", "==", businessID),
+                where("status", "==", "approved")
+            );
+            statApproved.textContent = (await getDocs(qApproved)).size;
+    
+            // Hizmetler
+            const qServices = query(
+                collection(db, "services"),
+                where("businessID", "==", businessID)
+            );
+            statServices.textContent = (await getDocs(qServices)).size;
+        } catch (error) {
+             console.error("İstatistikleri yüklerken hata:", error);
+        }
     }
 
 </script>
