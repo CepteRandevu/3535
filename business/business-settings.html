@@ -187,18 +187,6 @@
 
 <body>
 
-<!-- Drawer -->
-<div id="drawerOverlay" class="drawer-overlay"></div>
-<div id="drawerMenu" class="drawer-menu">
-  <div class="drawer-title">Cepterandevu</div>
-  <div class="drawer-links">
-    <a href="business-panel.html">Panel</a>
-    <a href="business-services.html">Hizmetler</a>
-    <a href="business-employees.html">Çalışanlar</a>
-    <a href="business-appointments.html">Randevular</a>
-    <a href="business-settings.html" class="active">Ayarlar</a>
-  </div>
-</div>
 
 <header class="top-header">
   <div class="top-center">
@@ -224,6 +212,7 @@
   </div>
 </aside>
 
+
 <main class="main-area">
   <h1 class="page-title">Ayarlar</h1>
 
@@ -240,7 +229,7 @@
 
     <label>İşletme Adı</label>
     <input id="bizNameInput">
-    
+
     <div class="row-two">
       <div>
         <label>İl</label>
@@ -279,29 +268,6 @@
 </main>
 
 
-<!-- Drawer script -->
-<script>
-  const drawer = document.getElementById("drawerMenu");
-  const overlay = document.getElementById("drawerOverlay");
-  const menuBtn = document.getElementById("menuBtn");
-
-  function openDrawer(){
-    drawer.classList.add("drawer-open");
-    overlay.style.display = "block";
-  }
-  function closeDrawer(){
-    drawer.classList.remove("drawer-open");
-    overlay.style.display = "none";
-  }
-
-  if(menuBtn){
-    menuBtn.addEventListener("click", openDrawer);
-  }
-  if(overlay){
-    overlay.addEventListener("click", closeDrawer);
-  }
-</script>
-
 
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
@@ -312,11 +278,11 @@
   import { getFirestore, doc, getDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app  = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  /* DEFAULT SVG LOGO (BASE64 GARANTİ ÇALIŞIR) */
+  /* DEFAULT BASE64 LOGO */
   const DEFAULT_LOGO =
     'data:image/svg+xml;utf8,' +
     '<svg xmlns="http://www.w3.org/2000/svg"width="256"height="256"viewBox="0 0 256 256">' +
@@ -327,11 +293,22 @@
     '</svg>';
 
   let BUSINESS_ID = null;
+  let citiesData = [];
+  let cityFromDB = "";
+  let districtFromDB = "";
 
-  const logoInput   = document.getElementById("logoInput");
-  const logoPreview = document.getElementById("logoPreview");
+  const logoInput      = document.getElementById("logoInput");
+  const logoPreview    = document.getElementById("logoPreview");
+  const bizNameInput   = document.getElementById("bizNameInput");
+  const bizPhoneInput  = document.getElementById("bizPhoneInput");
+  const bizAddressInput= document.getElementById("bizAddressInput");
+  const bizAboutInput  = document.getElementById("bizAboutInput");
+  const citySelect     = document.getElementById("citySelect");
+  const districtSelect = document.getElementById("districtSelect");
+  const saveBizBtn     = document.getElementById("saveBizBtn");
 
-  /* ---------------- BASE64 DÖNÜŞTÜRÜCÜ ---------------- */
+
+  /* ---------------- DOSYAYI BASE64'E ÇEVİR ---------------- */
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -341,6 +318,7 @@
     });
   }
 
+
   /* ---------------- LOGO SEÇİLDİ ---------------- */
   logoInput.addEventListener("change", async () => {
     const file = logoInput.files[0];
@@ -349,10 +327,8 @@
     try {
       const base64 = await fileToBase64(file);
 
-      // Önce ekranda göster
       logoPreview.src = base64;
 
-      // Firestore'a yaz
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         { logoBase64: base64 },
@@ -361,14 +337,74 @@
 
       alert("Logo başarıyla güncellendi.");
     } catch (err) {
-      console.error(err);
       logoPreview.src = DEFAULT_LOGO;
-      alert("Logo yüklenirken hata oluştu.");
+      alert("Logo yüklenemedi.");
     }
   });
 
 
-  /* ------------ İŞLETME BİLGİLERİNİ YÜKLE ------------ */
+  /* ---------------- ŞEHİR JSON YÜKLEME ---------------- */
+  async function loadCities() {
+    try {
+      const res = await fetch("/al/js/turkey-cities.json");
+      citiesData = await res.json();
+      fillCities();
+    } catch (err) {
+      console.error("İl/ilçe verisi yüklenemedi:", err);
+    }
+  }
+
+  function fillCities() {
+    citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
+    citiesData.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.name;
+      opt.textContent = c.name;
+      citySelect.appendChild(opt);
+    });
+
+    if (cityFromDB) {
+      citySelect.value = cityFromDB;
+      fillDistricts(cityFromDB, districtFromDB);
+    }
+  }
+
+  function fillDistricts(cityName, selected = "") {
+    districtSelect.innerHTML = "";
+
+    if (!cityName) {
+      districtSelect.innerHTML = `<option value="">Önce il seçiniz</option>`;
+      return;
+    }
+
+    const cityObj = citiesData.find(c => c.name === cityName);
+    if (!cityObj || !Array.isArray(cityObj.districts)) {
+      districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
+      return;
+    }
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "İlçe seçiniz";
+    districtSelect.appendChild(placeholder);
+
+    cityObj.districts.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+
+    if (selected) districtSelect.value = selected;
+  }
+
+
+  citySelect.addEventListener("change", () => {
+    fillDistricts(citySelect.value);
+  });
+
+
+  /* ---------------- İŞLETME VERİLERİNİ YÜKLE ---------------- */
   async function loadBusiness() {
     const ref  = doc(db, "businesses", BUSINESS_ID);
     const snap = await getDoc(ref);
@@ -383,23 +419,65 @@
     if (d.logoBase64) logoPreview.src = d.logoBase64;
     else logoPreview.src = DEFAULT_LOGO;
 
-    document.getElementById("bizNameInput").value    = d.name    || "";
-    document.getElementById("bizPhoneInput").value   = d.phone   || "";
-    document.getElementById("bizAddressInput").value = d.address || "";
-    document.getElementById("bizAboutInput").value   = d.about   || "";
+    // Diğer bilgiler
+    bizNameInput.value    = d.name    || "";
+    bizPhoneInput.value   = d.phone   || "";
+    bizAddressInput.value = d.address || "";
+    bizAboutInput.value   = d.about   || "";
+
+    cityFromDB     = d.city     || "";
+    districtFromDB = d.district || "";
+
+    if (citiesData.length > 0) {
+      fillCities();
+    }
   }
 
-  /* ------------ AUTH KONTROLÜ ------------ */
+
+  /* ---------------- VERİLERİ KAYDET ---------------- */
+  saveBizBtn.addEventListener("click", async () => {
+    if (!BUSINESS_ID) return;
+
+    saveBizBtn.disabled = true;
+
+    try {
+      await setDoc(
+        doc(db, "businesses", BUSINESS_ID),
+        {
+          name:     bizNameInput.value.trim(),
+          phone:    bizPhoneInput.value.trim(),
+          address:  bizAddressInput.value.trim(),
+          about:    bizAboutInput.value.trim(),
+          city:     citySelect.value,
+          district: districtSelect.value
+        },
+        { merge:true }
+      );
+
+      alert("İşletme bilgileri kaydedildi.");
+    } catch (err) {
+      alert("Kayıt sırasında hata oluştu.");
+    } finally {
+      saveBizBtn.disabled = false;
+    }
+  });
+
+
+  /* ---------------- AUTH KONTROLÜ ---------------- */
   onAuthStateChanged(auth, async user => {
     if (!user) {
       location.href = "business-login.html";
       return;
     }
+
     BUSINESS_ID = user.uid;
-    loadBusiness();
+
+    await loadCities();   
+    await loadBusiness();
   });
 
-  /* ------------ ŞİFRE GÜNCELLE ------------ */
+
+  /* ---------------- ŞİFRE ---------------- */
   document.getElementById("savePassBtn").addEventListener("click", async () => {
     const pass = document.getElementById("newPassInput").value;
 
@@ -412,11 +490,12 @@
       await updatePassword(auth.currentUser, pass);
       alert("Şifre güncellendi.");
     } catch (err) {
-      alert("Şifre değişmedi. Yeniden giriş yapman gerekebilir.");
+      alert("Şifre değişmedi, tekrar giriş gerekli olabilir.");
     }
   });
 
-  /* ------------ ÇIKIŞ ------------ */
+
+  /* ---------------- ÇIKIŞ ---------------- */
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
     location.href = "business-login.html";
