@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="pageTitle">İşletme Paneli | Cepterandevu</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
         :root {
@@ -30,6 +32,52 @@
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             color: var(--text);
             min-height: 100vh;
+        }
+
+        /* --- SIFIRLANAN MOBİL/MASAÜSTÜ BAŞLIK ALANI --- */
+        .top-header {
+            width: 100%;
+            text-align: center;
+            padding: 14px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background: var(--sidebar);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Logo ve yazı ortada */
+        .top-center {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        /* --- MENÜ BUTONU (SADECE MOBİL İÇİN) --- */
+        .menu-btn {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 999;
+            background: var(--accent);
+            color: #022c22;
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+            display: block; /* Mobil'de görünür */
         }
 
         /* --- SIDEBAR (SADECE MASAÜSTÜ İÇİN) --- */
@@ -108,28 +156,8 @@
             flex: 1;
             padding: 20px;
             width: 100%;
-            min-height: 100vh; 
-        }
-        
-        /* --- MOBILE HEADER (SADECE MOBİL İÇİN) --- */
-        .mobile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            background: var(--sidebar);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 500;
-            /* Mobil menü butonu için biraz boşluk bırak */
-            padding-left: 75px; 
-        }
-        
-        .mobile-header .header-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text);
+            min-height: 100vh;
+            padding-top: 75px; /* Mobil header için boşluk */
         }
         
         .title {
@@ -137,7 +165,7 @@
             font-weight: 700;
             margin-bottom: 24px;
             color: var(--text);
-            /* Mobil başlık zaten .mobile-header içinde, bu masaüstü için */
+            /* Masaüstünde üst header gizlendiği için başlık gösterilir */
             display: none; 
         }
 
@@ -178,6 +206,28 @@
         }
         
         /* En Son Randevular Listesi Stilleri */
+        .appointment-section {
+            padding: 16px; /* p-4 yerine */
+            background: rgba(16, 21, 40, 0.5); /* bg-gray-900/50 yerine */
+            border-radius: 18px; /* rounded-xl yerine */
+            border: 1px solid rgba(75, 85, 99, 0.35); /* border border-gray-700/50 yerine */
+            margin-top: 24px; /* my-6 yerine */
+            margin-bottom: 24px; /* my-6 yerine */
+        }
+        
+        .appointment-section h2 {
+             font-size: 18px;
+             font-weight: 600;
+             margin-bottom: 12px;
+        }
+        
+        .appointment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* space-y-3 yerine */
+            margin-top: 16px; /* mt-4 yerine */
+        }
+
         .appointment-item {
             display: flex;
             justify-content: space-between;
@@ -205,6 +255,7 @@
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .status-pending {
@@ -217,62 +268,58 @@
             color: #10b981;
         }
         
+        /* Kalan statü renklerini ekleyelim */
+        .status-cancelled { 
+            background-color: rgba(239, 68, 68, 0.2); 
+            color: #f87171; 
+        }
+        .status-completed { 
+            background-color: rgba(59, 130, 246, 0.2); 
+            color: #60a5fa; 
+        }
+
         /* --- YENİ MOBİL ÇEKMECE (DRAWER) STİLLERİ --- */
 
-        /* Üst Menü Butonu */
-        .menu-btn{
-            position:fixed;
-            top:14px; left:14px;
-            z-index:1001; /* Sidebar'dan (1000) daha yüksek */
-            background:#22c55e;
-            color:#022c22;
-            border:0;
-            padding:10px 16px;
-            border-radius:12px;
-            font-size:16px;
-            font-weight:700;
-            cursor:pointer;
-            box-shadow:0 6px 20px rgba(34,197,94,0.4);
-        }
-        
         /* Menü Arkası */
-        .drawer-overlay{
-            position:fixed;
-            top:0; left:0;
-            width:100%; height:100%;
-            background:rgba(0,0,0,0.55);
-            backdrop-filter:blur(2px);
-            display:none;
-            z-index:998;
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(2px);
+            display: none;
+            z-index: 998;
         }
 
         /* Açılan Menü */
-        .drawer-menu{
-            position:fixed;
-            top:0; left:0;
-            width:250px;
-            height:100%;
-            background:#0b1120;
-            transform:translateX(-100%);
-            transition:transform 0.28s ease;
-            z-index:9999; /* En üstte olmalı */
-            padding:20px;
-            border-right:1px solid rgba(255,255,255,0.1);
+        .drawer-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 250px;
+            height: 100%;
+            background: #0b1120;
+            transform: translateX(-100%);
+            transition: transform 0.28s ease;
+            z-index: 9999;
+            padding: 20px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
         }
 
         /* Açık hali */
-        .drawer-open{
-            transform:translateX(0);
+        .drawer-open {
+            transform: translateX(0);
         }
 
         /* Başlık */
-        .drawer-title{
-            font-size:20px;
-            font-weight:700;
-            color:#22c55e;
-            margin-bottom:20px;
-            padding-bottom:10px;
-            border-bottom:1px solid rgba(255,255,255,0.1);
+        .drawer-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         /* Linkler */
@@ -281,12 +328,12 @@
             flex-direction: column;
             gap: 8px;
         }
-        .drawer-links a{
-            display:block;
-            padding:12px 10px;
-            color:#e2e8f0;
-            font-size:15px;
-            text-decoration:none;
+        .drawer-links a {
+            display: block;
+            padding: 12px 10px;
+            color: #e2e8f0;
+            font-size: 15px;
+            text-decoration: none;
             border-radius: 8px;
             transition: background 0.2s, color 0.2s;
         }
@@ -297,6 +344,13 @@
             font-weight: 600;
         }
         
+        .loading-message {
+            font-size: 14px;
+            color: var(--muted);
+            padding: 8px;
+        }
+
+
         /* --- DESKTOP VIEW (Min 768px) --- */
         @media (min-width: 768px) {
             body {
@@ -307,13 +361,18 @@
                 display: flex; /* Masaüstünde sidebar'ı göster */
             }
             
-            .mobile-header {
-                display: none; /* Masaüstünde mobil başlığı gizle */
+            .top-header {
+                display: none; /* Masaüstünde üst header'ı gizle */
+            }
+            
+            .menu-btn {
+                display: none; /* Masaüstünde mobil butonu gizle */
             }
 
             .main-area {
                 margin-left: 240px; /* Sabit sidebar kadar boşluk bırak */
                 padding: 32px;
+                padding-top: 32px; /* Artık mobil header yok */
             }
             
             .title {
@@ -332,14 +391,8 @@
             .stat {
                 font-size: 32px;
             }
-            
-            .menu-btn, .drawer-overlay, .drawer-menu {
-                display: none !important; /* Masaüstünde mobil menü elemanlarını tamamen gizle */
-            }
         }
     </style>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- Firebase SDK'ları -->
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
@@ -360,22 +413,21 @@
             <span class="drawer-title">Cepterandevu</span>
         </div>
         <div class="drawer-links" id="drawerLinks">
-            <!-- Linkler JS ile doldurulacak, şimdilik placeholder -->
-            <a href="#" data-path="business-panel.html" onclick="handleNavigation(this)">Panel</a>
-            <a href="#" data-path="business-services.html" onclick="handleNavigation(this)">Hizmetler</a>
-            <a href="#" data-path="business-employees.html" onclick="handleNavigation(this)">Çalışanlar</a>
-            <a href="#" data-path="business-appointments.html" onclick="handleNavigation(this)">Randevular</a>
-            <a href="#" data-path="business-settings.html" onclick="handleNavigation(this)">Ayarlar</a>
+            <!-- Menü linkleri burada -->
+            <a href="#" data-path="business-panel.html" onclick="handleNavigation(this)"><i class="fas fa-tachometer-alt"></i> Panel</a>
+            <a href="#" data-path="business-services.html" onclick="handleNavigation(this)"><i class="fas fa-wrench"></i> Hizmetler</a>
+            <a href="#" data-path="business-employees.html" onclick="handleNavigation(this)"><i class="fas fa-users"></i> Çalışanlar</a>
+            <a href="#" data-path="business-appointments.html" onclick="handleNavigation(this)"><i class="fas fa-calendar-alt"></i> Randevular</a>
+            <a href="#" data-path="business-settings.html" onclick="handleNavigation(this)"><i class="fas fa-cog"></i> Ayarlar</a>
         </div>
     </div>
 
-    <!-- MOBILE HEADER (Sadece mobil için görünür) -->
-    <header class="mobile-header">
-        <div class="logo-box">
+    <!-- MOBİL VE MASAÜSTÜ ÜST BAŞLIĞI (Mobil'de fixed menü butonunun sağında, Masaüstünde gizli) -->
+    <header class="top-header">
+        <div class="top-center">
             <div class="logo-mark">C</div>
-            <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
+            <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
         </div>
-        <!-- Mobil Menü Butonu artık yukarıda `menuBtn` olarak var -->
     </header>
 
     <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
@@ -386,7 +438,7 @@
         </div>
 
         <div class="menu">
-            <!-- Tıklama olayları simülasyon amaçlıdır, gerçekte sayfayı değiştirir -->
+            <!-- Tıklama olayları simülasyon amaçlıdır -->
             <button class="active" onclick="handleNavigation(this)" data-path="business-panel.html"><i class="fas fa-tachometer-alt"></i> Panel</button>
             <button onclick="handleNavigation(this)" data-path="business-services.html"><i class="fas fa-wrench"></i> Hizmetler</button>
             <button onclick="handleNavigation(this)" data-path="business-employees.html"><i class="fas fa-users"></i> Çalışanlar</button>
@@ -397,6 +449,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-area">
+        <!-- Masaüstü Başlığı -->
         <h1 class="title" id="bizTitle">İşletme Paneli</h1>
 
         <!-- İSTATİSTİK KARTLARI -->
@@ -423,11 +476,11 @@
         </div>
         
         <!-- EN SON RANDEVULAR -->
-        <section class="p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 my-6">
-             <h2 class="text-lg font-semibold mb-3">En Son Randevular</h2>
-             <div id="latestAppointmentsList" class="space-y-3 mt-4">
+        <section class="appointment-section">
+             <h2>En Son Randevular</h2>
+             <div id="latestAppointmentsList" class="appointment-list">
                  <!-- Randevular buraya JS ile yüklenecek -->
-                 <p class="text-sm text-gray-400 p-2" id="loadingMessage">Randevu verileri yükleniyor...</p>
+                 <p class="loading-message" id="loadingMessage">Randevu verileri yükleniyor...</p>
              </div>
         </section>
 
@@ -435,6 +488,10 @@
 
 
 <script>
+    // **********************************************
+    // --- UI/NAVIGATION LOGIC (Pure JS) ---
+    // **********************************************
+    
     const drawer = document.getElementById("drawerMenu");
     const overlay = document.getElementById("drawerOverlay");
     const menuBtn = document.getElementById("menuBtn");
@@ -465,8 +522,8 @@
         } else if (element.tagName === 'A') {
             path = element.getAttribute('data-path');
         } else {
-             // Eğer string olarak çağrılırsa (eski kod uyumu için)
-             path = element;
+            // Eğer string olarak çağrılırsa (eski kod uyumu için)
+            path = element;
         }
 
         if (!path) return;
@@ -480,6 +537,7 @@
         }
 
         // Gerçek bir uygulamada: window.location.href = path;
+        // Simülasyon olduğu için sadece logluyoruz.
         console.log("Navigating to (simulated): " + path);
     }
 
@@ -505,8 +563,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Sayfa yüklendiğinde mevcut yolu aktif et
-        updateActiveMenu("business-panel.html"); // Varsayılan olarak paneli aktif et
+        // Sayfa yüklendiğinde varsayılan yolu aktif et
+        updateActiveMenu("business-panel.html"); 
     });
 </script>
 
@@ -574,8 +632,8 @@
         const statusMap = {
             'pending': { text: 'Beklemede', class: 'status-pending' },
             'approved': { text: 'Onaylandı', class: 'status-approved' },
-            'cancelled': { text: 'İptal Edildi', class: 'bg-red-900/30 text-red-400' },
-            'completed': { text: 'Tamamlandı', class: 'bg-blue-900/30 text-blue-400' },
+            'cancelled': { text: 'İptal Edildi', class: 'status-cancelled' },
+            'completed': { text: 'Tamamlandı', class: 'status-completed' },
         };
         const s = statusMap[status] || { text: status, class: 'bg-gray-500/20 text-gray-400' };
         return `<span class="status-badge ${s.class}">${s.text}</span>`;
@@ -657,6 +715,7 @@
             snapshot.forEach(doc => {
                 const data = doc.data();
                 data.docId = doc.id; // Document ID'yi de ekle
+                
                 if (data.status === "pending") {
                     pendingCount++;
                 } else if (data.status === "approved") {
@@ -695,7 +754,7 @@
         latestAppointmentsList.innerHTML = ''; // Listeyi temizle
         
         if (appointments.length === 0) {
-            latestAppointmentsList.innerHTML = '<p class="text-sm text-gray-500 p-2">Henüz hiç randevu yok.</p>';
+            latestAppointmentsList.innerHTML = '<p class="loading-message">Henüz hiç randevu yok.</p>';
             return;
         }
 
@@ -705,7 +764,8 @@
             
             // Tarih ve Saati okunabilir formata dönüştür
             const dateParts = app.date ? app.date.split('-') : ["", "", ""];
-            const formattedDate = `${dateParts[2] || '?'}.${dateParts[1] || '?'}.${dateParts[0] || '?'}`; // DD.MM.YYYY
+            // YYYY-MM-DD -> DD.MM.YYYY
+            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : "Tarih Bilgisi Yok";
             
             const timeText = app.time || "Belirtilmemiş";
             
