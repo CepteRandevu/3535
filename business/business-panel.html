@@ -1,281 +1,415 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>İşletme Paneli | Cepterandevu</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>İşletme Paneli | Cepterandevu</title>
 
-  <style>
-    :root {
-      --bg: #050816;
-      --sidebar: #0b1120;
-      --card: #101528;
-      --accent: #22c55e;
-      --accent-strong: #16a34a;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --border: rgba(148,163,184,0.35);
-      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
-      --radius-xl: 22px;
-    }
+    <style>
+        :root {
+            --bg: #050816;
+            --sidebar: #0b1120;
+            --card: #101528;
+            --accent: #22c55e;
+            --accent-strong: #16a34a;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: rgba(148,163,184,0.35);
+            --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
+            --radius-xl: 22px;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      display: flex;
-      background: radial-gradient(circle at top, #111827, #020617 55%);
-      font-family: system-ui, sans-serif;
-      color: var(--text);
-      min-height: 100vh;
-    }
+        body {
+            display: flex;
+            flex-direction: column; /* Mobile first: main content on top, then the body content */
+            background: radial-gradient(circle at top, #111827, #020617 55%);
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
-      background: var(--sidebar);
-      padding: 24px 18px;
-      border-right: 1px solid var(--border);
-      position: fixed;
-      top: 0; bottom: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+        /* --- SIDEBAR (Mobile First: Hidden by default) --- */
+        .sidebar {
+            width: 240px;
+            background: var(--sidebar);
+            padding: 24px 18px;
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 1000; /* Overlay other content */
+            transition: transform 0.3s ease-out;
+            transform: translateX(-100%); /* Start position: hidden off-screen */
+        }
+        
+        .sidebar.open {
+            transform: translateX(0); /* Open position: visible */
+        }
+        
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            /* Added space for close button on mobile */
+            justify-content: space-between; 
+        }
 
-    .logo-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 14px;
+            background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: #ecfdf5;
+            box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+        }
 
-    .logo-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: 800;
-      font-size: 18px;
-      color: #ecfdf5;
-      box-shadow: 0 10px 30px rgba(34,197,94,0.6);
-    }
+        .biz-name-small {
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-    .biz-name-small {
-      font-size: 14px;
-      font-weight: 600;
-    }
+        .menu button {
+            width: 100%;
+            padding: 10px 12px;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            color: var(--muted);
+            cursor: pointer;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: background 0.2s, color 0.2s;
+        }
 
-    .menu button {
-      width: 100%;
-      padding: 10px 12px;
-      background: transparent;
-      border: 0;
-      text-align: left;
-      color: var(--muted);
-      cursor: pointer;
-      border-radius: 12px;
-      font-size: 14px;
-    }
+        .menu button.active {
+            background: var(--accent);
+            color: #022c22;
+            font-weight: 600;
+        }
 
-    .menu button.active {
-      background: var(--accent);
-      color: #022c22;
-      font-weight: 600;
-    }
+        .menu-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
 
-    /* MAIN */
-    .main-area {
-      margin-left: 240px;
-      flex: 1;
-      padding: 24px;
-    }
+        .menu-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 30px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
 
-    .title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-bottom: 20px;
-    }
+        /* --- MAIN AREA (Mobile First: Full width) --- */
+        .main-area {
+            flex: 1;
+            padding: 20px; /* Mobile Padding */
+            width: 100%;
+        }
+        
+        /* --- MOBILE HEADER --- */
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--sidebar);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+        
+        .mobile-header .header-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: -20px; /* Center title better */
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none; /* Hide desktop title on mobile */
+        }
 
-    .card {
-      background: var(--card);
-      padding: 18px;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
-    }
+        /* --- CARDS (Mobile First: Min 150px wide) --- */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-    .card h3 {
-      margin-bottom: 8px;
-      font-size: 17px;
-    }
+        .card {
+            background: var(--card);
+            padding: 18px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft);
+        }
 
-    .stat {
-      font-size: 26px;
-      font-weight: 700;
-      margin-top: 4px;
-    }
-  </style>
+        .card h3 {
+            margin-bottom: 8px;
+            font-size: 15px; /* Smaller font for mobile */
+            color: var(--muted);
+        }
 
-  <!-- Firebase -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+        .stat {
+            font-size: 24px; /* Slightly smaller stat for mobile */
+            font-weight: 700;
+            margin-top: 4px;
+            color: var(--accent);
+        }
+        
+        /* --- DESKTOP VIEW (Min 768px) --- */
+        @media (min-width: 768px) {
+            body {
+                flex-direction: row; /* Desktop: side-by-side layout */
+            }
+
+            .sidebar {
+                transform: translateX(0); /* Always visible */
+                position: fixed;
+                height: 100%;
+            }
+            
+            .mobile-header {
+                display: none; /* Hide mobile header */
+            }
+
+            .main-area {
+                margin-left: 240px; /* Offset for the fixed sidebar */
+                padding: 24px; /* Desktop Padding */
+            }
+            
+            .title {
+                display: block; /* Show desktop title */
+                font-size: 22px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 18px;
+            }
+
+            .card h3 {
+                font-size: 17px;
+                color: var(--text);
+            }
+
+            .stat {
+                font-size: 26px;
+            }
+
+            .logo-box {
+                justify-content: flex-start; /* No close button needed on desktop */
+            }
+            .menu-close-btn {
+                display: none;
+            }
+        }
+    </style>
+
+    <!-- Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
 
 </head>
 
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo-box">
-      <div class="logo-mark">C</div>
-      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
-    </div>
+    <!-- MOBILE HEADER (Görünür sadece mobil) -->
+    <header class="mobile-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
+        <div></div> <!-- Spacer -->
+    </header>
 
-    <div class="menu">
-      <button class="active">Panel</button>
-      <button onclick="location.href='business-services.html'">Hizmetler</button>
-      <button onclick="location.href='business-employees.html'">Çalışanlar</button>
-      <button onclick="location.href='business-appointments.html'">Randevular</button>
-      <button onclick="location.href='business-settings.html'">Ayarlar</button>
-    </div>
-  </aside>
+    <!-- SIDEBAR (Gizli/Açılabilir) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-box">
+            <div class="logo-mark">C</div>
+            <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
+            <!-- Mobil menüyü kapatma butonu -->
+            <button class="menu-close-btn" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-  <!-- MAIN -->
-  <main class="main-area">
-    <h1 class="title" id="bizTitle">İşletme Paneli</h1>
+        <div class="menu">
+            <button class="active">Panel</button>
+            <!-- Menüdeki yönlendirmeler için tıklama olayına toggleSidebar() eklenmeli -->
+            <button onclick="location.href='business-services.html'; toggleSidebar();">Hizmetler</button>
+            <button onclick="location.href='business-employees.html'; toggleSidebar();">Çalışanlar</button>
+            <button onclick="location.href='business-appointments.html'; toggleSidebar();">Randevular</button>
+            <button onclick="location.href='business-settings.html'; toggleSidebar();">Ayarlar</button>
+        </div>
+    </aside>
 
-    <div class="cards">
-      <div class="card">
-        <h3>Bugün Toplam Randevu</h3>
-        <div class="stat" id="statToday">0</div>
-      </div>
+    <!-- MAIN -->
+    <main class="main-area">
+        <h1 class="title" id="bizTitle">İşletme Paneli</h1>
 
-      <div class="card">
-        <h3>Bekleyen Randevular</h3>
-        <div class="stat" id="statPending">0</div>
-      </div>
+        <div class="cards">
+            <div class="card">
+                <h3>Bugün Randevu</h3>
+                <div class="stat" id="statToday">0</div>
+            </div>
 
-      <div class="card">
-        <h3>Onaylanmış Randevular</h3>
-        <div class="stat" id="statApproved">0</div>
-      </div>
+            <div class="card">
+                <h3>Bekleyenler</h3>
+                <div class="stat" id="statPending">0</div>
+            </div>
 
-      <div class="card">
-        <h3>Toplam Hizmet</h3>
-        <div class="stat" id="statServices">0</div>
-      </div>
-    </div>
+            <div class="card">
+                <h3>Onaylananlar</h3>
+                <div class="stat" id="statApproved">0</div>
+            </div>
 
-  </main>
+            <div class="card">
+                <h3>Toplam Hizmet</h3>
+                <div class="stat" id="statServices">0</div>
+            </div>
+        </div>
+
+        <!-- Diğer panel içeriği buraya gelecek -->
+
+    </main>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+        getAuth,
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    doc,
-    getDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+        doc,
+        getDoc,
+        setLogLevel
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1"
-  };
+    // Firestore ve Auth işlemlerinden önce log seviyesini ayarla
+    setLogLevel('Debug');
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    // Canvas Ortamından Global Değişkenleri Alma
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        // Not: Burada API anahtarlarınızı hardcode etmeyin, ancak test amaçlı eklenmiş.
+        apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+        authDomain: "cepterandevu-35fe4.firebaseapp.com",
+        projectId: "cepterandevu-35fe4",
+        storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+        messagingSenderId: "86298180836",
+        appId: "1:86298180836:web:124c2004605d68b32700f1"
+    };
 
-  let businessID = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  const bizNameSmall = document.getElementById("bizNameSmall");
-  const bizTitle = document.getElementById("bizTitle");
+    let businessID = null;
 
-  const statToday = document.getElementById("statToday");
-  const statPending = document.getElementById("statPending");
-  const statApproved = document.getElementById("statApproved");
-  const statServices = document.getElementById("statServices");
+    const sidebar = document.getElementById("sidebar");
+    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+    const bizNameMobile = document.getElementById("bizNameMobile");
+    const bizTitle = document.getElementById("bizTitle");
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "business-login.html";
-      return;
+    const statToday = document.getElementById("statToday");
+    const statPending = document.getElementById("statPending");
+    const statApproved = document.getElementById("statApproved");
+    const statServices = document.getElementById("statServices");
+
+    // Mobil menü açma/kapama işlevi
+    window.toggleSidebar = function() {
+        sidebar.classList.toggle('open');
     }
 
-    businessID = user.uid;
+    // Başlangıçta kimlik doğrulama durumunu kontrol et
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            // Yönlendirme hatasını önlemek için sadece dosya adını kullanıyoruz
+            window.location.href = "business-login.html"; 
+            return;
+        }
 
-    await loadBusinessName();
-    await loadStats();
-  });
+        businessID = user.uid;
 
-  async function loadBusinessName() {
-    const ref = doc(db, "businesses", businessID);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const name = snap.data().name || "İşletme";
-      bizNameSmall.textContent = name;
-      bizTitle.textContent = name + " Paneli";
+        // İstatistikleri yüklemeden önce bekle
+        await loadBusinessName();
+        await loadStats();
+    });
+
+    // İşletme adını yükle
+    async function loadBusinessName() {
+        // Varsayılan koleksiyon adını kullanıyoruz. Eğer 'artifacts' yapısı gerekiyorsa yol buna göre ayarlanmalıdır.
+        const ref = doc(db, "businesses", businessID); 
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+            const name = snap.data().name || "İşletme";
+            bizNameSmallSidebar.textContent = name;
+            bizNameMobile.textContent = name; // Mobile header'ı güncelle
+            bizTitle.textContent = name + " Paneli";
+        }
     }
-  }
 
-  async function loadStats() {
-    // Bugün
-    const today = new Date().toISOString().split("T")[0];
+    // İstatistikleri yükle
+    async function loadStats() {
+        // Bugünün tarihini YYYY-MM-DD formatında al
+        const today = new Date().toISOString().split("T")[0];
 
-    const qToday = query(
-      collection(db, "appointments"),
-      where("businessID", "==", businessID),
-      where("date", "==", today)
-    );
-    const todaySnap = await getDocs(qToday);
-    statToday.textContent = todaySnap.size;
+        // Bugün
+        const qToday = query(
+            collection(db, "appointments"),
+            where("businessID", "==", businessID),
+            where("date", "==", today)
+        );
+        const todaySnap = await getDocs(qToday);
+        statToday.textContent = todaySnap.size;
 
-    // Pending
-    const qPending = query(
-      collection(db, "appointments"),
-      where("businessID", "==", businessID),
-      where("status", "==", "pending")
-    );
-    statPending.textContent = (await getDocs(qPending)).size;
+        // Bekleyen
+        const qPending = query(
+            collection(db, "appointments"),
+            where("businessID", "==", businessID),
+            where("status", "==", "pending")
+        );
+        statPending.textContent = (await getDocs(qPending)).size;
 
-    // Approved
-    const qApproved = query(
-      collection(db, "appointments"),
-      where("businessID", "==", businessID),
-      where("status", "==", "approved")
-    );
-    statApproved.textContent = (await getDocs(qApproved)).size;
+        // Onaylanmış
+        const qApproved = query(
+            collection(db, "appointments"),
+            where("businessID", "==", businessID),
+            where("status", "==", "approved")
+        );
+        statApproved.textContent = (await getDocs(qApproved)).size;
 
-    // Services
-    const qServices = query(
-      collection(db, "services"),
-      where("businessID", "==", businessID)
-    );
-    statServices.textContent = (await getDocs(qServices)).size;
-  }
+        // Hizmetler
+        const qServices = query(
+            collection(db, "services"),
+            where("businessID", "==", businessID)
+        );
+        statServices.textContent = (await getDocs(qServices)).size;
+    }
 
 </script>
 
