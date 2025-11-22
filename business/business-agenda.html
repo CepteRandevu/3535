@@ -1,310 +1,420 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ajandam | Cepterandevu</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajandam | Cepterandevu</title>
 
-  <style>
-    :root{
-      --bg:#050816;
-      --card:#0f172a;
-      --accent:#22c55e;
-      --accent-soft:rgba(34,197,94,0.18);
-      --accent-strong:#16a34a;
-      --text:#f1f5f9;
-      --muted:#94a3b8;
-      --border:rgba(148,163,184,0.25);
-      --radius:14px;
-    }
+<style>
+:root{
+  --bg:#050816;
+  --card:#0f172a;
+  --accent:#22c55e;
+  --accent-soft:rgba(34,197,94,0.18);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --border:rgba(148,163,184,0.22);
+  --radius:14px;
+}
 
-    *{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  color:var(--text);
+  font-family:system-ui,Segoe UI,Roboto,sans-serif;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+}
 
-    body{
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:radial-gradient(circle at top,#111827,#020617 55%);
-      color:var(--text);
-      padding:20px;
-      display:flex;
-      justify-content:center;
-      min-height:100vh;
-    }
+.container{
+  width:100%;
+  max-width:1100px;
+}
 
-    .container{
-      width:100%;
-      max-width:1100px;
-    }
+h1{
+  font-size:22px;
+  margin-bottom:12px;
+}
 
-    h1{
-      margin-bottom:12px;
-      font-size:22px;
-      font-weight:700;
-    }
+/* GRID YAPI */
+.agenda-grid{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:12px;
+  margin-top:16px;
+}
 
-    .calendar-wrap{
-      display:grid;
-      grid-template-columns:150px 1fr;
-      gap:16px;
-      margin-top:20px;
-    }
+/* SOL SAAT BLOĞU */
+.hours-col{
+  background:var(--card);
+  padding:12px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  height:max-content;
+}
 
-    .hours{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:12px;
-      height:max-content;
-    }
+.hour-item{
+  text-align:center;
+  padding:6px;
+  border-radius:8px;
+  font-size:13px;
+  background:#0b1220;
+  margin-bottom:5px;
+}
 
-    .hour{
-      padding:8px;
-      margin-bottom:4px;
-      font-size:13px;
-      background:rgba(255,255,255,0.05);
-      border-radius:8px;
-      text-align:center;
-    }
+/* TAKVİM */
+.calendar-col{
+  background:var(--card);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  padding:12px;
+}
 
-    .calendar{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:16px;
-    }
+.calendar-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
 
-    .calendar-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:14px;
-    }
+.calendar-header button{
+  background:var(--accent);
+  border:0;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;
+  color:#022c22;
+  font-weight:600;
+  cursor:pointer;
+}
 
-    .calendar-header button{
-      background:var(--accent);
-      border:0;
-      padding:6px 10px;
-      border-radius:8px;
-      color:#022c22;
-      cursor:pointer;
-      font-size:13px;
-      font-weight:600;
-    }
+.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  margin-bottom:6px;
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .days{
-      display:grid;
-      grid-template-columns:repeat(7,1fr);
-      gap:6px;
-      font-size:13px;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
+.cells{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
 
-    .cells{
-      display:grid;
-      grid-template-columns:repeat(7,1fr);
-      gap:6px;
-    }
+.cell{
+  background:#0b1220;
+  border:1px solid var(--border);
+  border-radius:10px;
+  min-height:120px;
+  padding:6px;
+  position:relative;
+  cursor:pointer;
+}
 
-    .cell{
-      background:#0b1220;
-      border:1px solid var(--border);
-      border-radius:10px;
-      min-height:95px;
-      padding:6px;
-      font-size:12px;
-      position:relative;
-      cursor:pointer;
-    }
+.cell:hover{ border-color:var(--accent); }
 
-    .cell:hover{
-      border-color:var(--accent);
-    }
+.cell .date{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:4px;
+}
 
-    .cell .date{
-      font-size:11px;
-      color:var(--muted);
-      margin-bottom:4px;
-    }
+.slot{
+  background:var(--accent-soft);
+  margin-bottom:4px;
+  padding:4px 6px;
+  border-radius:6px;
+  font-size:11px;
+  color:#bbf7d0;
+}
 
-    .slot{
-      background:var(--accent-soft);
-      padding:3px 4px;
-      border-radius:6px;
-      font-size:11px;
-      color:#bbf7d0;
-      margin-bottom:3px;
-    }
-  </style>
+/* MODAL */
+#modalBg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(2px);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal{
+  width:90%;
+  max-width:400px;
+  background:#0f172a;
+  border-radius:14px;
+  border:1px solid var(--border);
+  padding:18px;
+}
+
+.modal h3{
+  margin-bottom:10px;
+}
+
+.modal label{
+  font-size:13px;
+  margin-top:8px;
+  display:block;
+  color:var(--muted);
+}
+
+.modal select,.modal input{
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:var(--text);
+  margin-top:4px;
+}
+
+.btn{
+  padding:10px;
+  border-radius:10px;
+  border:0;
+  width:100%;
+  margin-top:10px;
+  background:var(--accent);
+  color:#022c22;
+  font-weight:600;
+  font-size:14px;
+  cursor:pointer;
+}
+.btn-danger{
+  background:#ef4444;
+  color:white;
+}
+</style>
 </head>
 
 <body>
 <div class="container">
 
-  <h1>📅 Ajandam</h1>
+<h1>📅 Ajandam</h1>
+<div id="loading">Takvim yükleniyor...</div>
 
-  <div id="loading" style="margin-top:20px;">Takvim yükleniyor...</div>
-
-  <div id="agendaWrap" style="display:none;" class="calendar-wrap">
-    <!-- SOL: Saatler -->
-    <div class="hours" id="hoursList"></div>
-
-    <!-- SAĞ: Takvim -->
-    <div class="calendar">
-      <div class="calendar-header">
-        <button id="prevMonth">← Önceki</button>
-        <div id="monthLabel"></div>
-        <button id="nextMonth">Sonraki →</button>
-      </div>
-
-      <div class="days">
-        <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div>
-        <div>Cum</div><div>Cmt</div><div>Paz</div>
-      </div>
-
-      <div id="cells" class="cells"></div>
+<div id="agendaGrid" class="agenda-grid" style="display:none;">
+  <div id="hoursCol" class="hours-col"></div>
+  <div class="calendar-col">
+    <div class="calendar-header">
+      <button id="prevMonth">←</button>
+      <div id="monthLabel"></div>
+      <button id="nextMonth">→</button>
     </div>
+
+    <div class="days">
+      <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div>
+      <div>Cum</div><div>Cmt</div><div>Paz</div>
+    </div>
+
+    <div id="cells" class="cells"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Randevu</h3>
+
+    <div id="modalContent">
+      <!-- JS ile doldurulacak -->
+    </div>
+
+    <button id="modalClose" class="btn">Kapat</button>
   </div>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, query, where, getDocs } 
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc } 
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* --- FIREBASE CONFIG --- */
 const firebaseConfig = {
-  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-  authDomain: "cepterandevu-35fe4.firebaseapp.com",
-  projectId: "cepterandevu-35fe4",
-  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-  messagingSenderId: "86298180836",
-  appId: "1:86298180836:web:124c2004605d68b32700f1",
+  apiKey:"AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain:"cepterandevu-35fe4.firebaseapp.com",
+  projectId:"cepterandevu-35fe4",
+  storageBucket:"cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId:"86298180836",
+  appId:"1:86298180836:web:124c2004605d68b32700f1"
 };
 
-const app  = initializeApp(firebaseConfig);
-const db   = getFirestore(app);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
 
-/* --- DOM --- */
-const loadingEl  = document.getElementById("loading");
-const agendaWrap = document.getElementById("agendaWrap");
-const hoursList  = document.getElementById("hoursList");
-const monthLabel = document.getElementById("monthLabel");
-const cellsEl    = document.getElementById("cells");
+const loading=document.getElementById("loading");
+const agendaGrid=document.getElementById("agendaGrid");
+const hoursCol=document.getElementById("hoursCol");
+const cells=document.getElementById("cells");
+const monthLabel=document.getElementById("monthLabel");
 
-let BUSINESS_ID = null;
+const modalBg=document.getElementById("modalBg");
+const modalContent=document.getElementById("modalContent");
+const modalClose=document.getElementById("modalClose");
 
-/* --- SAAT ARALIĞI (İşletme verisinden gelecek) --- */
-let workHours = [];
-
-/* --- BUGÜNÜN TARİHİ --- */
-let currentMonth = new Date();
+let BUSINESS_ID=null;
+let workHours=[];
+let currentMonth=new Date();
 currentMonth.setDate(1);
 
-/* --- GİRİŞ KONTROLÜ --- */
-onAuthStateChanged(auth, async user=>{
-  if(!user){
-    window.location.href = "business-login.html";
-    return;
-  }
-  BUSINESS_ID = user.uid;
-  await loadBusinessSettings();
+modalClose.onclick=()=>modalBg.style.display="none";
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){ location.href="business-login.html"; return; }
+  BUSINESS_ID=user.uid;
+  await loadSettings();
   renderHours();
   renderCalendar();
 });
 
-/* --- İŞLETME AYARLARI (çalışma saatleri) --- */
-async function loadBusinessSettings(){
-  const ref = doc(db,"businesses",BUSINESS_ID);
-  const snap = await getDoc(ref);
-
-  if(!snap.exists()){
-    workHours = [];
-  } else {
-    workHours = snap.data().workHours || [];
-  }
-
-  loadingEl.style.display = "none";
-  agendaWrap.style.display = "grid";
+async function loadSettings(){
+  const ref=doc(db,"businesses",BUSINESS_ID);
+  const snap=await getDoc(ref);
+  workHours=snap.exists()? snap.data().workHours||[] : [];
+  loading.style.display="none";
+  agendaGrid.style.display="grid";
 }
-/* --- SAATLERİ GÖSTER --- */
+
 function renderHours(){
-  hoursList.innerHTML = "";
+  hoursCol.innerHTML="";
   workHours.forEach(h=>{
-    const div = document.createElement("div");
-    div.className = "hour";
-    div.textContent = h;
-    hoursList.appendChild(div);
+    const d=document.createElement("div");
+    d.className="hour-item";
+    d.textContent=h;
+    hoursCol.appendChild(d);
   });
 }
-
-/* --- AY TAKVİMİ --- */
 function renderCalendar(){
-  cellsEl.innerHTML = "";
+  cells.innerHTML="";
+  const year=currentMonth.getFullYear();
+  const month=currentMonth.getMonth();
 
-  const year  = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
+  monthLabel.textContent=currentMonth.toLocaleDateString("tr-TR",{year:"numeric",month:"long"});
 
-  monthLabel.textContent = currentMonth.toLocaleDateString("tr-TR", {
-    year:"numeric",
-    month:"long"
-  });
-
-  const firstDay = new Date(year,month,1);
-  const lastDay  = new Date(year,month+1,0);
-  const start = firstDay.getDay() === 0 ? 6 : firstDay.getDay()-1;
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
+  const start = first.getDay()===0 ? 6 : first.getDay()-1;
 
   for(let i=0;i<start;i++){
-    const empty = document.createElement("div");
-    empty.className = "cell";
-    empty.style.opacity = "0.2";
-    cellsEl.appendChild(empty);
+    const e=document.createElement("div");
+    e.className="cell";
+    e.style.opacity="0.25";
+    cells.appendChild(e);
   }
 
-  for(let d=1; d<=lastDay.getDate(); d++){
-    const date = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  for(let day=1; day<=last.getDate(); day++){
+    const dateStr=`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
 
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    cell.dataset.date = date;
+    const c=document.createElement("div");
+    c.className="cell";
+    c.dataset.date=dateStr;
+    c.innerHTML=`<div class="date">${day}</div>`;
+    c.onclick=()=>openCreateModal(dateStr);
 
-    cell.innerHTML = `<div class="date">${d}</div>`;
+    cells.appendChild(c);
 
-    cellsEl.appendChild(cell);
-
-    loadDayAppointments(date, cell);
+    loadAppointmentsFor(dateStr,c);
   }
 }
 
-/* --- SEÇİLİ GÜNE RANDEVULARI ÇEK --- */
-async function loadDayAppointments(date, cell){
-  const qRef = query(
+async function loadAppointmentsFor(dateStr,cell){
+  const qRef=query(
     collection(db,"appointments"),
-    where("businessID","==", BUSINESS_ID),
-    where("date","==", date)
+    where("businessID","==",BUSINESS_ID),
+    where("date","==",dateStr)
   );
 
-  const snap = await getDocs(qRef);
+  const snap=await getDocs(qRef);
 
   snap.forEach(docSnap=>{
-    const ap = docSnap.data();
-
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.textContent = `${ap.time} - ${ap.serviceID}`;
-    cell.appendChild(div);
+    const ap=docSnap.data();
+    const slot=document.createElement("div");
+    slot.className="slot";
+    slot.textContent=`${ap.time} — ${ap.customerName||"Müşteri"} (${ap.serviceName||"Hizmet"})`;
+    slot.onclick=(e)=>{
+      e.stopPropagation();
+      openDetailModal(docSnap.id,ap);
+    };
+    cell.appendChild(slot);
   });
 }
 
-/* --- AY GEÇİŞ BUTONLARI --- */
-document.getElementById("prevMonth").onclick = ()=>{
+/* --- DETAY MODAL --- */
+function openDetailModal(id,ap){
+  modalContent.innerHTML=`
+    <div><b>Müşteri:</b> ${ap.customerName||"-"}</div>
+    <div><b>Hizmet:</b> ${ap.serviceName||"-"}</div>
+    <div><b>Çalışan:</b> ${ap.employeeName||"-"}</div>
+    <div><b>Tarih:</b> ${ap.date}</div>
+    <div><b>Saat:</b> ${ap.time}</div>
+
+    <button class="btn-danger" onclick="deleteAppointment('${id}')">Randevuyu Sil</button>
+  `;
+  modalBg.style.display="flex";
+}
+
+/* --- RANDEVU SİLME --- */
+window.deleteAppointment = async(id)=>{
+  await deleteDoc(doc(db,"appointments",id));
+  modalBg.style.display="none";
+  renderCalendar();
+};
+
+/* --- YENİ RANDEVU EKLE --- */
+function openCreateModal(dateStr){
+  modalContent.innerHTML=`
+    <label>Saat</label>
+    <select id="newTime">
+      ${workHours.map(h=>`<option value="${h}">${h}</option>`).join("")}
+    </select>
+
+    <label>Müşteri Adı</label>
+    <input id="newCust" placeholder="Ad soyad">
+
+    <label>Hizmet</label>
+    <input id="newServ" placeholder="Örn: Saç kesim">
+
+    <label>Çalışan</label>
+    <input id="newEmp" placeholder="Çalışan adı">
+
+    <button class="btn" onclick="createNew('${dateStr}')">Ekle</button>
+  `;
+  modalBg.style.display="flex";
+}
+
+window.createNew = async(dateStr)=>{
+  const time=document.getElementById("newTime").value;
+  const customer=document.getElementById("newCust").value.trim();
+  const service=document.getElementById("newServ").value.trim();
+  const employee=document.getElementById("newEmp").value.trim();
+
+  await addDoc(collection(db,"appointments"),{
+    businessID:BUSINESS_ID,
+    date:dateStr,
+    time,
+    customerName:customer,
+    serviceName:service,
+    employeeName:employee,
+    status:"approved",
+    createdAt:Date.now()
+  });
+
+  modalBg.style.display="none";
+  renderCalendar();
+};
+
+/* AY DEĞİŞTİRME */
+document.getElementById("prevMonth").onclick=()=>{
   currentMonth.setMonth(currentMonth.getMonth()-1);
   renderCalendar();
 };
-document.getElementById("nextMonth").onclick = ()=>{
+document.getElementById("nextMonth").onclick=()=>{
   currentMonth.setMonth(currentMonth.getMonth()+1);
   renderCalendar();
 };
+
 </script>
 </body>
 </html>
