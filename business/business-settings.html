@@ -1,452 +1,625 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ayarlar | Cepterandevu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ayarlar | Cepterandevu</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#050816;
+      --sidebar:#0b1120;
+      --card:#101528;
+      --accent:#22c55e;
+      --accent-strong:#16a34a;
+      --text:#f9fafb;
+      --muted:#9ca3af;
+      --border:rgba(148,163,184,0.35);
+      --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
+      --radius-xl:20px;
+    }
 
-<style>
-  :root {
-    --bg:#050816;
-    --sidebar:#0b1120;
-    --card:#101528;
-    --accent:#22c55e;
-    --accent-strong:#16a34a;
-    --text:#f9fafb;
-    --muted:#9ca3af;
-    --border:rgba(148,163,184,0.35);
-    --radius-xl:18px;
-    --shadow-soft:0 10px 30px rgba(10,10,20,0.7);
-  }
+    *{margin:0;padding:0;box-sizing:border-box;}
 
-  *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      display:flex;
+      flex-direction:column;
+      background:radial-gradient(circle at top,#111827,#020617 55%);
+      font-family:system-ui,sans-serif;
+      color:var(--text);
+      min-height:100vh;
+    }
 
-  body{
-    display:flex;
-    flex-direction:column;
-    background:radial-gradient(circle at top,#111827,#020617 55%);
-    font-family:'Inter',sans-serif;
-    color:var(--text);
-    min-height:100vh;
-  }
+    /* ÜST HEADER (MOBİL) */
+    .top-header{
+      width:100%;
+      padding-top:14px;
+      padding-bottom:0;
+      position:sticky;
+      top:0;
+      z-index:500;
+      background:var(--sidebar);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
 
-  /* ------------------------------ ÜST HEADER (Mobil) ------------------------------ */
-  .top-header{
-    width:100%;
-    padding-top:14px;
-    padding-bottom:0;
-    position:sticky;
-    top:0;
-    background:var(--sidebar);
-    border-bottom:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    z-index:999;
-  }
+    .top-center{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+    }
 
-  .top-center{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    justify-content:center;
-    width:100%;
-  }
+    .top-menu-row{
+      width:100%;
+      display:flex;
+      justify-content:flex-start;
+      padding-left:20px;
+      padding-bottom:14px;
+    }
 
-  .logo-mark{
-    width:36px;height:36px;border-radius:14px;
-    background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-    display:flex;justify-content:center;align-items:center;
-    font-weight:800;font-size:18px;color:white;
-    box-shadow:0 6px 20px rgba(34,197,94,0.45);
-  }
+    .logo-mark{
+      width:36px;height:36px;border-radius:14px;
+      background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+      display:flex;justify-content:center;align-items:center;
+      font-weight:800;font-size:18px;color:#ecfdf5;
+      box-shadow:0 10px 30px rgba(34,197,94,0.6);
+    }
+    .logo-title{
+      font-size:17px;
+      font-weight:600;
+      color:var(--text);
+    }
 
-  .logo-title{font-size:17px;font-weight:600;}
+    .menu-btn{
+      background:var(--accent);
+      color:#022c22;
+      border:0;
+      padding:9px 15px;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:0 4px 12px rgba(34,197,94,0.35);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-  .top-menu-row{
-    width:100%;
-    display:flex;
-    justify-content:flex-start;
-    padding-left:20px;
-    padding-bottom:14px;
-  }
+    .menu-btn i{font-size:14px;}
 
-  .menu-btn{
-    background:var(--accent);
-    color:#022c22;
-    border:0;
-    padding:9px 16px;
-    border-radius:12px;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    box-shadow:0 4px 12px rgba(34,197,94,0.35);
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
+    /* DRAWER MENU (MOBİL) */
+    .drawer-overlay{
+      position:fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      background:rgba(0,0,0,0.55);
+      backdrop-filter:blur(2px);
+      display:none;
+      z-index:998;
+    }
 
-  /* -------------------------------- SIDEBAR (Desktop) ---------------------------- */
-  .sidebar{
-    width:240px;
-    background:var(--sidebar);
-    padding:24px 18px;
-    border-right:1px solid var(--border);
-    position:fixed;
-    top:0;bottom:0;left:0;
-    display:none;
-    flex-direction:column;
-    gap:15px;
-    z-index:1000;
-  }
+    .drawer-menu{
+      position:fixed;
+      top:0;left:0;
+      width:250px;height:100%;
+      background:#0b1120;
+      transform:translateX(-100%);
+      transition:transform .25s ease;
+      z-index:999;
+      padding:20px;
+      border-right:1px solid rgba(255,255,255,0.08);
+      display:flex;
+      flex-direction:column;
+    }
 
-  .logo-box{
-    display:flex;align-items:center;gap:12px;margin-bottom:20px;
-  }
-  .biz-name-small{font-size:15px;font-weight:600;}
+    .drawer-open{
+      transform:translateX(0);
+    }
 
-  .menu button{
-    width:100%;padding:12px;
-    background:transparent;border:0;
-    text-align:left;color:var(--muted);
-    cursor:pointer;border-radius:12px;
-    font-size:14px;font-weight:500;
-  }
-  .menu button.active{
-    background:var(--accent);
-    color:#022c22;
-    font-weight:700;
-    box-shadow:0 4px 12px rgba(34,197,94,0.3);
-  }
+    .drawer-title{
+      font-size:20px;
+      font-weight:700;
+      color:var(--accent);
+      margin-bottom:18px;
+      padding-bottom:10px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
 
-  /* ------------------------------ DRAWER (Mobil Menü) ------------------------------ */
-  .drawer-overlay{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.55);
-    display:none;z-index:998;
-  }
-  .drawer-menu{
-    position:fixed;top:0;left:0;width:250px;height:100%;
-    background:#0b1120;
-    transform:translateX(-100%);
-    transition:0.28s;
-    z-index:9999;
-    padding:22px;
-  }
-  .drawer-open{transform:translateX(0);}
+    .drawer-links{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .drawer-links a{
+      display:block;
+      padding:10px 10px;
+      font-size:15px;
+      color:#e2e8f0;
+      text-decoration:none;
+      border-radius:8px;
+      transition:background .2s,color .2s;
+    }
+    .drawer-links a:hover,
+    .drawer-links a.active{
+      background:var(--accent);
+      color:#022c22;
+      font-weight:600;
+    }
 
-  .drawer-title{font-size:20px;font-weight:700;margin-bottom:18px;}
-  .drawer-links a{
-    display:block;padding:12px;color:#e5e5e5;
-    text-decoration:none;border-radius:10px;
-    font-size:15px;margin-bottom:4px;
-  }
-  .drawer-links a.active,
-  .drawer-links a:hover{
-    background:var(--accent);color:#022c22;
-  }
+    /* SIDEBAR (DESKTOP) */
+    .sidebar{
+      width:240px;
+      background:var(--sidebar);
+      padding:24px 18px;
+      border-right:1px solid var(--border);
+      position:fixed;top:0;bottom:0;
+      display:none;
+      flex-direction:column;
+      gap:14px;
+      z-index:1000;
+    }
 
-  /* -------------------------------------- MAIN ------------------------------------- */
-  .main-area{
-    flex:1;
-    padding:20px;
-    padding-top:110px;
-  }
+    .logo-box{
+      display:flex;align-items:center;gap:12px;margin-bottom:20px;
+    }
+    .biz-name-small{font-size:14px;font-weight:600;}
 
-  .card{
-    background:var(--card);
-    padding:20px;
-    border-radius:var(--radius-xl);
-    border:1px solid var(--border);
-    box-shadow:var(--shadow-soft);
-    margin-bottom:22px;
-  }
+    .menu button{
+      width:100%;padding:10px 12px;background:transparent;border:0;
+      text-align:left;color:var(--muted);cursor:pointer;
+      border-radius:12px;font-size:14px;
+    }
+    .menu button.active{
+      background:var(--accent);color:#022c22;font-weight:600;
+    }
 
-  label{font-size:13px;color:var(--muted);margin-bottom:4px;display:block;}
+    /* MAIN */
+    .main-area{
+      flex:1;
+      padding:20px;
+      width:100%;
+      min-height:100vh;
+      padding-top:110px; /* mobil header için */
+    }
 
-  input,select,textarea{
-    width:100%;padding:11px;
-    border-radius:12px;
-    background:#020617;border:1px solid var(--border);
-    color:var(--text);margin-bottom:12px;
-  }
+    .title{
+      font-size:22px;
+      font-weight:600;
+      margin-bottom:16px;
+      display:none; /* desktop’ta açılacak */
+    }
 
-  .logo-preview{
-    width:90px;height:90px;border-radius:12px;
-    object-fit:cover;border:2px solid var(--accent);
-    margin-bottom:10px;
-  }
+    .card{
+      background:var(--card);
+      padding:20px;
+      border-radius:var(--radius-xl);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-soft);
+      margin-bottom:20px;
+    }
 
-  .btn-primary{
-    width:100%;padding:12px;
-    border:0;border-radius:12px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-    color:#022c22;font-size:15px;
-    font-weight:600;margin-top:6px;
-  }
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
 
-  .logout-btn{
-    width:100%;background:#ef4444;
-    border:0;border-radius:12px;
-    padding:12px;color:white;
-    margin-top:20px;font-size:15px;
-  }
+    input, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#020617;
+      border:1px solid var(--border);
+      color:var(--text);
+      margin-bottom:10px;
+      outline:none;
+      font-size:13px;
+    }
+    textarea{height:70px;resize:none;}
 
-  @media(min-width:768px){
-    body{flex-direction:row;}
-    .sidebar{display:flex;}
-    .top-header{display:none;}
-    .main-area{margin-left:240px;padding:30px;padding-top:30px;}
-  }
-</style>
+    .logo-upload-box{
+      width:110px;
+      height:110px;
+      border-radius:16px;
+      border:2px dashed var(--accent);
+      background:rgba(34,197,94,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--accent);
+      font-size:12px;
+      cursor:pointer;
+      margin-bottom:10px;
+      overflow:hidden;
+    }
+    .logo-upload-box span{
+      text-align:center;
+      padding:0 6px;
+    }
+    .logo-preview{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:16px;
+      display:none;
+    }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    .btn-primary{
+      width:100%;
+      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+      border:0;
+      padding:12px;
+      font-size:15px;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      color:#022c22;
+      margin-top:6px;
+      box-shadow:0 12px 30px rgba(34,197,94,0.45);
+    }
+
+    .logout-btn{
+      width:100%;
+      background:#ef4444;
+      color:white;
+      padding:12px;
+      border:0;
+      border-radius:12px;
+      font-size:15px;
+      margin-top:20px;
+      cursor:pointer;
+    }
+
+    @media (min-width:768px){
+      body{flex-direction:row;}
+      .sidebar{display:flex;}
+      .top-header{display:none;}
+      .main-area{
+        margin-left:240px;
+        padding:32px;
+        padding-top:32px;
+      }
+      .title{display:block;}
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- Drawer -->
-<div id="drawerOverlay" class="drawer-overlay"></div>
-<div id="drawerMenu" class="drawer-menu">
-  <div class="drawer-title">Cepterandevu</div>
-  <div class="drawer-links">
-    <a href="business-panel.html">Panel</a>
-    <a href="business-services.html">Hizmetler</a>
-    <a href="business-employees.html">Çalışanlar</a>
-    <a href="business-appointments.html">Randevular</a>
-    <a href="business-settings.html" class="active">Ayarlar</a>
-  </div>
-</div>
-
-<!-- Üst Header -->
-<header class="top-header">
-  <div class="top-center">
-    <div class="logo-mark">C</div>
-    <span class="logo-title">Ayarlar</span>
-  </div>
-  <div class="top-menu-row">
-    <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
-  </div>
-</header>
-
-<!-- Sidebar -->
-<aside class="sidebar">
-  <div class="logo-box">
-    <div class="logo-mark">C</div>
-    <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+  <!-- MOBİL MENÜ (DRAWER) -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="drawerMenu" class="drawer-menu">
+    <div class="drawer-title">Cepterandevu</div>
+    <div class="drawer-links">
+      <a href="business-panel.html" data-path="business-panel.html">Panel</a>
+      <a href="business-services.html" data-path="business-services.html">Hizmetler</a>
+      <a href="business-employees.html" data-path="business-employees.html">Çalışanlar</a>
+      <a href="business-appointments.html" data-path="business-appointments.html">Randevular</a>
+      <a href="business-settings.html" data-path="business-settings.html" class="active">Ayarlar</a>
+    </div>
   </div>
 
-  <div class="menu">
-    <button onclick="location.href='business-panel.html'">Panel</button>
-    <button onclick="location.href='business-services.html'">Hizmetler</button>
-    <button onclick="location.href='business-employees.html'">Çalışanlar</button>
-    <button onclick="location.href='business-appointments.html'">Randevular</button>
-    <button class="active">Ayarlar</button>
-  </div>
-</aside>
+  <!-- ÜST HEADER (MOBİL) -->
+  <header class="top-header">
+    <div class="top-center">
+      <div class="logo-mark">C</div>
+      <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
+    </div>
+    <div class="top-menu-row">
+      <button id="menuBtn" class="menu-btn">
+        <i class="fas fa-bars"></i> Menü
+      </button>
+    </div>
+  </header>
 
+  <!-- SIDEBAR (DESKTOP) -->
+  <aside class="sidebar">
+    <div class="logo-box">
+      <div class="logo-mark">C</div>
+      <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
+    </div>
 
-<!-- MAIN -->
-<main class="main-area">
-  <div class="card">
-    <h3 style="margin-bottom:10px;">İşletme Bilgileri</h3>
+    <div class="menu">
+      <button onclick="handleNavigation('business-panel.html')">Panel</button>
+      <button onclick="handleNavigation('business-services.html')">Hizmetler</button>
+      <button onclick="handleNavigation('business-employees.html')">Çalışanlar</button>
+      <button onclick="handleNavigation('business-appointments.html')">Randevular</button>
+      <button class="active">Ayarlar</button>
+    </div>
+  </aside>
 
-    <label>Logo</label>
-    <img id="logoPreview" class="logo-preview">
-    <input type="file" id="logoInput" accept="image/*">
+  <!-- ANA İÇERİK -->
+  <main class="main-area">
+    <h1 class="title" id="pageTitleHeading">Ayarlar</h1>
 
-    <label>İşletme Adı</label>
-    <input id="bizName">
+    <!-- İŞLETME BİLGİLERİ -->
+    <div class="card">
+      <h3 style="margin-bottom:12px;">İşletme Bilgileri</h3>
 
-    <label>İl</label>
-    <select id="citySelect">
-      <option value="">İl seçiniz</option>
-      <option>İzmir</option>
-      <option>İstanbul</option>
-      <option>Ankara</option>
-      <option>Bursa</option>
-      <option>Antalya</option>
-      <option>Konya</option>
-    </select>
+      <label>Logo</label>
+      <div class="logo-upload-box" id="logoBox">
+        <span id="logoBoxText">Logo yüklemek için dokun</span>
+        <img id="logoPreview" class="logo-preview" alt="Logo Önizleme">
+      </div>
+      <input type="file" id="logoInput" accept="image/*" style="display:none;">
 
-    <label>İlçe</label>
-    <select id="districtSelect">
-      <option value="">Önce il seç</option>
-    </select>
+      <label>İşletme Adı</label>
+      <input id="bizName" placeholder="Örn: KG Barber">
 
-    <label>Telefon</label>
-    <input id="bizPhone">
+      <label>İl</label>
+      <input id="bizCity" placeholder="Örn: İzmir">
 
-    <label>Adres</label>
-    <textarea id="bizAddress"></textarea>
+      <label>İlçe</label>
+      <input id="bizDistrict" placeholder="Örn: Menderes">
 
-    <label>Açıklama</label>
-    <textarea id="bizAbout"></textarea>
+      <label>Telefon</label>
+      <input id="bizPhone" placeholder="05xx xxx xx xx">
 
-    <button id="saveBiz" class="btn-primary">İşletme Bilgilerini Kaydet</button>
-  </div>
+      <label>Adres</label>
+      <textarea id="bizAddress" placeholder="Açık adres"></textarea>
 
-  <div class="card">
-    <h3>Şifre Değiştir</h3>
-    <label>Yeni Şifre</label>
-    <input type="password" id="newPass">
-    <button class="btn-primary" id="savePass">Şifreyi Güncelle</button>
-  </div>
+      <label>Açıklama</label>
+      <textarea id="bizAbout" placeholder="Kısa açıklama, hizmetler vb."></textarea>
 
-  <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
-</main>
+      <button class="btn-primary" id="saveBiz">İşletme Bilgilerini Kaydet</button>
+    </div>
 
+    <!-- ŞİFRE KISMI -->
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Şifre Değiştir</h3>
+      <label>Yeni Şifre</label>
+      <input type="password" id="newPass" placeholder="En az 6 karakter">
+      <button class="btn-primary" id="savePass">Şifreyi Güncelle</button>
+    </div>
 
-<!-- JS -->
-<script>
-  const drawer = document.getElementById("drawerMenu");
-  const overlay = document.getElementById("drawerOverlay");
-  const menuBtn = document.getElementById("menuBtn");
+    <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+  </main>
 
-  menuBtn.onclick = ()=>{ drawer.classList.add("drawer-open"); overlay.style.display="block"; };
-  overlay.onclick = ()=>{ drawer.classList.remove("drawer-open"); overlay.style.display="none"; };
-</script>
+  <!-- Font Awesome (ikonlar için) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" defer></script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  <!-- NAVIGATION & DRAWER JS -->
+  <script>
+    const drawer = document.getElementById("drawerMenu");
+    const overlay = document.getElementById("drawerOverlay");
+    const menuBtn = document.getElementById("menuBtn");
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-
-  let BUSINESS_ID = null;
-
-  const logoPreview = document.getElementById("logoPreview");
-  const logoInput = document.getElementById("logoInput");
-  const citySelect = document.getElementById("citySelect");
-  const districtSelect = document.getElementById("districtSelect");
-
-  const bizName = document.getElementById("bizName");
-  const bizPhone = document.getElementById("bizPhone");
-  const bizAddress = document.getElementById("bizAddress");
-  const bizAbout = document.getElementById("bizAbout");
-
-  const bizNameSmall = document.getElementById("bizNameSmall");
-
-  /* ---------------- AUTH ---------------- */
-  onAuthStateChanged(auth, async(user)=>{
-    if(!user){
-      location.href="business-login.html";
-      return;
+    function openDrawer(){
+      drawer.classList.add("drawer-open");
+      overlay.style.display = "block";
+    }
+    function closeDrawer(){
+      drawer.classList.remove("drawer-open");
+      overlay.style.display = "none";
     }
 
-    BUSINESS_ID = user.uid;
-    await loadBusiness();
-  });
-
-  /* ---------------- VERİ YÜKLE ---------------- */
-  async function loadBusiness(){
-    const ref = doc(db,"businesses",BUSINESS_ID);
-    const snap = await getDoc(ref);
-    if(!snap.exists()) return;
-
-    const d = snap.data();
-
-    bizNameSmall.textContent = d.name || "İşletme";
-    bizName.value = d.name || "";
-    bizPhone.value = d.phone || "";
-    bizAddress.value = d.address || "";
-    bizAbout.value = d.about || "";
-    citySelect.value = d.city || "";
-    districtSelect.value = d.district || "";
-
-    if(d.logoURL){
-      logoPreview.src = d.logoURL;
-    } else {
-      logoPreview.src = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
+    if(menuBtn){
+      menuBtn.addEventListener("click", openDrawer);
     }
-  }
-
-  /* ---------------- LOGO YÜKLE ---------------- */
-  logoInput.addEventListener("change", async()=>{
-    const file = logoInput.files[0];
-    if(!file) return;
-
-    const storageRef = ref(storage,"logos/"+BUSINESS_ID+".jpg");
-    await uploadBytes(storageRef,file);
-    const url = await getDownloadURL(storageRef);
-
-    await updateDoc(doc(db,"businesses",BUSINESS_ID),{logoURL:url});
-    logoPreview.src = url;
-    alert("Logo güncellendi!");
-  });
-
-  /* ---------------- İL → İLÇE ---------------- */
-  const DISTRICTS = {
-    "İzmir":["Bornova","Karşıyaka","Buca","Konak","Çiğli","Gaziemir","Balçova"],
-    "İstanbul":["Kadıköy","Beşiktaş","Üsküdar","Bakırköy","Şişli","Fatih"],
-    "Ankara":["Çankaya","Keçiören","Mamak","Yenimahalle"],
-    "Bursa":["Nilüfer","Osmangazi","Yıldırım"],
-    "Antalya":["Konyaaltı","Muratpaşa","Kepez"],
-    "Konya":["Selçuklu","Karatay","Meram"]
-  };
-
-  citySelect.onchange = ()=>{
-    districtSelect.innerHTML = `<option value="">İlçe seç</option>`;
-    const city = citySelect.value;
-    if(DISTRICTS[city]){
-      DISTRICTS[city].forEach(d=>{
-        const op = document.createElement("option");
-        op.textContent = d;
-        districtSelect.appendChild(op);
-      });
+    if(overlay){
+      overlay.addEventListener("click", closeDrawer);
     }
-  };
 
-  /* ---------------- KAYDET ---------------- */
-  document.getElementById("saveBiz").onclick = async ()=>{
-    await updateDoc(doc(db,"businesses",BUSINESS_ID),{
-      name:bizName.value,
-      phone:bizPhone.value,
-      address:bizAddress.value,
-      about:bizAbout.value,
-      city:citySelect.value,
-      district:districtSelect.value
+    function handleNavigation(path){
+      if(!path) return;
+      window.location.href = path;
+    }
+    window.handleNavigation = handleNavigation;
+  </script>
+
+  <!-- FIREBASE + LOGO + AYARLAR -->
+  <script type="module">
+    import { firebaseConfig } from "../js/firebase-config.js";
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      updatePassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let BUSINESS_ID = null;
+
+    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+    const bizNameMobile = document.getElementById("bizNameMobile");
+    const pageTitleHeading = document.getElementById("pageTitleHeading");
+
+    const bizNameInput = document.getElementById("bizName");
+    const bizCityInput = document.getElementById("bizCity");
+    const bizDistrictInput = document.getElementById("bizDistrict");
+    const bizPhoneInput = document.getElementById("bizPhone");
+    const bizAddressInput = document.getElementById("bizAddress");
+    const bizAboutInput = document.getElementById("bizAbout");
+
+    const logoBox = document.getElementById("logoBox");
+    const logoBoxText = document.getElementById("logoBoxText");
+    const logoPreview = document.getElementById("logoPreview");
+    const logoInput = document.getElementById("logoInput");
+
+    const saveBizBtn = document.getElementById("saveBiz");
+    const savePassBtn = document.getElementById("savePass");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const newPassInput = document.getElementById("newPass");
+
+    onAuthStateChanged(auth, async (user)=>{
+      if(!user){
+        window.location.href = "business-login.html";
+        return;
+      }
+
+      BUSINESS_ID = user.uid;
+      await loadBusiness();
     });
 
-    alert("İşletme bilgileri güncellendi!");
-  };
+    async function loadBusiness(){
+      try{
+        const refBiz = doc(db,"businesses",BUSINESS_ID);
+        const snap = await getDoc(refBiz);
 
-  /* ---------------- ŞİFRE ---------------- */
-  document.getElementById("savePass").onclick = async ()=>{
-    const pass = document.getElementById("newPass").value;
+        if(!snap.exists()){
+          // İlk girişse boş bir belge oluştur
+          await setDoc(refBiz,{
+            name:"",
+            city:"",
+            district:"",
+            phone:"",
+            address:"",
+            about:"",
+            logoURL:""
+          },{merge:true});
+          return;
+        }
 
-    if(pass.length < 6){
-      alert("Şifre en az 6 karakter olmalı");
-      return;
+        const d = snap.data();
+
+        const name = d.name || "İşletme";
+        bizNameSmallSidebar.textContent = name;
+        bizNameMobile.textContent = name;
+        pageTitleHeading.textContent = "Ayarlar · " + name;
+
+        bizNameInput.value = d.name || "";
+        bizCityInput.value = d.city || "";
+        bizDistrictInput.value = d.district || "";
+        bizPhoneInput.value = d.phone || "";
+        bizAddressInput.value = d.address || "";
+        bizAboutInput.value = d.about || "";
+
+        if(d.logoURL){
+          logoPreview.src = d.logoURL;
+          logoPreview.style.display = "block";
+          logoBoxText.style.display = "none";
+        }else{
+          logoPreview.style.display = "none";
+          logoBoxText.style.display = "block";
+        }
+
+      }catch(err){
+        console.error("İşletme bilgileri okunamadı:", err);
+      }
     }
 
-    await updatePassword(auth.currentUser,pass);
-    alert("Şifre güncellendi!");
-  };
+    // LOGO SEÇ / YÜKLE
+    logoBox.addEventListener("click", ()=>{
+      logoInput.click();
+    });
 
-  /* ---------------- ÇIKIŞ ---------------- */
-  document.getElementById("logoutBtn").onclick = async ()=>{
-    await signOut(auth);
-    location.href="business-login.html";
-  };
+    logoInput.addEventListener("change", async (e)=>{
+      const file = e.target.files[0];
+      if(!file || !BUSINESS_ID) return;
 
-</script>
+      logoBoxText.textContent = "Yükleniyor...";
+      logoBoxText.style.display = "block";
+      logoPreview.style.display = "none";
+
+      try{
+        const storageRef = ref(storage, "logos/" + BUSINESS_ID + ".jpg");
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        await updateDoc(doc(db,"businesses",BUSINESS_ID),{
+          logoURL: url
+        });
+
+        logoPreview.src = url;
+        logoPreview.style.display = "block";
+        logoBoxText.style.display = "none";
+
+        alert("Logo güncellendi.");
+      }catch(err){
+        console.error(err);
+        alert("Logo yüklenirken hata oluştu.");
+        logoBoxText.textContent = "Tekrar dene";
+        logoBoxText.style.display = "block";
+        logoPreview.style.display = "none";
+      }
+    });
+
+    // İŞLETME BİLGİLERİNİ KAYDET
+    saveBizBtn.addEventListener("click", async ()=>{
+      if(!BUSINESS_ID) return;
+
+      const name = bizNameInput.value.trim();
+      if(!name){
+        alert("İşletme adı zorunlu.");
+        return;
+      }
+
+      try{
+        await updateDoc(doc(db,"businesses",BUSINESS_ID),{
+          name,
+          city: bizCityInput.value.trim(),
+          district: bizDistrictInput.value.trim(),
+          phone: bizPhoneInput.value.trim(),
+          address: bizAddressInput.value.trim(),
+          about: bizAboutInput.value.trim()
+        });
+
+        bizNameSmallSidebar.textContent = name;
+        bizNameMobile.textContent = name;
+        pageTitleHeading.textContent = "Ayarlar · " + name;
+
+        alert("İşletme bilgileri güncellendi.");
+      }catch(err){
+        console.error(err);
+        alert("Bilgiler güncellenirken hata oluştu.");
+      }
+    });
+
+    // ŞİFRE GÜNCELLE
+    savePassBtn.addEventListener("click", async ()=>{
+      const pass = newPassInput.value;
+      if(pass.length < 6){
+        alert("Şifre en az 6 karakter olmalı.");
+        return;
+      }
+      try{
+        await updatePassword(auth.currentUser, pass);
+        alert("Şifre güncellendi.");
+        newPassInput.value = "";
+      }catch(err){
+        console.error(err);
+        if(err.code === "auth/requires-recent-login"){
+          alert("Şifreyi değiştirmek için tekrar giriş yapman gerekiyor.");
+        }else{
+          alert("Şifre güncellenemedi: " + err.message);
+        }
+      }
+    });
+
+    // ÇIKIŞ
+    logoutBtn.addEventListener("click", async ()=>{
+      await signOut(auth);
+      window.location.href = "business-login.html";
+    });
+
+  </script>
 
 </body>
 </html>
