@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>İşletme Paneli | Cepterandevu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -15,15 +16,16 @@
             --text: #f9fafb;
             --muted: #9ca3af;
             --border: rgba(148,163,184,0.35);
-            --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
-            --radius-xl: 22px;
+            --radius-xl: 18px; /* Daha modern bir yuvarlaklık */
+            --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
+            /* Hafif bir degrade arka plan */
             background: radial-gradient(circle at top, #111827, #020617 55%);
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             color: var(--text);
@@ -39,17 +41,17 @@
             position: fixed;
             top: 0;
             bottom: 0;
-            display: flex;
+            display: none; /* Mobil'de varsayılan olarak gizli */
             flex-direction: column;
             gap: 14px;
             z-index: 1000;
         }
-        
+
         .logo-box {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             justify-content: flex-start;
         }
 
@@ -64,43 +66,49 @@
             font-weight: 800;
             font-size: 18px;
             color: #ecfdf5;
-            box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+            box-shadow: 0 6px 20px rgba(34,197,94,0.4);
         }
 
         .biz-name-small {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
         }
 
         .menu button {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 14px;
             background: transparent;
             border: 0;
             text-align: left;
             color: var(--muted);
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: 500;
             transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu button:hover {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--text);
         }
 
         .menu button.active {
             background: var(--accent);
             color: #022c22;
-            font-weight: 600;
-        }
-        
-        /* Mobil menü açma/kapama butonları desktop'ta gizlensin */
-        .menu-toggle, .menu-close-btn {
-            display: none;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
         }
 
         /* --- MAIN AREA --- */
         .main-area {
             flex: 1;
-            padding: 20px; 
+            padding: 20px;
             width: 100%;
+            min-height: calc(100vh - 62px); /* Mobile'da alt navigasyonun üstü */
         }
         
         /* --- MOBILE HEADER (SADECE MOBİL İÇİN) --- */
@@ -123,43 +131,52 @@
         }
         
         .title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text);
+            /* Mobil başlık zaten .mobile-header içinde, bu masaüstü için */
+            display: none; 
         }
 
         /* --- CARDS --- */
         .cards {
             display: grid;
-            /* Mobil için daha küçük kartlar */
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .card {
             background: var(--card);
-            padding: 18px;
+            padding: 20px;
             border-radius: var(--radius-xl);
             border: 1px solid var(--border);
             box-shadow: var(--shadow-soft);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
         }
 
         .card h3 {
             margin-bottom: 8px;
-            font-size: 15px; 
+            font-size: 14px;
+            font-weight: 500;
             color: var(--muted);
         }
 
         .stat {
-            font-size: 24px; 
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800;
             margin-top: 4px;
             color: var(--accent);
         }
         
         /* ------------------------------ */
-        /* MOBİL BOTTOM NAV BAR       */
+        /* MOBİL BOTTOM NAV BAR          */
         /* ------------------------------ */
         .mobile-nav {
             position: fixed;
@@ -168,8 +185,8 @@
             right: 0;
             height: 62px;
             background: #0b1120;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: grid; /* Mobil için varsayılan olarak göster */
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: grid; 
             grid-template-columns: repeat(5, 1fr);
             z-index: 9999;
         }
@@ -186,32 +203,41 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s, background 0.2s;
         }
         
-        /* Ikon yer tutucusu */
-        .mobile-nav button::before {
-            content: "•"; /* Basit bir ikon yer tutucusu */
+        .mobile-nav button:hover {
+             background: rgba(34, 197, 94, 0.1);
+        }
+
+        /* Ikon yer tutucusu (Profesyonel bir görünüm için Font Awesome'dan yararlanalım) */
+        .nav-icon {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
             font-size: 18px;
         }
+        
+        /* İkonlar - Sadece yer tutucu olarak */
+        #nav-dashboard .nav-icon::before { content: "\f0e4"; } /* Tachometer Alt */
+        #nav-services .nav-icon::before { content: "\f0ad"; } /* Wrench */
+        #nav-employees .nav-icon::before { content: "\f007"; } /* User */
+        #nav-appointments .nav-icon::before { content: "\f073"; } /* Calendar */
+        #nav-settings .nav-icon::before { content: "\f013"; } /* Cog */
+
 
         .mobile-nav button.active {
             color: #22c55e;
             font-weight: 700;
         }
 
-
         /* --- DESKTOP VIEW (Min 768px) --- */
         @media (min-width: 768px) {
             body {
-                flex-direction: row; 
+                flex-direction: row;
             }
 
             .sidebar {
                 display: flex; /* Masaüstünde sidebar'ı göster */
-                transform: translateX(0); 
-                position: fixed;
-                height: 100%;
             }
             
             .mobile-header {
@@ -220,47 +246,44 @@
 
             .main-area {
                 margin-left: 240px; /* Sabit sidebar kadar boşluk bırak */
-                padding: 24px; 
+                padding: 32px;
                 margin-bottom: 0; /* Alt boşluğu kaldır */
             }
             
             .title {
                 display: block; /* Masaüstü başlığını göster */
-                font-size: 22px;
             }
 
             .cards {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                gap: 18px;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 24px;
             }
 
             .card h3 {
-                font-size: 17px;
-                color: var(--text);
+                font-size: 15px;
             }
 
             .stat {
-                font-size: 26px;
+                font-size: 32px;
             }
             
             .mobile-nav {
                 display: none; /* Masaüstünde alt navigasyonu gizle */
             }
-            
-            /* Mobil header'ı sildiğimiz için bizNameMobile'ı gizlemeye gerek yok */
         }
         
         /* Ekran 768px'den küçükse (Mobil) */
         @media (max-width: 767px) {
-             .sidebar {
-                display: none !important; /* Yan menüyü tamamen gizle */
-             }
              .main-area {
-                margin-left: 0 !important;
                 margin-bottom: 62px; /* Alt navigasyon kadar boşluk bırak */
+             }
+             .logo-box {
+                /* Sidebar'daki logo-box'ı mobil'de gizlemek gerekmez, çünkü sidebar zaten gizli */
              }
         }
     </style>
+    <!-- Font Awesome Icons for better mobile nav -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- Firebase -->
     <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
@@ -277,22 +300,22 @@
             <div class="logo-mark">C</div>
             <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
         </div>
+        <!-- Mobil menü açma/kapama butonu artık gerekmiyor, alt navigasyon var -->
     </header>
 
     <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
     <aside class="sidebar" id="sidebar">
         <div class="logo-box">
             <div class="logo-mark">C</div>
-            <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
+            <div class="biz-name-small" id="bizNameSmallSidebar">Yükleniyor...</div>
         </div>
 
         <div class="menu">
-            <!-- Sidebar'daki menü elemanlarına toggleSidebar() kaldırıldı, çünkü artık mobil için alt menü var -->
-            <button class="active" onclick="location.href='business-panel.html'">Panel</button>
-            <button onclick="location.href='business-services.html'">Hizmetler</button>
-            <button onclick="location.href='business-employees.html'">Çalışanlar</button>
-            <button onclick="location.href='business-appointments.html'">Randevular</button>
-            <button onclick="location.href='business-settings.html'">Ayarlar</button>
+            <button class="active" onclick="handleNavigation('business-panel.html')"><i class="fas fa-tachometer-alt"></i> Panel</button>
+            <button onclick="handleNavigation('business-services.html')"><i class="fas fa-wrench"></i> Hizmetler</button>
+            <button onclick="handleNavigation('business-employees.html')"><i class="fas fa-users"></i> Çalışanlar</button>
+            <button onclick="handleNavigation('business-appointments.html')"><i class="fas fa-calendar-alt"></i> Randevular</button>
+            <button onclick="handleNavigation('business-settings.html')"><i class="fas fa-cog"></i> Ayarlar</button>
         </div>
     </aside>
 
@@ -321,25 +344,55 @@
                 <div class="stat" id="statServices">0</div>
             </div>
         </div>
-
-        <!-- Diğer panel içeriği buraya gelecek -->
+        
+        <!-- Diğer dashboard içeriği burada yer alabilir -->
+        <section class="p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 my-6">
+             <h2 class="text-lg font-semibold mb-3">En Son Randevular</h2>
+             <p class="text-sm text-gray-400">Gerçek zamanlı randevu listesi buraya gelecek.</p>
+             <div id="latestAppointmentsList" class="space-y-3 mt-4">
+                <!-- Randevu Listesi buraya eklenecek -->
+             </div>
+        </section>
 
     </main>
 
     <!-- MOBILE BOTTOM NAVIGATION (Sadece mobil için görünür) -->
     <div class="mobile-nav">
-        <button onclick="location.href='business-panel.html'" id="nav-dashboard">Panel</button>
-        <button onclick="location.href='business-services.html'" id="nav-services">Hizmetler</button>
-        <button onclick="location.href='business-employees.html'" id="nav-employees">Çalışanlar</button>
-        <button onclick="location.href='business-appointments.html'" id="nav-appointments">Randevular</button>
-        <button onclick="location.href='business-settings.html'" id="nav-settings">Ayarlar</button>
+        <button id="nav-dashboard" class="active" onclick="handleNavigation('business-panel.html')">
+            <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
+            Panel
+        </button>
+        <button id="nav-services" onclick="handleNavigation('business-services.html')">
+            <span class="nav-icon"><i class="fas fa-wrench"></i></span>
+            Hizmetler
+        </button>
+        <button id="nav-employees" onclick="handleNavigation('business-employees.html')">
+            <span class="nav-icon"><i class="fas fa-users"></i></span>
+            Çalışanlar
+        </button>
+        <button id="nav-appointments" onclick="handleNavigation('business-appointments.html')">
+            <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
+            Randevular
+        </button>
+        <button id="nav-settings" onclick="handleNavigation('business-settings.html')">
+            <span class="nav-icon"><i class="fas fa-cog"></i></span>
+            Ayarlar
+        </button>
     </div>
 
 <script>
-    // Sayfaya göre alt navigasyonda hangi butonun aktif olacağını belirle
-    document.addEventListener('DOMContentLoaded', () => {
-        const path = window.location.pathname.split('/').pop();
+    // Sayfa değiştirme simülasyonu (Gerçek uygulamada bu bir router tarafından yapılacaktır)
+    function handleNavigation(url) {
+        // Normalde: window.location.href = url;
+        // Simülasyon: Aktif butonu değiştir.
+        console.log("Navigasyon Simülasyonu: " + url);
+        // Bu sayfada kalıyoruz ve sadece aktif menüyü güncelliyoruz
+        updateActiveMenu(url.split('/').pop()); 
+        // Gerçek bir uygulamada, bu fonksiyon sadece sayfayı yönlendirir.
+    }
 
+    // Aktif menü butonunu belirleme
+    function updateActiveMenu(path) {
         const pages = {
             "business-panel.html": "nav-dashboard",
             "business-services.html": "nav-services",
@@ -348,19 +401,32 @@
             "business-settings.html": "nav-settings"
         };
         
-        // Bu sayfa "business-panel.html" olduğu için default olarak aktif yapalım.
-        // Diğer sayfalarda da bu script olacağı için doğru butonu aktif edecektir.
-        const currentPageKey = path || "business-panel.html"; 
-        
-        if(pages[currentPageKey]){
-            const activeNavButton = document.getElementById(pages[currentPageKey]);
-            if(activeNavButton) {
-                activeNavButton.classList.add("active");
+        const currentPath = path || "business-panel.html";
+
+        // Sidebar menüsünü güncelle
+        document.querySelectorAll('.sidebar .menu button').forEach(btn => {
+            btn.classList.remove("active");
+            if (btn.getAttribute('onclick').includes(currentPath)) {
+                btn.classList.add('active');
             }
+        });
+
+        // Mobil navigasyonu güncelle
+        document.querySelectorAll('.mobile-nav button').forEach(btn => {
+            btn.classList.remove("active");
+        });
+        const activeNavButtonId = pages[currentPath];
+        const activeNavButton = document.getElementById(activeNavButtonId);
+        if (activeNavButton) {
+            activeNavButton.classList.add("active");
         }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const path = window.location.pathname.split('/').pop();
+        updateActiveMenu(path);
     });
 </script>
-
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -376,9 +442,9 @@
         collection,
         query,
         where,
-        getDocs,
         doc,
         getDoc,
+        onSnapshot, // Gerçek zamanlı dinleme için
         setLogLevel
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -391,7 +457,7 @@
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
     if (!firebaseConfig.apiKey) {
-        console.error("HATA: Firebase yapılandırması eksik. Uygulama çalışmayabilir.");
+        console.error("HATA: Firebase yapılandırması eksik.");
     }
     
     const app = initializeApp(firebaseConfig);
@@ -399,11 +465,12 @@
     const db = getFirestore(app);
 
     let businessID = null;
+    let isAuthReady = false; // Auth durumunun yüklenip yüklenmediğini takip et
 
     const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
     const bizNameMobile = document.getElementById("bizNameMobile");
     const bizTitle = document.getElementById("bizTitle");
-
+    
     const statToday = document.getElementById("statToday");
     const statPending = document.getElementById("statPending");
     const statApproved = document.getElementById("statApproved");
@@ -427,86 +494,95 @@
     // 2. Auth Durumu Değişikliğini Dinle ve Verileri Yükle
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
-            // Eğer kimlik doğrulama başarısız olursa veya kullanıcı çıkış yaparsa login sayfasına yönlendir.
-            window.location.href = "business-login.html"; 
+            // Gerçek uygulamada burası login sayfasına yönlendirilir:
+            // window.location.href = "business-login.html";
+            console.warn("Kullanıcı oturumu kapalı veya kimlik doğrulanamadı.");
+            isAuthReady = true; // Auth kontrolü tamamlandı, ancak kullanıcı yok
             return;
         }
 
-        // Kullanıcının UID'sini al (Bu, işletme ID'si olarak kabul ediliyor)
         businessID = user.uid;
+        isAuthReady = true; // Auth kontrolü tamamlandı ve kullanıcı var
 
         // Veri yükleme işlemlerini başlat
-        await loadBusinessName();
-        await loadStats();
+        loadBusinessName(); // Tek seferlik okuma
+        setupRealtimeListeners(); // Gerçek zamanlı dinlemeleri kur
     });
     
-    // Auth token'ı mevcutsa manuel olarak oturum açmayı dene (Canvas ortamı için)
+    // Auth token'ı mevcutsa manuel olarak oturum açmayı dene
     if (!auth.currentUser) {
         authenticate();
     }
 
 
-    // İşletme adını yükle
+    // İşletme adını yükle (Genellikle tek seferlik okunur)
     async function loadBusinessName() {
         try {
-            // Firestore yapısına göre "businesses" koleksiyonundan işletme ID'sine göre belgeyi oku
-            // NOT: Firebase Security Rules'a göre "artifacts/default-app-id/users/{userId}/..." yolu kullanılmalıdır.
-            // Ancak mevcut kodunuz 'businesses' ana koleksiyonunu kullanıyor, bu yüzden o yapıyı koruyorum.
-            const ref = doc(db, "businesses", businessID); 
-            const snap = await getDoc(ref);
-            if (snap.exists()) {
-                const name = snap.data().name || "İşletme";
+            // Önerilen Canvas Security Rules yolu: /artifacts/{appId}/users/{userId}/settings/profile
+            const businessRef = doc(db, "artifacts", appId, "users", businessID, "settings", "profile");
+            const snap = await getDoc(businessRef);
+
+            if (snap.exists() && snap.data().name) {
+                const name = snap.data().name;
                 bizNameSmallSidebar.textContent = name;
-                bizNameMobile.textContent = name; // Mobile header
+                bizNameMobile.textContent = name;
                 bizTitle.textContent = name + " Paneli";
             } else {
-                 console.warn("İşletme kaydı bulunamadı.");
+                console.warn("İşletme kaydı veya adı bulunamadı. UID:", businessID);
+                bizNameSmallSidebar.textContent = "İşletme (" + businessID.substring(0, 8) + "...)";
+                bizNameMobile.textContent = "İşletme Paneli";
+                bizTitle.textContent = "İşletme Paneli";
             }
         } catch (error) {
             console.error("İşletme adını yüklerken hata:", error);
         }
     }
+    
+    // İstatistikler için gerçek zamanlı dinlemeleri kur
+    function setupRealtimeListeners() {
+        if (!isAuthReady || !businessID) return;
 
-    // İstatistikleri yükle
-    async function loadStats() {
-        try {
-            // Bugünün tarihini YYYY-MM-DD formatında al
-            const today = new Date().toISOString().split("T")[0];
-    
-            // Bugün
-            const qToday = query(
-                collection(db, "appointments"),
-                where("businessID", "==", businessID),
-                where("date", "==", today)
-            );
-            const todaySnap = await getDocs(qToday);
-            statToday.textContent = todaySnap.size;
-    
-            // Bekleyen
-            const qPending = query(
-                collection(db, "appointments"),
-                where("businessID", "==", businessID),
-                where("status", "==", "pending")
-            );
-            statPending.textContent = (await getDocs(qPending)).size;
-    
-            // Onaylanmış
-            const qApproved = query(
-                collection(db, "appointments"),
-                where("businessID", "==", businessID),
-                where("status", "==", "approved")
-            );
-            statApproved.textContent = (await getDocs(qApproved)).size;
-    
-            // Hizmetler
-            const qServices = query(
-                collection(db, "services"),
-                where("businessID", "==", businessID)
-            );
-            statServices.textContent = (await getDocs(qServices)).size;
-        } catch (error) {
-             console.error("İstatistikleri yüklerken hata:", error);
-        }
+        // Bugünün tarihini YYYY-MM-DD formatında al
+        const today = new Date().toISOString().split("T")[0];
+        
+        // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/appointments
+        const appointmentsCollectionRef = collection(db, "artifacts", appId, "users", businessID, "appointments");
+        
+        // Firestore Collection Yolu: /artifacts/{appId}/users/{userId}/services
+        const servicesCollectionRef = collection(db, "artifacts", appId, "users", businessID, "services");
+
+        // --- 1. Bugün Randevu Sayısı ---
+        const qToday = query(
+            appointmentsCollectionRef,
+            where("date", "==", today)
+        );
+        onSnapshot(qToday, (snapshot) => {
+            statToday.textContent = snapshot.size;
+        }, (error) => console.error("Bugünkü randevuları dinleme hatası:", error));
+        
+        // --- 2. Bekleyen Randevu Sayısı ---
+        const qPending = query(
+            appointmentsCollectionRef,
+            where("status", "==", "pending")
+        );
+        onSnapshot(qPending, (snapshot) => {
+            statPending.textContent = snapshot.size;
+        }, (error) => console.error("Bekleyen randevuları dinleme hatası:", error));
+        
+        // --- 3. Onaylanan Randevu Sayısı ---
+        const qApproved = query(
+            appointmentsCollectionRef,
+            where("status", "==", "approved")
+        );
+        onSnapshot(qApproved, (snapshot) => {
+            statApproved.textContent = snapshot.size;
+        }, (error) => console.error("Onaylanan randevuları dinleme hatası:", error));
+        
+        // --- 4. Toplam Hizmet Sayısı ---
+        const qServices = query(servicesCollectionRef);
+        onSnapshot(qServices, (snapshot) => {
+            statServices.textContent = snapshot.size;
+        }, (error) => console.error("Hizmetleri dinleme hatası:", error));
     }
 
 </script>
