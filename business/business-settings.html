@@ -127,6 +127,10 @@
     font-size:13px;outline:none;
   }
 
+  input:focus, select:focus, textarea:focus{
+    border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);
+  }
+
   textarea{height:70px;resize:none;}
 
   .row-two{display:flex;gap:10px;flex-wrap:wrap;}
@@ -171,10 +175,30 @@
     padding:11px 12px;border-radius:12px;font-weight:600;
     font-size:14px;cursor:pointer;margin-top:8px;
   }
+
+  @media(min-width:900px){
+    body{flex-direction:row;}
+    .sidebar{display:flex;}
+    .top-header{display:none;}
+    .main-area{margin-left:240px;padding:26px 26px 32px;}
+  }
 </style>
 </head>
 
 <body>
+
+<!-- Drawer -->
+<div id="drawerOverlay" class="drawer-overlay"></div>
+<div id="drawerMenu" class="drawer-menu">
+  <div class="drawer-title">Cepterandevu</div>
+  <div class="drawer-links">
+    <a href="business-panel.html">Panel</a>
+    <a href="business-services.html">Hizmetler</a>
+    <a href="business-employees.html">Çalışanlar</a>
+    <a href="business-appointments.html">Randevular</a>
+    <a href="business-settings.html" class="active">Ayarlar</a>
+  </div>
+</div>
 
 <header class="top-header">
   <div class="top-center">
@@ -216,7 +240,7 @@
 
     <label>İşletme Adı</label>
     <input id="bizNameInput">
-
+    
     <div class="row-two">
       <div>
         <label>İl</label>
@@ -254,6 +278,31 @@
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 </main>
 
+
+<!-- Drawer script -->
+<script>
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
+
+  function openDrawer(){
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
+  function closeDrawer(){
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
+
+  if(menuBtn){
+    menuBtn.addEventListener("click", openDrawer);
+  }
+  if(overlay){
+    overlay.addEventListener("click", closeDrawer);
+  }
+</script>
+
+
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
 
@@ -263,11 +312,11 @@
   import { getFirestore, doc, getDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  /* ❗ KIRILMA İHTİMALİ SIFIR DEFAULT BASE64 LOGO */
+  /* DEFAULT SVG LOGO (BASE64 GARANTİ ÇALIŞIR) */
   const DEFAULT_LOGO =
     'data:image/svg+xml;utf8,' +
     '<svg xmlns="http://www.w3.org/2000/svg"width="256"height="256"viewBox="0 0 256 256">' +
@@ -282,7 +331,7 @@
   const logoInput   = document.getElementById("logoInput");
   const logoPreview = document.getElementById("logoPreview");
 
-  // Dosyayı base64'e çevir
+  /* ---------------- BASE64 DÖNÜŞTÜRÜCÜ ---------------- */
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -292,7 +341,7 @@
     });
   }
 
-  // Logo seçilince
+  /* ---------------- LOGO SEÇİLDİ ---------------- */
   logoInput.addEventListener("change", async () => {
     const file = logoInput.files[0];
     if (!file || !BUSINESS_ID) return;
@@ -303,20 +352,23 @@
       // Önce ekranda göster
       logoPreview.src = base64;
 
-      // Firestore'a kaydet
+      // Firestore'a yaz
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         { logoBase64: base64 },
         { merge:true }
       );
 
-      alert("Logo güncellendi.");
+      alert("Logo başarıyla güncellendi.");
     } catch (err) {
+      console.error(err);
       logoPreview.src = DEFAULT_LOGO;
+      alert("Logo yüklenirken hata oluştu.");
     }
   });
 
-  // Sayfa açılınca işletme bilgilerini yükle
+
+  /* ------------ İŞLETME BİLGİLERİNİ YÜKLE ------------ */
   async function loadBusiness() {
     const ref  = doc(db, "businesses", BUSINESS_ID);
     const snap = await getDoc(ref);
@@ -327,6 +379,7 @@
 
     const d = snap.data();
 
+    // LOGO
     if (d.logoBase64) logoPreview.src = d.logoBase64;
     else logoPreview.src = DEFAULT_LOGO;
 
@@ -336,15 +389,37 @@
     document.getElementById("bizAboutInput").value   = d.about   || "";
   }
 
-  // Firebase login kontrolü
+  /* ------------ AUTH KONTROLÜ ------------ */
   onAuthStateChanged(auth, async user => {
     if (!user) {
       location.href = "business-login.html";
       return;
     }
-
     BUSINESS_ID = user.uid;
     loadBusiness();
+  });
+
+  /* ------------ ŞİFRE GÜNCELLE ------------ */
+  document.getElementById("savePassBtn").addEventListener("click", async () => {
+    const pass = document.getElementById("newPassInput").value;
+
+    if (pass.length < 6) {
+      alert("Şifre en az 6 karakter olmalı.");
+      return;
+    }
+
+    try {
+      await updatePassword(auth.currentUser, pass);
+      alert("Şifre güncellendi.");
+    } catch (err) {
+      alert("Şifre değişmedi. Yeniden giriş yapman gerekebilir.");
+    }
+  });
+
+  /* ------------ ÇIKIŞ ------------ */
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    location.href = "business-login.html";
   });
 
 </script>
