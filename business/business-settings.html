@@ -497,7 +497,7 @@
       form.append("apiKey", firebaseConfig.apiKey);
       form.append("idToken", idToken);
 
-      const res = await fetch("https://upload-proxy.adb-toc.workers.dev/", {
+      const res = await fetch("https://upload-proxy.adb-toc.workers.dev/upload", {
         method: "POST",
         body: form
       });
