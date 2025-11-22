@@ -148,7 +148,7 @@
     height:95px;
     border-radius:14px;
     border:2px solid var(--accent);
-    object-fit:cover;
+    object-fit:contain;         /* logonun tamamı kutuya sığsın */
     background:#020617;
   }
 
@@ -234,7 +234,8 @@
     <label>Logo</label>
 
     <div class="logo-box2">
-        <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png" alt="Logo">
+        <!-- Başlangıçta src boş, JS default logo atıyor -->
+        <img id="logoPreview" class="logo-preview" src="" alt="Logo">
         <input type="file" id="logoInput" accept="image/*" style="display:none;">
         <button class="upload-btn" onclick="document.getElementById('logoInput').click();">Logo Seç</button>
     </div>
@@ -315,7 +316,15 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  const DEFAULT_LOGO = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
+  // Flaticon falan yok, tamamen gömülü SVG. Kırılma ihtimali sıfır.
+  const DEFAULT_LOGO =
+    'data:image/svg+xml;utf8,' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">' +
+    '<rect width="256" height="256" fill="%23020a1b"/>' +
+    '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+    '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+    'font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="40" fill="%2322c55e">Logo</text>' +
+    '</svg>';
 
   let BUSINESS_ID = null;
   let citiesData = [];
@@ -332,10 +341,12 @@
   const bizAboutInput  = document.getElementById("bizAboutInput");
   const citySelect     = document.getElementById("citySelect");
   const districtSelect = document.getElementById("districtSelect");
-
   const saveBizBtn     = document.getElementById("saveBizBtn");
 
-  /* ----------- FINAL LOGO UPLOADCARE ----------- */
+  // Sayfa açılır açılmaz default logo göster
+  logoPreview.src = DEFAULT_LOGO;
+
+  /* ----------- LOGO UPLOADCARE ----------- */
 
   const UPLOADCARE_PUBLIC_KEY = "bc2bc00269f8815e0222";
 
@@ -355,8 +366,8 @@
 
     const fileId = json.file;
 
-    // Yeni, stabil logo URL formatı:
-    const cdnUrl = `https://ucarecdn.com/${fileId}/-/resize/256x256/-/format/auto/`;
+    // En sade, garanti çalışan URL
+    const cdnUrl = `https://ucarecdn.com/${fileId}/`;
     return cdnUrl;
   }
 
@@ -367,23 +378,27 @@
     try {
       saveBizBtn.disabled = true;
 
+      // Önce local önizleme
       logoPreview.src = URL.createObjectURL(file);
 
       const cdnUrl = await uploadToUploadcare(file);
 
+      // Firestore’a kaydet
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         { logoURL: cdnUrl },
         { merge: true }
       );
 
-      // Çok güçlü cache kırıcı
-      logoPreview.src = cdnUrl + "?cache=" + crypto.randomUUID();
+      // CDN’den gelen gerçek linki, cache kırarak bastır
+      logoPreview.src = cdnUrl + "?t=" + Date.now();
 
       alert("Logo başarıyla güncellendi.");
     } catch (err) {
       console.error(err);
       alert("Logo yüklenirken hata oluştu.");
+      // Hata olursa en azından default’a dön
+      logoPreview.src = DEFAULT_LOGO;
     } finally {
       saveBizBtn.disabled = false;
     }
@@ -397,7 +412,7 @@
       citiesData = await res.json();
       fillCities();
     } catch (err) {
-      console.error(err);
+      console.error("İl/ilçe verisi yüklenemedi:", err);
     }
   }
 
@@ -425,7 +440,7 @@
     }
 
     const cityObj = citiesData.find(c => c.name === cityName);
-    if (!cityObj) {
+    if (!cityObj || !Array.isArray(cityObj.districts)) {
       districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
       return;
     }
@@ -462,6 +477,8 @@
   });
 
   async function loadBusiness() {
+    if (!BUSINESS_ID) return;
+
     const ref  = doc(db, "businesses", BUSINESS_ID);
     const snap = await getDoc(ref);
     if (!snap.exists()) return;
@@ -480,8 +497,8 @@
     cityFromDB     = d.city     || "";
     districtFromDB = d.district || "";
 
-    if (d.logoURL) {
-      logoPreview.src = d.logoURL + "?cache=" + crypto.randomUUID();
+    if (d.logoURL && d.logoURL.trim() !== "") {
+      logoPreview.src = d.logoURL + "?t=" + Date.now();
     } else {
       logoPreview.src = DEFAULT_LOGO;
     }
@@ -537,7 +554,7 @@
       alert("Şifre güncellendi.");
     } catch (err) {
       console.error(err);
-      alert("Şifre güncellenemedi.");
+      alert("Şifre güncellenemedi. Tekrar giriş yapman gerekebilir.");
     }
   });
 
