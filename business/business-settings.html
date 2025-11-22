@@ -169,8 +169,7 @@
   }
 </style>
 </head>
-
-<body>
+ <body>
 
 <!-- Drawer -->
 <div id="drawerOverlay" class="drawer-overlay"></div>
@@ -266,7 +265,6 @@
 </main>
 
 <script>
-  // Drawer aç/kapat
   const drawer = document.getElementById("drawerMenu");
   const overlay = document.getElementById("drawerOverlay");
   const menuBtn = document.getElementById("menuBtn");
@@ -285,7 +283,6 @@
   }
   overlay.addEventListener("click", closeDrawer);
 </script>
-
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
 
@@ -426,60 +423,44 @@
     });
   }
 
-  // LOGO YÜKLEME → CLOUDFLARE WORKER ÜZERİNDEN
+  // LOGO YÜKLEME — UPLOADCARE
   logoInput.addEventListener("change", async ()=>{
     const file = logoInput.files[0];
     if(!file || !BUSINESS_ID) return;
-
-    const user = auth.currentUser;
-    if(!user){
-      alert("Oturum süren dolmuş. Lütfen tekrar giriş yap.");
-      window.location.href = "business-login.html";
-      return;
-    }
 
     saveBizBtn.disabled = true;
 
     try{
       const compressed = await resizeImage(file, 256);
-      const idToken = await user.getIdToken();
 
       const form = new FormData();
-      form.append("file", compressed, "logo.jpg");
-      form.append("uid", BUSINESS_ID);
-      form.append("apiKey", firebaseConfig.apiKey);
-      form.append("idToken", idToken);
+      form.append("file", compressed);
+      form.append("UPLOADCARE_PUB_KEY", "bc2bc00269f8815e0222");
+      form.append("UPLOADCARE_STORE", "auto");
 
-      const res = await fetch("https://upload-proxy.adb-toc.workers.dev/", {
+      const res = await fetch("https://upload.uploadcare.com/base/", {
         method: "POST",
         body: form
       });
 
-      if(!res.ok){
-        const txt = await res.text();
-        console.error("Worker hata:", txt);
-        alert("Logo yükleme hatası (worker).");
-        return;
-      }
-
       const data = await res.json();
-      if(!data.success || !data.url){
-        console.error("Worker cevabı:", data);
-        alert("Logo yüklenemedi.");
+      if(!data.file){
+        alert("Logo yüklenemedi!");
         return;
       }
 
-      const url = data.url;
+      const logoURL = `https://ucarecdn.com/${data.file}/`;
 
       await setDoc(doc(db,"businesses",BUSINESS_ID),{
-        logoURL:url
+        logoURL: logoURL
       },{merge:true});
 
-      logoPreview.src = url;
-      alert("Logo güncellendi.");
+      logoPreview.src = logoURL;
+      alert("Logo başarıyla güncellendi.");
+
     }catch(err){
       console.error(err);
-      alert("Logo yüklenirken hata oluştu.");
+      alert("Logo yükleme hatası!");
     }finally{
       saveBizBtn.disabled = false;
     }
@@ -562,20 +543,13 @@
       return;
     }
 
-    savePassBtn.disabled = true;
     try{
       await updatePassword(auth.currentUser, pass);
       alert("Şifre güncellendi.");
       newPassInput.value = "";
     }catch(err){
       console.error(err);
-      if(err.code === "auth/requires-recent-login"){
-        alert("Şifreyi değiştirmek için tekrar giriş yapman gerekiyor.");
-      }else{
-        alert("Şifre güncellenemedi: " + err.message);
-      }
-    }finally{
-      savePassBtn.disabled = false;
+      alert("Şifre güncellenemedi.");
     }
   });
 
