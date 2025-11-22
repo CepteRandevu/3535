@@ -498,6 +498,11 @@
     } else {
       logoPreview.src = DEFAULT_LOGO;
     }
+
+    if (cityFromDB) {
+      citySelect.value = cityFromDB;
+      fillDistricts(cityFromDB, districtFromDB);
+    }
   }
 
   /* --------- İŞLETME KAYDET -------- */
