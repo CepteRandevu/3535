@@ -146,9 +146,12 @@
   }
 
   .logo-preview{
-    width:95px;height:95px;border-radius:14px;
+    width:95px;
+    height:95px;
+    border-radius:14px;
     border:2px solid var(--accent);
-    object-fit:cover;background:#020617;
+    object-fit:cover;
+    background:#020617;
   }
 
   .upload-btn{
@@ -308,13 +311,11 @@
 
   const saveBizBtn = document.getElementById("saveBizBtn");
 
-
   /* ----------- LOGO UPLOADCARE ENTEGRASYONU ----------- */
 
   const UPLOADCARE_PUBLIC_KEY = "bc2bc00269f8815e0222"; // SENİN KEY
 
   async function uploadToUploadcare(file) {
-
     const form = new FormData();
     form.append("UPLOADCARE_PUB_KEY", UPLOADCARE_PUBLIC_KEY);
     form.append("UPLOADCARE_STORE", "auto");
@@ -331,27 +332,29 @@
         throw new Error("Uploadcare upload error: " + JSON.stringify(json));
     }
 
-    return `https://ucarecdn.com/${json.file}/`;
+    // Basit preview, 404 riski yok
+    return `https://ucarecdn.com/${json.file}/-/preview/`;
   }
 
-
   logoInput.addEventListener("change", async () => {
-
       const file = logoInput.files[0];
       if(!file || !BUSINESS_ID) return;
 
       try{
           saveBizBtn.disabled = true;
 
-          // Ön izleme
+          // Anlık önizleme
           logoPreview.src = URL.createObjectURL(file);
 
+          // Uploadcare'e yükle
           const cdnUrl = await uploadToUploadcare(file);
 
+          // Firestore'a kaydet
           await setDoc(doc(db, "businesses", BUSINESS_ID), {
             logoURL: cdnUrl
           }, { merge: true });
 
+          // Artık CDN URL'sini kullan
           logoPreview.src = cdnUrl;
           alert("Logo başarıyla güncellendi.");
 
@@ -362,7 +365,6 @@
           saveBizBtn.disabled = false;
       }
   });
-
 
   /* ---------- ŞEHİR JSON YÜKLEME ---------- */
 
@@ -421,7 +423,6 @@
       fillDistricts(citySelect.value);
   });
 
-
   /* --------- AUTH DURUM TAKİP -------- */
 
   onAuthStateChanged(auth, async user => {
@@ -433,7 +434,6 @@
       await loadCities();
       await loadBusiness();
   });
-
 
   async function loadBusiness(){
       const ref = doc(db,"businesses",BUSINESS_ID);
@@ -453,11 +453,12 @@
       cityFromDB = d.city || "";
       districtFromDB = d.district || "";
 
-      if(d.logoURL){
-         logoPreview.src = d.logoURL;
+      if (d.logoURL && d.logoURL.trim() !== "") {
+        logoPreview.src = d.logoURL;
+      } else {
+        logoPreview.src = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
       }
   }
-
 
   /* --------- İŞLETME KAYDET -------- */
 
@@ -486,7 +487,6 @@
       }
   });
 
-
   /* --------- ŞİFRE -------- */
 
   document.getElementById("savePassBtn").addEventListener("click", async ()=>{
@@ -504,7 +504,6 @@
         alert("Şifre güncellenemedi.");
       }
   });
-
 
   /* --------- ÇIKIŞ -------- */
   document.getElementById("logoutBtn").addEventListener("click", async ()=>{
