@@ -108,7 +108,7 @@
             flex: 1;
             padding: 20px;
             width: 100%;
-            min-height: calc(100vh - 62px); /* Mobile'da alt navigasyonun üstü */
+            min-height: 100vh; 
         }
         
         /* --- MOBILE HEADER (SADECE MOBİL İÇİN) --- */
@@ -122,6 +122,8 @@
             position: sticky;
             top: 0;
             z-index: 500;
+            /* Mobil menü butonu için biraz boşluk bırak */
+            padding-left: 75px; 
         }
         
         .mobile-header .header-title {
@@ -175,46 +177,6 @@
             color: var(--accent);
         }
         
-        /* ------------------------------ */
-        /* MOBİL BOTTOM NAV BAR          */
-        /* ------------------------------ */
-        .mobile-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 62px;
-            background: #0b1120;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr);
-            z-index: 9999;
-        }
-
-        .mobile-nav button {
-            background: none;
-            border: 0;
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: color 0.2s, background 0.2s;
-        }
-        
-        .mobile-nav button:hover {
-             background: rgba(34, 197, 94, 0.1);
-        }
-
-        .mobile-nav button.active {
-            color: #22c55e;
-            font-weight: 700;
-        }
-
         /* En Son Randevular Listesi Stilleri */
         .appointment-item {
             display: flex;
@@ -254,8 +216,87 @@
             background-color: rgba(34, 197, 94, 0.2);
             color: #10b981;
         }
+        
+        /* --- YENİ MOBİL ÇEKMECE (DRAWER) STİLLERİ --- */
 
+        /* Üst Menü Butonu */
+        .menu-btn{
+            position:fixed;
+            top:14px; left:14px;
+            z-index:1001; /* Sidebar'dan (1000) daha yüksek */
+            background:#22c55e;
+            color:#022c22;
+            border:0;
+            padding:10px 16px;
+            border-radius:12px;
+            font-size:16px;
+            font-weight:700;
+            cursor:pointer;
+            box-shadow:0 6px 20px rgba(34,197,94,0.4);
+        }
+        
+        /* Menü Arkası */
+        .drawer-overlay{
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.55);
+            backdrop-filter:blur(2px);
+            display:none;
+            z-index:998;
+        }
 
+        /* Açılan Menü */
+        .drawer-menu{
+            position:fixed;
+            top:0; left:0;
+            width:250px;
+            height:100%;
+            background:#0b1120;
+            transform:translateX(-100%);
+            transition:transform 0.28s ease;
+            z-index:9999; /* En üstte olmalı */
+            padding:20px;
+            border-right:1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Açık hali */
+        .drawer-open{
+            transform:translateX(0);
+        }
+
+        /* Başlık */
+        .drawer-title{
+            font-size:20px;
+            font-weight:700;
+            color:#22c55e;
+            margin-bottom:20px;
+            padding-bottom:10px;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Linkler */
+        .drawer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .drawer-links a{
+            display:block;
+            padding:12px 10px;
+            color:#e2e8f0;
+            font-size:15px;
+            text-decoration:none;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .drawer-links a:hover, .drawer-links a.active {
+            background: var(--accent);
+            color: #022c22;
+            font-weight: 600;
+        }
+        
         /* --- DESKTOP VIEW (Min 768px) --- */
         @media (min-width: 768px) {
             body {
@@ -273,7 +314,6 @@
             .main-area {
                 margin-left: 240px; /* Sabit sidebar kadar boşluk bırak */
                 padding: 32px;
-                margin-bottom: 0; /* Alt boşluğu kaldır */
             }
             
             .title {
@@ -293,16 +333,9 @@
                 font-size: 32px;
             }
             
-            .mobile-nav {
-                display: none; /* Masaüstünde alt navigasyonu gizle */
+            .menu-btn, .drawer-overlay, .drawer-menu {
+                display: none !important; /* Masaüstünde mobil menü elemanlarını tamamen gizle */
             }
-        }
-        
-        /* Ekran 768px'den küçükse (Mobil) */
-        @media (max-width: 767px) {
-             .main-area {
-                margin-bottom: 62px; /* Alt navigasyon kadar boşluk bırak */
-             }
         }
     </style>
     <!-- Font Awesome Icons -->
@@ -317,12 +350,32 @@
 
 <body>
 
+    <!-- ÜST MENÜ BUTONU (Sadece mobil için görünür) -->
+    <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
+
+    <!-- Soldan Açılan Menü (Drawer) -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
+    <div id="drawerMenu" class="drawer-menu">
+        <div class="drawer-header">
+            <span class="drawer-title">Cepterandevu</span>
+        </div>
+        <div class="drawer-links" id="drawerLinks">
+            <!-- Linkler JS ile doldurulacak, şimdilik placeholder -->
+            <a href="#" data-path="business-panel.html" onclick="handleNavigation(this)">Panel</a>
+            <a href="#" data-path="business-services.html" onclick="handleNavigation(this)">Hizmetler</a>
+            <a href="#" data-path="business-employees.html" onclick="handleNavigation(this)">Çalışanlar</a>
+            <a href="#" data-path="business-appointments.html" onclick="handleNavigation(this)">Randevular</a>
+            <a href="#" data-path="business-settings.html" onclick="handleNavigation(this)">Ayarlar</a>
+        </div>
+    </div>
+
     <!-- MOBILE HEADER (Sadece mobil için görünür) -->
     <header class="mobile-header">
         <div class="logo-box">
             <div class="logo-mark">C</div>
             <div class="header-title" id="bizNameMobile">İşletme Paneli</div>
         </div>
+        <!-- Mobil Menü Butonu artık yukarıda `menuBtn` olarak var -->
     </header>
 
     <!-- SIDEBAR (Sadece Masaüstü için görünür) -->
@@ -334,11 +387,11 @@
 
         <div class="menu">
             <!-- Tıklama olayları simülasyon amaçlıdır, gerçekte sayfayı değiştirir -->
-            <button class="active" onclick="handleNavigation('business-panel.html')"><i class="fas fa-tachometer-alt"></i> Panel</button>
-            <button onclick="handleNavigation('business-services.html')"><i class="fas fa-wrench"></i> Hizmetler</button>
-            <button onclick="handleNavigation('business-employees.html')"><i class="fas fa-users"></i> Çalışanlar</button>
-            <button onclick="handleNavigation('business-appointments.html')"><i class="fas fa-calendar-alt"></i> Randevular</button>
-            <button onclick="handleNavigation('business-settings.html')"><i class="fas fa-cog"></i> Ayarlar</button>
+            <button class="active" onclick="handleNavigation(this)" data-path="business-panel.html"><i class="fas fa-tachometer-alt"></i> Panel</button>
+            <button onclick="handleNavigation(this)" data-path="business-services.html"><i class="fas fa-wrench"></i> Hizmetler</button>
+            <button onclick="handleNavigation(this)" data-path="business-employees.html"><i class="fas fa-users"></i> Çalışanlar</button>
+            <button onclick="handleNavigation(this)" data-path="business-appointments.html"><i class="fas fa-calendar-alt"></i> Randevular</button>
+            <button onclick="handleNavigation(this)" data-path="business-settings.html"><i class="fas fa-cog"></i> Ayarlar</button>
         </div>
     </aside>
 
@@ -374,80 +427,86 @@
              <h2 class="text-lg font-semibold mb-3">En Son Randevular</h2>
              <div id="latestAppointmentsList" class="space-y-3 mt-4">
                  <!-- Randevular buraya JS ile yüklenecek -->
-                 <p class="text-sm text-gray-400" id="loadingMessage">Randevu verileri yükleniyor...</p>
+                 <p class="text-sm text-gray-400 p-2" id="loadingMessage">Randevu verileri yükleniyor...</p>
              </div>
         </section>
 
     </main>
 
-    <!-- MOBILE BOTTOM NAVIGATION (Sadece mobil için görünür) -->
-    <div class="mobile-nav">
-        <button id="nav-dashboard" class="active" onclick="handleNavigation('business-panel.html')">
-            <i class="fas fa-tachometer-alt"></i>
-            Panel
-        </button>
-        <button id="nav-services" onclick="handleNavigation('business-services.html')">
-            <i class="fas fa-wrench"></i>
-            Hizmetler
-        </button>
-        <button id="nav-employees" onclick="handleNavigation('business-employees.html')">
-            <i class="fas fa-users"></i>
-            Çalışanlar
-        </button>
-        <button id="nav-appointments" onclick="handleNavigation('business-appointments.html')">
-            <i class="fas fa-calendar-alt"></i>
-            Randevular
-        </button>
-        <button id="nav-settings" onclick="handleNavigation('business-settings.html')">
-            <i class="fas fa-cog"></i>
-            Ayarlar
-        </button>
-    </div>
 
 <script>
-    // Sayfa değiştirme simülasyonu (Gerçek uygulamada bu bir router tarafından yapılacaktır)
-    function handleNavigation(url) {
-        // Bu sayfada kalıyoruz ve sadece aktif menüyü güncelliyoruz
-        updateActiveMenu(url.split('/').pop()); 
-        // Gerçek bir uygulamada: window.location.href = url;
+    const drawer = document.getElementById("drawerMenu");
+    const overlay = document.getElementById("drawerOverlay");
+    const menuBtn = document.getElementById("menuBtn");
+    
+    // Drawer'ı açma/kapama fonksiyonları
+    function openDrawer() {
+        drawer.classList.add("drawer-open");
+        overlay.style.display = "block";
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove("drawer-open");
+        overlay.style.display = "none";
+    }
+
+    // Mobil Menü Olay Dinleyicileri
+    menuBtn.addEventListener("click", openDrawer);
+    overlay.addEventListener("click", closeDrawer);
+    
+
+    // Sayfa değiştirme simülasyonu ve menü aktifliği güncellemesi
+    function handleNavigation(element) {
+        let path;
+        
+        // Gelen öğe bir buton (masaüstü sidebar) veya anchor (mobil drawer) olabilir
+        if (element.tagName === 'BUTTON') {
+            path = element.getAttribute('data-path');
+        } else if (element.tagName === 'A') {
+            path = element.getAttribute('data-path');
+        } else {
+             // Eğer string olarak çağrılırsa (eski kod uyumu için)
+             path = element;
+        }
+
+        if (!path) return;
+
+        // 1. Aktif Menü Güncellemesi
+        updateActiveMenu(path);
+
+        // 2. Mobil Çekmeceyi Kapat (Mobil'de ise)
+        if (window.innerWidth < 768) {
+            closeDrawer();
+        }
+
+        // Gerçek bir uygulamada: window.location.href = path;
+        console.log("Navigating to (simulated): " + path);
     }
 
     // Aktif menü butonunu belirleme
     function updateActiveMenu(path) {
-        const pages = {
-            "business-panel.html": "nav-dashboard",
-            "business-services.html": "nav-services",
-            "business-employees.html": "nav-employees",
-            "business-appointments.html": "nav-appointments",
-            "business-settings.html": "nav-settings"
-        };
-        
         const currentPath = path || "business-panel.html";
 
-        // Sidebar menüsünü güncelle
+        // Sidebar menüsünü güncelle (Button elementleri)
         document.querySelectorAll('.sidebar .menu button').forEach(btn => {
             btn.classList.remove("active");
-            // Basit bir kontrol ile sayfa adını içeren butonu bul
-            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(currentPath)) {
+            if (btn.getAttribute('data-path') === currentPath) {
                 btn.classList.add('active');
             }
         });
 
-        // Mobil navigasyonu güncelle
-        document.querySelectorAll('.mobile-nav button').forEach(btn => {
-            btn.classList.remove("active");
+        // Mobil Drawer menüsünü güncelle (Anchor elementleri)
+        document.querySelectorAll('.drawer-links a').forEach(link => {
+            link.classList.remove("active");
+            if (link.getAttribute('data-path') === currentPath) {
+                link.classList.add('active');
+            }
         });
-        const activeNavButtonId = pages[currentPath];
-        const activeNavButton = document.getElementById(activeNavButtonId);
-        if (activeNavButton) {
-            activeNavButton.classList.add("active");
-        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         // Sayfa yüklendiğinde mevcut yolu aktif et
-        const path = window.location.pathname.split('/').pop();
-        updateActiveMenu(path);
+        updateActiveMenu("business-panel.html"); // Varsayılan olarak paneli aktif et
     });
 </script>
 
@@ -483,9 +542,18 @@
         console.error("HATA: Firebase yapılandırması eksik.");
     }
     
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // Hata durumunda uygulama başlatılmasını engellemek için basic kontrol
+    let app, auth, db;
+    if (firebaseConfig.apiKey) {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+    } else {
+        console.error("Firebase API Key bulunamadığı için uygulama başlatılamadı.");
+        // UI'da yükleniyor mesajını güncelle
+        document.getElementById("loadingMessage").textContent = "Veritabanı bağlantı hatası.";
+    }
+
 
     let businessID = null;
     let isAuthReady = false; 
@@ -506,7 +574,8 @@
         const statusMap = {
             'pending': { text: 'Beklemede', class: 'status-pending' },
             'approved': { text: 'Onaylandı', class: 'status-approved' },
-            // Diğer statüleri de buraya ekleyebilirsiniz (örn: cancelled, completed)
+            'cancelled': { text: 'İptal Edildi', class: 'bg-red-900/30 text-red-400' },
+            'completed': { text: 'Tamamlandı', class: 'bg-blue-900/30 text-blue-400' },
         };
         const s = statusMap[status] || { text: status, class: 'bg-gray-500/20 text-gray-400' };
         return `<span class="status-badge ${s.class}">${s.text}</span>`;
@@ -514,6 +583,7 @@
 
     // --- 1. Kimlik Doğrulama ---
     async function authenticate() {
+        if (!auth) return;
         try {
             if (initialAuthToken) {
                 await signInWithCustomToken(auth, initialAuthToken);
@@ -529,6 +599,7 @@
     
     // --- 2. İşletme Adını Yükle (Ayarlar'dan) ---
     async function loadBusinessName(uid) {
+        if (!db) return;
         const defaultName = "İşletme (" + uid.substring(0, 8) + "...)";
         bizNameSmallSidebar.textContent = defaultName;
         bizNameMobile.textContent = "İşletme Paneli";
@@ -556,16 +627,17 @@
     
     // --- 3. İstatistikler ve Randevular İçin Gerçek Zamanlı Dinlemeleri Kur ---
     function setupRealtimeListeners(uid) {
-        if (!uid) return;
+        if (!uid || !db) return;
 
-        // Bugünün tarihini YYYY-MM-DD formatında al (UTC yerine yerel saat baz alınır)
+        // Bugünün tarihini YYYY-MM-DD formatında al
         const today = new Date().toISOString().split("T")[0];
         
-        // Collection Yolları
+        // Collection Yolları (Özel Veriler)
         const appointmentsCollectionRef = collection(db, "artifacts", appId, "users", uid, "appointments");
         const servicesCollectionRef = collection(db, "artifacts", appId, "users", uid, "services");
 
         // --- Stat 1: Bugün Randevu Sayısı ---
+        // Randevu sayısı için sorgu (yalnızca bugüne ait)
         const qToday = query(
             appointmentsCollectionRef,
             where("date", "==", today)
@@ -574,7 +646,8 @@
             statToday.textContent = snapshot.size;
         }, (error) => console.error("Bugünkü randevuları dinleme hatası:", error));
         
-        // --- Stat 2 & 3: Bekleyen ve Onaylanan Randevu Sayıları ---
+        // --- Stat 2, 3 ve En Son Randevular: Tüm Randevuları Dinle ---
+        // Tüm randevular için sorgu (sonradan JS'de filtrelenecek/sıralanacak)
         const qAllAppointments = query(appointmentsCollectionRef);
         onSnapshot(qAllAppointments, (snapshot) => {
             let pendingCount = 0;
@@ -583,24 +656,26 @@
 
             snapshot.forEach(doc => {
                 const data = doc.data();
+                data.docId = doc.id; // Document ID'yi de ekle
                 if (data.status === "pending") {
                     pendingCount++;
                 } else if (data.status === "approved") {
                     approvedCount++;
                 }
                 
-                // En son 5 randevuyu almak için listeye ekle
+                // En son randevular için listeye ekle
                 latestAppointments.push({ id: doc.id, ...data });
             });
 
             statPending.textContent = pendingCount;
             statApproved.textContent = approvedCount;
 
-            // En son randevuları tarihe göre sırala (Yeni randevular en üstte)
+            // Randevuları tarihe göre sırala (En yeniler başta)
+            // Not: Firestore'da orderBy kullanmak yerine JS'de sıralama yapıyoruz
+            // (Firestore'da index sorunlarını önlemek için)
             latestAppointments.sort((a, b) => {
-                // date ve time alanlarını birleştirerek karşılaştırma yap
-                const dateA = new Date(`${a.date}T${a.time}:00`);
-                const dateB = new Date(`${b.date}T${b.time}:00`);
+                const dateA = new Date(`${a.date || '1970-01-01'}T${a.time || '00:00'}:00`);
+                const dateB = new Date(`${b.date || '1970-01-01'}T${b.time || '00:00'}:00`);
                 return dateB.getTime() - dateA.getTime();
             });
 
@@ -618,11 +693,7 @@
     // --- 4. En Son Randevuları Ekrana Yazdır ---
     function renderLatestAppointments(appointments) {
         latestAppointmentsList.innerHTML = ''; // Listeyi temizle
-        const loadingMessage = document.getElementById("loadingMessage");
-        if (loadingMessage) {
-            loadingMessage.remove(); // Yükleniyor mesajını kaldır
-        }
-
+        
         if (appointments.length === 0) {
             latestAppointmentsList.innerHTML = '<p class="text-sm text-gray-500 p-2">Henüz hiç randevu yok.</p>';
             return;
@@ -634,14 +705,14 @@
             
             // Tarih ve Saati okunabilir formata dönüştür
             const dateParts = app.date ? app.date.split('-') : ["", "", ""];
-            const formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; // DD.MM.YYYY
+            const formattedDate = `${dateParts[2] || '?'}.${dateParts[1] || '?'}.${dateParts[0] || '?'}`; // DD.MM.YYYY
             
             const timeText = app.time || "Belirtilmemiş";
             
             appointmentDiv.innerHTML = `
                 <div class="appointment-details">
                     <strong>${app.clientName || 'İsimsiz Müşteri'}</strong>
-                    <span>${app.serviceName || 'Hizmet Bilgisi Yok'}</span>
+                    <span>${app.serviceName || 'Hizmet Bilgisi Yok'} - ${app.employeeName || 'Çalışan Bilgisi Yok'}</span>
                 </div>
                 <div class="text-right">
                     <span class="text-sm text-gray-300 font-semibold block">${formattedDate} ${timeText}</span>
@@ -654,31 +725,32 @@
 
 
     // --- 5. Auth Değişikliği Dinleyicisi ---
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            businessID = user.uid;
-            isAuthReady = true;
+    if (auth) {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                businessID = user.uid;
+                isAuthReady = true;
 
-            // Yükleme sırası: İsim yükle, sonra gerçek zamanlı dinlemeleri kur
-            await loadBusinessName(businessID); 
-            setupRealtimeListeners(businessID); 
-            
-        } else {
-            console.warn("Kullanıcı oturumu kapalı. Anonim giriş bekleniyor.");
-            isAuthReady = true;
-            // Eğer auth.currentUser null ise ve anonim giriş yapılmadıysa, tekrar dene
-            if (initialAuthToken || !auth.currentUser) {
-                // Anonim giriş veya custom token ile oturum açmayı dene
-                authenticate();
+                // Yükleme sırası: İsim yükle, sonra gerçek zamanlı dinlemeleri kur
+                await loadBusinessName(businessID); 
+                setupRealtimeListeners(businessID); 
+                
+            } else {
+                console.warn("Kullanıcı oturumu kapalı. Anonim giriş bekleniyor.");
+                isAuthReady = true;
+                // Eğer auth.currentUser null ise ve anonim giriş yapılmadıysa, tekrar dene
+                if (initialAuthToken || !auth.currentUser) {
+                    // Anonim giriş veya custom token ile oturum açmayı dene
+                    authenticate();
+                }
             }
+        });
+
+        // Oturum açma işlemini başlat (onAuthStateChanged tetiklenecektir)
+        if (!auth.currentUser) {
+            authenticate();
         }
-    });
-
-    // Oturum açma işlemini başlat (onAuthStateChanged tetiklenecektir)
-    if (!auth.currentUser) {
-        authenticate();
     }
-
 </script>
 
 </body>
