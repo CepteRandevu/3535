@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Randevu Yönetimi | Cepterandevu</title>
+  <title>Randevular | Cepterandevu</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -15,38 +17,50 @@
       --text: #f9fafb;
       --muted: #9ca3af;
       --border: rgba(148,163,184,0.35);
-      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
-      --radius-xl: 22px;
+      --radius-xl: 18px;
+      --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       display: flex;
+      flex-direction: column;
       background: radial-gradient(circle at top, #111827, #020617 55%);
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
       min-height: 100vh;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
+    .top-header {
+      width: 100%;
+      padding-top: 14px;
+      padding-bottom: 0;
+      position: sticky;
+      top: 0;
+      z-index: 500;
       background: var(--sidebar);
-      padding: 24px 18px;
-      border-right: 1px solid var(--border);
-      position: fixed;
-      top: 0; bottom: 0;
+      border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .logo-box {
+    .top-center {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .top-menu-row {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 20px;
+      padding-bottom: 14px;
     }
 
     .logo-mark {
@@ -60,43 +74,100 @@
       font-weight: 800;
       font-size: 18px;
       color: #ecfdf5;
-      box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+      box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+    }
+
+    .logo-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .menu-btn {
+      background: var(--accent);
+      color: #022c22;
+      border: 0;
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .menu-btn i { font-size: 14px; }
+
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1000;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: flex-start;
     }
 
     .biz-name-small {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
     }
 
     .menu button {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 14px;
       background: transparent;
       border: 0;
       text-align: left;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu button:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--text);
     }
 
     .menu button.active {
       background: var(--accent);
       color: #022c22;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
     }
 
-    /* MAIN */
     .main-area {
-      margin-left: 240px;
       flex: 1;
-      padding: 24px;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: 110px;
     }
 
     .title {
       font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      display: none;
     }
 
     .card {
@@ -213,13 +284,6 @@
     }
 
     @media (max-width: 720px) {
-      .main-area {
-        margin-left: 0;
-        padding: 16px;
-      }
-      .sidebar {
-        display: none;
-      }
       .appt-row {
         flex-direction: column;
         align-items: flex-start;
@@ -228,42 +292,135 @@
         align-items: flex-start;
       }
     }
+
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 998;
+    }
+
+    .drawer-menu {
+      position: fixed;
+      top: 0; left: 0;
+      width: 250px;
+      height: 100%;
+      background: #0b1120;
+      transform: translateX(-100%);
+      transition: transform 0.28s ease;
+      z-index: 9999;
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-open { transform: translateX(0); }
+
+    .drawer-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-links a {
+      display: block;
+      padding: 12px 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .drawer-links a:hover,
+    .drawer-links a.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    @media (min-width: 768px) {
+      body { flex-direction: row; }
+      .sidebar { display: flex; }
+      .top-header { display: none; }
+      .main-area {
+        margin-left: 240px;
+        padding: 32px;
+        padding-top: 32px;
+      }
+      .title { display: block; }
+    }
   </style>
 
-  <!-- Firebase (global, ama asıl import altta module içinde) -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
-
 <body>
+  <!-- Drawer -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="drawerMenu" class="drawer-menu">
+    <div class="drawer-title">Cepterandevu</div>
+    <div class="drawer-links">
+      <a href="business-panel.html">Panel</a>
+      <a href="business-services.html">Hizmetler</a>
+      <a href="business-employees.html">Çalışanlar</a>
+      <a href="business-appointments.html" class="active">Randevular</a>
+      <a href="business-settings.html">Ayarlar</a>
+    </div>
+  </div>
 
-  <!-- SIDEBAR -->
+  <!-- Üst Header -->
+  <header class="top-header">
+    <div class="top-center">
+      <div class="logo-mark">C</div>
+      <span class="logo-title" id="bizNameMobile">Randevular</span>
+    </div>
+    <div class="top-menu-row">
+      <button id="menuBtn" class="menu-btn">
+        <i class="fas fa-bars"></i> Menü
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo-box">
       <div class="logo-mark">C</div>
-      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+      <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
     </div>
 
     <div class="menu">
-      <button onclick="location.href='/al/business/business-panel.html'">Panel</button>
-      <button onclick="location.href='/al/business/business-services.html'">Hizmetler</button>
-      <button onclick="location.href='/al/business/business-employees.html'">Çalışanlar</button>
-      <button class="active">Randevular</button>
-      <button onclick="location.href='/al/business/business-settings.html'">Ayarlar</button>
+      <button onclick="location.href='business-panel.html'"><i class="fas fa-tachometer-alt"></i> Panel</button>
+      <button onclick="location.href='business-services.html'"><i class="fas fa-wrench"></i> Hizmetler</button>
+      <button onclick="location.href='business-employees.html'"><i class="fas fa-users"></i> Çalışanlar</button>
+      <button class="active" onclick="location.href='business-appointments.html'"><i class="fas fa-calendar-alt"></i> Randevular</button>
+      <button onclick="location.href='business-settings.html'"><i class="fas fa-cog"></i> Ayarlar</button>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="main-area">
-    <h1 class="title">Randevu Yönetimi</h1>
+    <h1 class="title" id="bizTitle">Randevu Yönetimi</h1>
 
     <div class="card">
       <div class="card-header">
         <h3>Bekleyen Randevular</h3>
         <span id="pendingCount">0 adet</span>
       </div>
-      <div id="pendingList" class="appt-list">
+      <div id="pendingList">
         <div class="empty">Şu anda bekleyen randevu yok.</div>
       </div>
     </div>
@@ -273,20 +430,37 @@
         <h3>Tüm Randevular</h3>
         <span id="allCount">0 adet</span>
       </div>
-      <div id="allList" class="appt-list">
+      <div id="allList">
         <div class="empty">Henüz randevu oluşturulmamış.</div>
       </div>
     </div>
   </main>
 
-  <!-- BURADAN SONRASI 2. PARÇA: SCRIPT -->
+  <script>
+    const drawer = document.getElementById("drawerMenu");
+    const overlay = document.getElementById("drawerOverlay");
+    const menuBtn = document.getElementById("menuBtn");
+
+    function openDrawer() {
+      drawer.classList.add("drawer-open");
+      overlay.style.display = "block";
+    }
+    function closeDrawer() {
+      drawer.classList.remove("drawer-open");
+      overlay.style.display = "none";
+    }
+
+    menuBtn.addEventListener("click", openDrawer);
+    overlay.addEventListener("click", closeDrawer);
+  </script>
+
   <script type="module">
+    import { firebaseConfig } from "../js/firebase-config.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
       getAuth,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
     import {
       getFirestore,
       collection,
@@ -298,36 +472,28 @@
       updateDoc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /* Firebase Config (diğer sayfalarla aynı) */
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-      authDomain: "cepterandevu-35fe4.firebaseapp.com",
-      projectId: "cepterandevu-35fe4",
-      storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-      messagingSenderId: "86298180836",
-      appId: "1:86298180836:web:124c2004605d68b32700f1"
-    };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     let businessID = null;
 
-    const bizNameSmall = document.getElementById("bizNameSmall");
+    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+    const bizNameMobile = document.getElementById("bizNameMobile");
+    const bizTitle = document.getElementById("bizTitle");
+
     const pendingListEl = document.getElementById("pendingList");
     const allListEl = document.getElementById("allList");
     const pendingCountEl = document.getElementById("pendingCount");
     const allCountEl = document.getElementById("allCount");
 
-    // Basit cache’ler (müşteri / hizmet / çalışan isimlerini tekrar tekrar çekmemek için)
     const userCache = {};
     const serviceCache = {};
     const employeeCache = {};
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = "/al/business/business-login.html";
+        window.location.href = "business-login.html";
         return;
       }
 
@@ -341,7 +507,10 @@
         const ref = doc(db, "businesses", businessID);
         const snap = await getDoc(ref);
         if (snap.exists()) {
-          bizNameSmall.textContent = snap.data().name || "İşletme";
+          const name = snap.data().name || "İşletme";
+          bizNameSmallSidebar.textContent = name;
+          bizNameMobile.textContent = "Randevular · " + name;
+          bizTitle.textContent = name + " · Randevular";
         }
       } catch (e) {
         console.error("İşletme ismi okunamadı:", e);
@@ -351,9 +520,9 @@
     function sortAppointments(list) {
       return list.slice().sort((a, b) => {
         if (a.date === b.date) {
-          return a.time.localeCompare(b.time);
+          return (a.time || "").localeCompare(b.time || "");
         }
-        return a.date.localeCompare(b.date);
+        return (a.date || "").localeCompare(b.date || "");
       });
     }
 
@@ -363,13 +532,12 @@
       for (const ap of items) {
         const obj = { ...ap };
 
-        // Müşteri bilgileri (customers/users koleksiyonu)
         if (ap.customerUID) {
           if (!userCache[ap.customerUID]) {
             try {
               const usnap = await getDoc(doc(db, "customers", ap.customerUID));
               userCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
-            } catch (e) {
+            } catch(e) {
               console.error("Kullanıcı okunamadı:", e);
             }
           }
@@ -380,13 +548,12 @@
           }
         }
 
-        // Hizmet bilgisi
         if (ap.serviceID) {
           if (!serviceCache[ap.serviceID]) {
             try {
               const ssnap = await getDoc(doc(db, "services", ap.serviceID));
               serviceCache[ap.serviceID] = ssnap.exists() ? ssnap.data() : null;
-            } catch (e) {
+            } catch(e) {
               console.error("Hizmet okunamadı:", e);
             }
           }
@@ -397,13 +564,12 @@
           }
         }
 
-        // Çalışan bilgisi
         if (ap.employeeID) {
           if (!employeeCache[ap.employeeID]) {
             try {
               const esnap = await getDoc(doc(db, "employees", ap.employeeID));
               employeeCache[ap.employeeID] = esnap.exists() ? esnap.data() : null;
-            } catch (e) {
+            } catch(e) {
               console.error("Çalışan okunamadı:", e);
             }
           }
@@ -420,7 +586,6 @@
     }
 
     function renderAppointments(items) {
-      // Bekleyenler
       const pending = items.filter(ap => ap.status === "pending");
       const sortedAll = sortAppointments(items);
       const sortedPending = sortAppointments(pending);
@@ -461,7 +626,7 @@
       const svcText = ap.serviceName ? ap.serviceName : ap.serviceID || "Hizmet";
       const empText = ap.employeeName ? ap.employeeName : ap.employeeID || "";
 
-      mainLine.textContent = `${svcText} · ${ap.date} ${ap.time}`;
+      mainLine.textContent = `${svcText} · ${ap.date || "-"} ${ap.time || ""}`;
 
       const sub1 = document.createElement("div");
       sub1.className = "appt-sub";
@@ -492,11 +657,12 @@
 
       const tag = document.createElement("span");
       tag.className = "tag";
-      tag.textContent =
-        `Oluşturma: ${ap.createdAt ? new Date(ap.createdAt).toLocaleString("tr-TR") : "-"}`;
+      const createdText = ap.createdAt
+        ? new Date(ap.createdAt).toLocaleString("tr-TR")
+        : "-";
+      tag.textContent = `Oluşturma: ${createdText}`;
       right.appendChild(tag);
 
-      // Sadece bekleyenler için butonlar
       if (ap.status === "pending") {
         const btnRow = document.createElement("div");
         btnRow.style.display = "flex";
@@ -505,14 +671,12 @@
         const approveBtn = document.createElement("button");
         approveBtn.className = "btn-sm btn-approve";
         approveBtn.textContent = "Onayla";
-        approveBtn.onclick = () =>
-          updateStatus(ap.id, "approved", ap.customerUID, approveBtn);
+        approveBtn.onclick = () => updateStatus(ap.id, "approved", approveBtn);
 
         const rejectBtn = document.createElement("button");
         rejectBtn.className = "btn-sm btn-reject";
         rejectBtn.textContent = "Reddet";
-        rejectBtn.onclick = () =>
-          updateStatus(ap.id, "rejected", ap.customerUID, rejectBtn);
+        rejectBtn.onclick = () => updateStatus(ap.id, "rejected", rejectBtn);
 
         btnRow.appendChild(approveBtn);
         btnRow.appendChild(rejectBtn);
@@ -525,25 +689,14 @@
       return row;
     }
 
-    async function updateStatus(id, newStatus, customerUID, btn) {
+    async function updateStatus(id, newStatus, btn) {
       try {
         if (btn) btn.disabled = true;
-
         const ref = doc(db, "appointments", id);
-        await updateDoc(ref, {
-          status: newStatus,
-          updatedAt: Date.now()
-        });
-
-        // Durum değişince müşteriye push gönder
-        if (customerUID) {
-          await sendStatusNotification(customerUID, newStatus);
-        }
-
+        await updateDoc(ref, { status: newStatus, updatedAt: Date.now() });
       } catch (e) {
         console.error("Durum güncellenemedi:", e);
         alert("Durum güncellenirken hata oluştu.");
-      } finally {
         if (btn) btn.disabled = false;
       }
     }
@@ -554,76 +707,18 @@
         where("businessID", "==", businessID)
       );
 
-      onSnapshot(
-        qRef,
-        async (snap) => {
-          const items = [];
-          snap.forEach(docSnap => {
-            items.push({ id: docSnap.id, ...docSnap.data() });
-          });
-
-          const enriched = await enrichAppointments(items);
-          renderAppointments(enriched);
-        },
-        (err) => {
-          console.error("Randevu dinleme hatası:", err);
-        }
-      );
-    }
-
-    /* ----------------- OneSignal Bildirim ----------------- */
-
-    async function sendStatusNotification(customerUID, newStatus) {
-      try {
-        const cRef = doc(db, "customers", customerUID);
-        const cSnap = await getDoc(cRef);
-        if (!cSnap.exists()) return;
-
-        const cData = cSnap.data();
-        if (!cData.playerID) return;  // telefonda OneSignal açılmamış olabilir
-
-        const title =
-          newStatus === "approved" ? "Randevun onaylandı" :
-          newStatus === "rejected" ? "Randevun reddedildi" :
-          "Randevu durumun güncellendi";
-
-        const bodyText =
-          newStatus === "approved"
-            ? "Randevun işletme tarafından onaylandı."
-            : newStatus === "rejected"
-              ? "Randevun işletme tarafından reddedildi."
-              : `Randevu durumun: ${newStatus}`;
-
-        await sendOneSignalToPlayer(cData.playerID, title, bodyText);
-      } catch (e) {
-        console.error("Bildirim hazırlanırken hata:", e);
-      }
-    }
-
-    async function sendOneSignalToPlayer(playerId, title, bodyText) {
-      try {
-        const res = await fetch("https://onesignal.com/api/v1/notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            // BURAYA OneSignal "REST API Key" gelecek
-            "Authorization": "os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
-          },
-          body: JSON.stringify({
-            app_id: "784cba74-0683-49ed-a3c6-e86741fc6aee",
-            include_player_ids: [playerId],
-            headings: { tr: title },
-            contents: { tr: bodyText }
-          })
+      onSnapshot(qRef, async (snap) => {
+        const items = [];
+        snap.forEach(docSnap => {
+          items.push({ id: docSnap.id, ...docSnap.data() });
         });
 
-        const json = await res.json();
-        console.log("OneSignal yanıtı:", json);
-      } catch (e) {
-        console.error("OneSignal isteği başarısız:", e);
-      }
+        const enriched = await enrichAppointments(items);
+        renderAppointments(enriched);
+      }, (err) => {
+        console.error("Randevu dinleme hatası:", err);
+      });
     }
-
   </script>
 </body>
 </html>
