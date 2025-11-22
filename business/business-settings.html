@@ -119,7 +119,6 @@
   }
 
   .card h3{font-size:16px;margin-bottom:10px;}
-
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
 
   input, select, textarea{
@@ -137,7 +136,6 @@
   .row-two{display:flex;gap:10px;flex-wrap:wrap;}
   .row-two > div{flex:1 1 0;min-width:140px;}
 
-  /* PROFESYONEL LOGO PREVIEW */
   .logo-box2{
       display:flex;
       align-items:center;
@@ -281,7 +279,7 @@
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 </main>
 
-<!-- Drawer script (module değil) -->
+<!-- Drawer script -->
 <script>
   const drawer = document.getElementById("drawerMenu");
   const overlay = document.getElementById("drawerOverlay");
@@ -337,7 +335,7 @@
 
   const saveBizBtn     = document.getElementById("saveBizBtn");
 
-  /* ----------- LOGO UPLOADCARE ENTEGRASYONU ----------- */
+  /* ----------- FINAL LOGO UPLOADCARE ----------- */
 
   const UPLOADCARE_PUBLIC_KEY = "bc2bc00269f8815e0222";
 
@@ -353,15 +351,12 @@
     });
 
     const json = await res.json();
-
-    if (!res.ok || !json.file) {
-      throw new Error("Uploadcare error: " + JSON.stringify(json));
-    }
+    if (!json.file) throw new Error("Uploadcare error: " + JSON.stringify(json));
 
     const fileId = json.file;
 
-    // Kare, 256x256, ortadan crop edilmiş URL
-    const cdnUrl = `https://ucarecdn.com/${fileId}/-/preview/256x256/-/crop/256x256/center/`;
+    // Yeni, stabil logo URL formatı:
+    const cdnUrl = `https://ucarecdn.com/${fileId}/-/resize/256x256/-/format/auto/`;
     return cdnUrl;
   }
 
@@ -372,21 +367,19 @@
     try {
       saveBizBtn.disabled = true;
 
-      // Anlık önizleme (local)
       logoPreview.src = URL.createObjectURL(file);
 
-      // Uploadcare'e yükle
       const cdnUrl = await uploadToUploadcare(file);
 
-      // Firestore'a kaydet
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         { logoURL: cdnUrl },
         { merge: true }
       );
 
-      // CDN URL'sini cache bust ile kullan
-      logoPreview.src = cdnUrl + "?v=" + Date.now();
+      // Çok güçlü cache kırıcı
+      logoPreview.src = cdnUrl + "?cache=" + crypto.randomUUID();
+
       alert("Logo başarıyla güncellendi.");
     } catch (err) {
       console.error(err);
@@ -401,11 +394,10 @@
   async function loadCities() {
     try {
       const res = await fetch("/al/js/turkey-cities.json");
-      if (!res.ok) throw new Error("HTTP " + res.status);
       citiesData = await res.json();
       fillCities();
     } catch (err) {
-      console.error("İl/ilçe verisi yüklenemedi:", err);
+      console.error(err);
     }
   }
 
@@ -433,7 +425,7 @@
     }
 
     const cityObj = citiesData.find(c => c.name === cityName);
-    if (!cityObj || !Array.isArray(cityObj.districts)) {
+    if (!cityObj) {
       districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
       return;
     }
@@ -450,9 +442,7 @@
       districtSelect.appendChild(opt);
     });
 
-    if (selected) {
-      districtSelect.value = selected;
-    }
+    if (selected) districtSelect.value = selected;
   }
 
   citySelect.addEventListener("change", () => {
@@ -472,8 +462,6 @@
   });
 
   async function loadBusiness() {
-    if (!BUSINESS_ID) return;
-
     const ref  = doc(db, "businesses", BUSINESS_ID);
     const snap = await getDoc(ref);
     if (!snap.exists()) return;
@@ -492,9 +480,8 @@
     cityFromDB     = d.city     || "";
     districtFromDB = d.district || "";
 
-    if (d.logoURL && d.logoURL.trim() !== "") {
-      // Cache bust ile
-      logoPreview.src = d.logoURL + "?v=" + Date.now();
+    if (d.logoURL) {
+      logoPreview.src = d.logoURL + "?cache=" + crypto.randomUUID();
     } else {
       logoPreview.src = DEFAULT_LOGO;
     }
@@ -550,7 +537,7 @@
       alert("Şifre güncellendi.");
     } catch (err) {
       console.error(err);
-      alert("Şifre güncellenemedi. Tekrar giriş yapman gerekebilir.");
+      alert("Şifre güncellenemedi.");
     }
   });
 
