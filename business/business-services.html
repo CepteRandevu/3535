@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hizmet Yönetimi | Cepterandevu</title>
+  <title>Hizmetler | Cepterandevu</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -15,38 +17,51 @@
       --text: #f9fafb;
       --muted: #9ca3af;
       --border: rgba(148,163,184,0.35);
-      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
-      --radius-xl: 22px;
+      --radius-xl: 18px;
+      --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       display: flex;
+      flex-direction: column;
       background: radial-gradient(circle at top, #111827, #020617 55%);
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
       min-height: 100vh;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
+    /* ÜST HEADER (Mobil + Desktop ortak) */
+    .top-header {
+      width: 100%;
+      padding-top: 14px;
+      padding-bottom: 0;
+      position: sticky;
+      top: 0;
+      z-index: 500;
       background: var(--sidebar);
-      padding: 24px 18px;
-      border-right: 1px solid var(--border);
-      position: fixed;
-      top: 0; bottom: 0;
+      border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      align-items: center;
+      gap: 8px;
     }
 
-    .logo-box {
+    .top-center {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .top-menu-row {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 20px;
+      padding-bottom: 14px;
     }
 
     .logo-mark {
@@ -60,43 +75,104 @@
       font-weight: 800;
       font-size: 18px;
       color: #ecfdf5;
-      box-shadow: 0 10px 30px rgba(34,197,94,0.6);
+      box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+    }
+
+    .logo-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .menu-btn {
+      background: var(--accent);
+      color: #022c22;
+      border: 0;
+      padding: 9px 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .menu-btn i {
+      font-size: 14px;
+    }
+
+    /* SIDEBAR (desktop) */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1000;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      justify-content: flex-start;
     }
 
     .biz-name-small {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
     }
 
     .menu button {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 14px;
       background: transparent;
       border: 0;
       text-align: left;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu button:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--text);
     }
 
     .menu button.active {
       background: var(--accent);
       color: #022c22;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
     }
 
     /* MAIN */
     .main-area {
-      margin-left: 240px;
       flex: 1;
-      padding: 24px;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: 110px;
     }
 
     .title {
       font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      display: none;
     }
 
     .card {
@@ -109,7 +185,7 @@
     }
 
     label {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       margin-bottom: 4px;
       display: block;
@@ -123,6 +199,13 @@
       border: 1px solid var(--border);
       color: var(--text);
       margin-bottom: 10px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
     }
 
     .btn-primary {
@@ -130,7 +213,7 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
       border: 0;
       padding: 12px;
-      font-size: 15px;
+      font-size: 14px;
       border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -145,6 +228,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+    }
+
+    .service-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .service-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .service-meta {
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .delete-btn {
@@ -156,145 +256,314 @@
       color: white;
       cursor: pointer;
     }
+
+    .delete-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .empty {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 2px;
+    }
+
+    /* Drawer */
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 998;
+    }
+
+    .drawer-menu {
+      position: fixed;
+      top: 0; left: 0;
+      width: 250px;
+      height: 100%;
+      background: #0b1120;
+      transform: translateX(-100%);
+      transition: transform 0.28s ease;
+      z-index: 9999;
+      padding: 20px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-open {
+      transform: translateX(0);
+    }
+
+    .drawer-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-links a {
+      display: block;
+      padding: 12px 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .drawer-links a:hover,
+    .drawer-links a.active {
+      background: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    @media (min-width: 768px) {
+      body { flex-direction: row; }
+      .sidebar { display: flex; }
+      .top-header { display: none; }
+      .main-area {
+        margin-left: 240px;
+        padding: 32px;
+        padding-top: 32px;
+      }
+      .title { display: block; }
+    }
   </style>
 
-  <!-- Firebase Scripts -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
-
 <body>
+  <!-- Drawer -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <div id="drawerMenu" class="drawer-menu">
+    <div class="drawer-title">Cepterandevu</div>
+    <div class="drawer-links">
+      <a href="business-panel.html">Panel</a>
+      <a href="business-services.html" class="active">Hizmetler</a>
+      <a href="business-employees.html">Çalışanlar</a>
+      <a href="business-appointments.html">Randevular</a>
+      <a href="business-settings.html">Ayarlar</a>
+    </div>
+  </div>
 
-  <!-- SIDEBAR -->
+  <!-- Üst Header (mobil) -->
+  <header class="top-header">
+    <div class="top-center">
+      <div class="logo-mark">C</div>
+      <span class="logo-title" id="bizNameMobile">Hizmetler</span>
+    </div>
+    <div class="top-menu-row">
+      <button id="menuBtn" class="menu-btn">
+        <i class="fas fa-bars"></i> Menü
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar (desktop) -->
   <aside class="sidebar">
     <div class="logo-box">
       <div class="logo-mark">C</div>
-      <div class="biz-name-small" id="bizNameSmall">İşletme</div>
+      <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
     </div>
-
     <div class="menu">
-      <button onclick="location.href='/al/business/business-panel.html'">Panel</button>
-      <button class="active">Hizmetler</button>
-      <button onclick="location.href='/al/business/business-employees.html'">Çalışanlar</button>
-      <button onclick="location.href='/al/business/business-appointments.html'">Randevular</button>
-      <button onclick="location.href='/al/business/business-settings.html'">Ayarlar</button>
+      <button onclick="location.href='business-panel.html'"><i class="fas fa-tachometer-alt"></i> Panel</button>
+      <button class="active" onclick="location.href='business-services.html'"><i class="fas fa-wrench"></i> Hizmetler</button>
+      <button onclick="location.href='business-employees.html'"><i class="fas fa-users"></i> Çalışanlar</button>
+      <button onclick="location.href='business-appointments.html'"><i class="fas fa-calendar-alt"></i> Randevular</button>
+      <button onclick="location.href='business-settings.html'"><i class="fas fa-cog"></i> Ayarlar</button>
     </div>
   </aside>
 
   <!-- MAIN -->
   <main class="main-area">
-    <h1 class="title">Hizmet Yönetimi</h1>
+    <h1 class="title" id="bizTitle">Hizmetler</h1>
 
     <div class="card">
-      <h3>Yeni Hizmet Ekle</h3>
+      <h2 style="margin-bottom:10px;">Yeni Hizmet Ekle</h2>
       <label>Hizmet Adı</label>
-      <input type="text" id="serviceName">
+      <input type="text" id="serviceName" placeholder="Örn: Saç Kesimi">
 
       <label>Süre (dakika)</label>
-      <input type="number" id="serviceDuration">
+      <input type="number" id="serviceDuration" placeholder="Örn: 30">
 
       <label>Fiyat (₺)</label>
-      <input type="number" id="servicePrice">
+      <input type="number" id="servicePrice" placeholder="Örn: 150">
 
-      <button class="btn-primary" id="addServiceBtn">Ekle</button>
+      <button class="btn-primary" id="addServiceBtn">Hizmeti Kaydet</button>
     </div>
 
     <div class="card">
-      <h3>Mevcut Hizmetler</h3>
-      <div id="servicesList">Yükleniyor...</div>
+      <h2 style="margin-bottom:10px;">Mevcut Hizmetler</h2>
+      <div id="servicesList" class="empty">Yükleniyor...</div>
     </div>
   </main>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc, query, where,
-    getDocs, deleteDoc, doc, getDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <script>
+    // Drawer kontrolü
+    const drawer = document.getElementById("drawerMenu");
+    const overlay = document.getElementById("drawerOverlay");
+    const menuBtn = document.getElementById("menuBtn");
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1"
-  };
+    function openDrawer() {
+      drawer.classList.add("drawer-open");
+      overlay.style.display = "block";
+    }
+    function closeDrawer() {
+      drawer.classList.remove("drawer-open");
+      overlay.style.display = "none";
+    }
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    menuBtn.addEventListener("click", openDrawer);
+    overlay.addEventListener("click", closeDrawer);
+  </script>
 
-  let businessID = null;
+  <script type="module">
+    import { firebaseConfig } from "../js/firebase-config.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      getDocs,
+      deleteDoc,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const servicesListEl = document.getElementById("servicesList");
-  const bizNameSmall = document.getElementById("bizNameSmall");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) return (location.href = "business-login.html");
+    let businessID = null;
 
-    businessID = user.uid;
+    const serviceNameInput = document.getElementById("serviceName");
+    const serviceDurationInput = document.getElementById("serviceDuration");
+    const servicePriceInput = document.getElementById("servicePrice");
+    const servicesListEl = document.getElementById("servicesList");
+    const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
+    const bizNameMobile = document.getElementById("bizNameMobile");
+    const bizTitle = document.getElementById("bizTitle");
 
-    await loadBusinessName();
-    await loadServices();
-  });
-
-  async function loadBusinessName() {
-    const snap = await getDoc(doc(db, "businesses", businessID));
-    if (snap.exists()) bizNameSmall.textContent = snap.data().name;
-  }
-
-  document.getElementById("addServiceBtn").onclick = async () => {
-    const name = document.getElementById("serviceName").value.trim();
-    const duration = document.getElementById("serviceDuration").value;
-    const price = document.getElementById("servicePrice").value;
-
-    if (!name || !duration || !price) return alert("Lütfen tüm alanları doldurun.");
-
-    await addDoc(collection(db, "services"), {
-      businessID,
-      name,
-      duration: Number(duration),
-      price: Number(price)
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "business-login.html";
+        return;
+      }
+      businessID = user.uid;
+      await loadBusinessName();
+      await loadServices();
     });
 
-    document.getElementById("serviceName").value = "";
-    document.getElementById("serviceDuration").value = "";
-    document.getElementById("servicePrice").value = "";
+    async function loadBusinessName() {
+      try {
+        const ref = doc(db, "businesses", businessID);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const name = snap.data().name || "İşletme";
+          bizNameSmallSidebar.textContent = name;
+          bizNameMobile.textContent = "Hizmetler · " + name;
+          bizTitle.textContent = name + " · Hizmetler";
+        }
+      } catch (e) {
+        console.error("İşletme adı alınamadı:", e);
+      }
+    }
 
-    loadServices();
-  };
+    document.getElementById("addServiceBtn").onclick = async () => {
+      const name = serviceNameInput.value.trim();
+      const duration = parseInt(serviceDurationInput.value);
+      const price = parseFloat(servicePriceInput.value);
 
-  async function loadServices() {
-    servicesListEl.textContent = "Yükleniyor...";
+      if (!name || !duration || !price) {
+        alert("Tüm alanları doldurun.");
+        return;
+      }
 
-    const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
-    const snap = await getDocs(qRef);
+      try {
+        await addDoc(collection(db, "services"), {
+          businessID,
+          name,
+          duration,
+          price
+        });
 
-    servicesListEl.innerHTML = "";
+        serviceNameInput.value = "";
+        serviceDurationInput.value = "";
+        servicePriceInput.value = "";
 
-    snap.forEach((docSnap) => {
-      const d = docSnap.data();
+        await loadServices();
+      } catch (e) {
+        console.error("Hizmet eklenemedi:", e);
+        alert("Hizmet eklenirken hata oluştu.");
+      }
+    };
 
-      servicesListEl.innerHTML += `
-        <div class="service-row">
-          <div>
-            <div><b>${d.name}</b></div>
-            <div>${d.duration} dk — ${d.price}₺</div>
-          </div>
-          <button class="delete-btn" onclick="deleteService('${docSnap.id}')">Sil</button>
-        </div>
-      `;
-    });
-  }
+    async function loadServices() {
+      servicesListEl.textContent = "Yükleniyor...";
 
-  window.deleteService = async (id) => {
-    await deleteDoc(doc(db, "services", id));
-    loadServices();
-  };
-</script>
+      try {
+        const qRef = query(collection(db, "services"), where("businessID", "==", businessID));
+        const snap = await getDocs(qRef);
 
+        if (snap.empty) {
+          servicesListEl.innerHTML = `<div class="empty">Henüz hizmet eklenmemiş.</div>`;
+          return;
+        }
+
+        servicesListEl.innerHTML = "";
+
+        snap.forEach((docSnap) => {
+          const data = docSnap.data();
+          const row = document.createElement("div");
+          row.className = "service-row";
+
+          row.innerHTML = `
+            <div class="service-info">
+              <div class="service-name">${data.name}</div>
+              <div class="service-meta">${data.duration} dk · ${data.price}₺</div>
+            </div>
+            <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
+          `;
+
+          servicesListEl.appendChild(row);
+        });
+
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.onclick = async () => {
+            if (!confirm("Bu hizmeti silmek istediğinize emin misiniz?")) return;
+            try {
+              await deleteDoc(doc(db, "services", btn.dataset.id));
+              await loadServices();
+            } catch (e) {
+              console.error("Hizmet silinemedi:", e);
+              alert("Hizmet silinirken hata oluştu.");
+            }
+          };
+        });
+      } catch (e) {
+        console.error("Hizmetler yüklenemedi:", e);
+        servicesListEl.innerHTML = `<div class="empty">Hizmetler yüklenirken hata oluştu.</div>`;
+      }
+    }
+  </script>
 </body>
 </html>
