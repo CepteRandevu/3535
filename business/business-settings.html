@@ -236,7 +236,7 @@
     <label>Logo</label>
 
     <div class="logo-box2">
-        <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png">
+        <img id="logoPreview" class="logo-preview" src="https://cdn-icons-png.flaticon.com/512/2961/2961378.png" alt="Logo">
         <input type="file" id="logoInput" accept="image/*" style="display:none;">
         <button class="upload-btn" onclick="document.getElementById('logoInput').click();">Logo Seç</button>
     </div>
@@ -281,8 +281,30 @@
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 </main>
 
-<script type="module">
+<!-- Drawer script (module değil) -->
+<script>
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
 
+  function openDrawer(){
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
+  function closeDrawer(){
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
+
+  if(menuBtn){
+    menuBtn.addEventListener("click", openDrawer);
+  }
+  if(overlay){
+    overlay.addEventListener("click", closeDrawer);
+  }
+</script>
+
+<script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
 
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -291,29 +313,33 @@
   import { getFirestore, doc, getDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+
+  const DEFAULT_LOGO = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
 
   let BUSINESS_ID = null;
   let citiesData = [];
   let cityFromDB = "";
   let districtFromDB = "";
 
-  const logoInput = document.getElementById("logoInput");
-  const logoPreview = document.getElementById("logoPreview");
-  const bizNameInput = document.getElementById("bizNameInput");
-  const bizPhoneInput = document.getElementById("bizPhoneInput");
-  const bizAddressInput = document.getElementById("bizAddressInput");
-  const bizAboutInput = document.getElementById("bizAboutInput");
-  const citySelect = document.getElementById("citySelect");
+  const bizNameSmall   = document.getElementById("bizNameSmall");
+  const bizNameMobile  = document.getElementById("bizNameMobile");
+  const logoInput      = document.getElementById("logoInput");
+  const logoPreview    = document.getElementById("logoPreview");
+  const bizNameInput   = document.getElementById("bizNameInput");
+  const bizPhoneInput  = document.getElementById("bizPhoneInput");
+  const bizAddressInput= document.getElementById("bizAddressInput");
+  const bizAboutInput  = document.getElementById("bizAboutInput");
+  const citySelect     = document.getElementById("citySelect");
   const districtSelect = document.getElementById("districtSelect");
 
-  const saveBizBtn = document.getElementById("saveBizBtn");
+  const saveBizBtn     = document.getElementById("saveBizBtn");
 
   /* ----------- LOGO UPLOADCARE ENTEGRASYONU ----------- */
 
-  const UPLOADCARE_PUBLIC_KEY = "bc2bc00269f8815e0222"; // SENİN KEY
+  const UPLOADCARE_PUBLIC_KEY = "bc2bc00269f8815e0222";
 
   async function uploadToUploadcare(file) {
     const form = new FormData();
@@ -321,194 +347,212 @@
     form.append("UPLOADCARE_STORE", "auto");
     form.append("file", file);
 
-    const res = await fetch("https://upload.uploadcare.com/base/", {
-        method: "POST",
-        body: form
+    const res  = await fetch("https://upload.uploadcare.com/base/", {
+      method: "POST",
+      body: form
     });
 
     const json = await res.json();
 
-    if(!json.file){
-        throw new Error("Uploadcare upload error: " + JSON.stringify(json));
+    if (!res.ok || !json.file) {
+      throw new Error("Uploadcare error: " + JSON.stringify(json));
     }
 
-    // Basit preview, 404 riski yok
-    return `https://ucarecdn.com/${json.file}/-/preview/`;
+    const fileId = json.file;
+
+    // Kare, 256x256, ortadan crop edilmiş URL
+    const cdnUrl = `https://ucarecdn.com/${fileId}/-/preview/256x256/-/crop/256x256/center/`;
+    return cdnUrl;
   }
 
   logoInput.addEventListener("change", async () => {
-      const file = logoInput.files[0];
-      if(!file || !BUSINESS_ID) return;
+    const file = logoInput.files[0];
+    if (!file || !BUSINESS_ID) return;
 
-      try{
-          saveBizBtn.disabled = true;
+    try {
+      saveBizBtn.disabled = true;
 
-          // Anlık önizleme
-          logoPreview.src = URL.createObjectURL(file);
+      // Anlık önizleme (local)
+      logoPreview.src = URL.createObjectURL(file);
 
-          // Uploadcare'e yükle
-          const cdnUrl = await uploadToUploadcare(file);
+      // Uploadcare'e yükle
+      const cdnUrl = await uploadToUploadcare(file);
 
-          // Firestore'a kaydet
-          await setDoc(doc(db, "businesses", BUSINESS_ID), {
-            logoURL: cdnUrl
-          }, { merge: true });
+      // Firestore'a kaydet
+      await setDoc(
+        doc(db, "businesses", BUSINESS_ID),
+        { logoURL: cdnUrl },
+        { merge: true }
+      );
 
-          // Artık CDN URL'sini kullan
-          logoPreview.src = cdnUrl;
-          alert("Logo başarıyla güncellendi.");
-
-      }catch(err){
-          console.error(err);
-          alert("Logo yüklenirken hata oluştu.");
-      }finally{
-          saveBizBtn.disabled = false;
-      }
+      // CDN URL'sini cache bust ile kullan
+      logoPreview.src = cdnUrl + "?v=" + Date.now();
+      alert("Logo başarıyla güncellendi.");
+    } catch (err) {
+      console.error(err);
+      alert("Logo yüklenirken hata oluştu.");
+    } finally {
+      saveBizBtn.disabled = false;
+    }
   });
 
   /* ---------- ŞEHİR JSON YÜKLEME ---------- */
 
   async function loadCities() {
-      try {
-          const res = await fetch("/al/js/turkey-cities.json");
-          citiesData = await res.json();
-          fillCities();
-      } catch (err) {
-          console.error("İl ilçe yüklenemedi", err);
-      }
+    try {
+      const res = await fetch("/al/js/turkey-cities.json");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      citiesData = await res.json();
+      fillCities();
+    } catch (err) {
+      console.error("İl/ilçe verisi yüklenemedi:", err);
+    }
   }
 
-  function fillCities(){
-      citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
-      citiesData.forEach(c=>{
-          const opt = document.createElement("option");
-          opt.value = c.name;
-          opt.textContent = c.name;
-          citySelect.appendChild(opt);
-      });
+  function fillCities() {
+    citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
+    citiesData.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.name;
+      opt.textContent = c.name;
+      citySelect.appendChild(opt);
+    });
 
-      if(cityFromDB){
-        citySelect.value = cityFromDB;
-        fillDistricts(cityFromDB, districtFromDB);
-      }
+    if (cityFromDB) {
+      citySelect.value = cityFromDB;
+      fillDistricts(cityFromDB, districtFromDB);
+    }
   }
 
-  function fillDistricts(cityName, selected=""){
-      districtSelect.innerHTML = "";
+  function fillDistricts(cityName, selected = "") {
+    districtSelect.innerHTML = "";
 
-      const cityObj = citiesData.find(c=>c.name === cityName);
-      if(!cityObj){
-        districtSelect.innerHTML = `<option value="">İlçe yok</option>`;
-        return;
-      }
+    if (!cityName) {
+      districtSelect.innerHTML = `<option value="">Önce il seçiniz</option>`;
+      return;
+    }
 
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = "İlçe seçiniz";
-      districtSelect.appendChild(placeholder);
+    const cityObj = citiesData.find(c => c.name === cityName);
+    if (!cityObj || !Array.isArray(cityObj.districts)) {
+      districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
+      return;
+    }
 
-      cityObj.districts.forEach(d=>{
-          const opt = document.createElement("option");
-          opt.value = d;
-          opt.textContent = d;
-          districtSelect.appendChild(opt);
-      });
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "İlçe seçiniz";
+    districtSelect.appendChild(placeholder);
 
-      if(selected){
-        districtSelect.value = selected;
-      }
+    cityObj.districts.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+
+    if (selected) {
+      districtSelect.value = selected;
+    }
   }
 
-  citySelect.addEventListener("change", ()=>{
-      fillDistricts(citySelect.value);
+  citySelect.addEventListener("change", () => {
+    fillDistricts(citySelect.value);
   });
 
-  /* --------- AUTH DURUM TAKİP -------- */
+  /* --------- AUTH DURUMU -------- */
 
   onAuthStateChanged(auth, async user => {
-      if(!user){
-          location.href = "business-login.html";
-          return;
-      }
-      BUSINESS_ID = user.uid;
-      await loadCities();
-      await loadBusiness();
+    if (!user) {
+      window.location.href = "business-login.html";
+      return;
+    }
+    BUSINESS_ID = user.uid;
+    await loadCities();
+    await loadBusiness();
   });
 
-  async function loadBusiness(){
-      const ref = doc(db,"businesses",BUSINESS_ID);
-      const snap = await getDoc(ref);
-      if(!snap.exists()) return;
+  async function loadBusiness() {
+    if (!BUSINESS_ID) return;
 
-      const d = snap.data();
+    const ref  = doc(db, "businesses", BUSINESS_ID);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
 
-      document.getElementById("bizNameSmall").textContent = d.name || "İşletme";
-      document.getElementById("bizNameMobile").textContent = d.name || "İşletme";
+    const d = snap.data();
 
-      bizNameInput.value = d.name || "";
-      bizPhoneInput.value = d.phone || "";
-      bizAddressInput.value = d.address || "";
-      bizAboutInput.value = d.about || "";
+    const name = d.name || "İşletme";
+    bizNameSmall.textContent  = name;
+    bizNameMobile.textContent = name;
 
-      cityFromDB = d.city || "";
-      districtFromDB = d.district || "";
+    bizNameInput.value    = d.name    || "";
+    bizPhoneInput.value   = d.phone   || "";
+    bizAddressInput.value = d.address || "";
+    bizAboutInput.value   = d.about   || "";
 
-      if (d.logoURL && d.logoURL.trim() !== "") {
-        logoPreview.src = d.logoURL;
-      } else {
-        logoPreview.src = "https://cdn-icons-png.flaticon.com/512/2961/2961378.png";
-      }
+    cityFromDB     = d.city     || "";
+    districtFromDB = d.district || "";
+
+    if (d.logoURL && d.logoURL.trim() !== "") {
+      // Cache bust ile
+      logoPreview.src = d.logoURL + "?v=" + Date.now();
+    } else {
+      logoPreview.src = DEFAULT_LOGO;
+    }
   }
 
   /* --------- İŞLETME KAYDET -------- */
 
-  saveBizBtn.addEventListener("click", async ()=>{
-      if(!BUSINESS_ID) return;
+  saveBizBtn.addEventListener("click", async () => {
+    if (!BUSINESS_ID) return;
 
-      saveBizBtn.disabled = true;
+    saveBizBtn.disabled = true;
 
-      try{
-          await setDoc(doc(db,"businesses",BUSINESS_ID), {
-              name: bizNameInput.value.trim(),
-              phone: bizPhoneInput.value.trim(),
-              address: bizAddressInput.value.trim(),
-              about: bizAboutInput.value.trim(),
-              city: citySelect.value,
-              district: districtSelect.value
-          }, { merge: true });
+    try {
+      await setDoc(
+        doc(db, "businesses", BUSINESS_ID),
+        {
+          name:    bizNameInput.value.trim(),
+          phone:   bizPhoneInput.value.trim(),
+          address: bizAddressInput.value.trim(),
+          about:   bizAboutInput.value.trim(),
+          city:    citySelect.value,
+          district:districtSelect.value
+        },
+        { merge: true }
+      );
 
-          alert("İşletme bilgileri kaydedildi.");
-
-      }catch(err){
-          console.error(err);
-          alert("Bir hata oluştu.");
-      }finally{
-          saveBizBtn.disabled = false;
-      }
+      alert("İşletme bilgileri kaydedildi.");
+    } catch (err) {
+      console.error(err);
+      alert("Bilgiler kaydedilirken hata oluştu.");
+    } finally {
+      saveBizBtn.disabled = false;
+    }
   });
 
   /* --------- ŞİFRE -------- */
 
-  document.getElementById("savePassBtn").addEventListener("click", async ()=>{
-      const pass = document.getElementById("newPassInput").value;
+  document.getElementById("savePassBtn").addEventListener("click", async () => {
+    const pass = document.getElementById("newPassInput").value;
 
-      if(pass.length < 6){
-        alert("Şifre en az 6 karakter olmalı.");
-        return;
-      }
+    if (pass.length < 6) {
+      alert("Şifre en az 6 karakter olmalı.");
+      return;
+    }
 
-      try{
-        await updatePassword(auth.currentUser, pass);
-        alert("Şifre güncellendi.");
-      } catch(err){
-        alert("Şifre güncellenemedi.");
-      }
+    try {
+      await updatePassword(auth.currentUser, pass);
+      alert("Şifre güncellendi.");
+    } catch (err) {
+      console.error(err);
+      alert("Şifre güncellenemedi. Tekrar giriş yapman gerekebilir.");
+    }
   });
 
   /* --------- ÇIKIŞ -------- */
-  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-      await signOut(auth);
-      location.href = "business-login.html";
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "business-login.html";
   });
 
 </script>
