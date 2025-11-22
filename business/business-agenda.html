@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajandam | Cepterandevu</title>
+
+  <style>
+    :root{
+      --bg:#050816;
+      --card:#0f172a;
+      --accent:#22c55e;
+      --accent-soft:rgba(34,197,94,0.18);
+      --accent-strong:#16a34a;
+      --text:#f1f5f9;
+      --muted:#94a3b8;
+      --border:rgba(148,163,184,0.25);
+      --radius:14px;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:radial-gradient(circle at top,#111827,#020617 55%);
+      color:var(--text);
+      padding:20px;
+      display:flex;
+      justify-content:center;
+      min-height:100vh;
+    }
+
+    .container{
+      width:100%;
+      max-width:1100px;
+    }
+
+    h1{
+      margin-bottom:12px;
+      font-size:22px;
+      font-weight:700;
+    }
+
+    .calendar-wrap{
+      display:grid;
+      grid-template-columns:150px 1fr;
+      gap:16px;
+      margin-top:20px;
+    }
+
+    .hours{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+      height:max-content;
+    }
+
+    .hour{
+      padding:8px;
+      margin-bottom:4px;
+      font-size:13px;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      text-align:center;
+    }
+
+    .calendar{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px;
+    }
+
+    .calendar-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+    }
+
+    .calendar-header button{
+      background:var(--accent);
+      border:0;
+      padding:6px 10px;
+      border-radius:8px;
+      color:#022c22;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .days{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .cells{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+    }
+
+    .cell{
+      background:#0b1220;
+      border:1px solid var(--border);
+      border-radius:10px;
+      min-height:95px;
+      padding:6px;
+      font-size:12px;
+      position:relative;
+      cursor:pointer;
+    }
+
+    .cell:hover{
+      border-color:var(--accent);
+    }
+
+    .cell .date{
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+
+    .slot{
+      background:var(--accent-soft);
+      padding:3px 4px;
+      border-radius:6px;
+      font-size:11px;
+      color:#bbf7d0;
+      margin-bottom:3px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>📅 Ajandam</h1>
+
+  <div id="loading" style="margin-top:20px;">Takvim yükleniyor...</div>
+
+  <div id="agendaWrap" style="display:none;" class="calendar-wrap">
+    <!-- SOL: Saatler -->
+    <div class="hours" id="hoursList"></div>
+
+    <!-- SAĞ: Takvim -->
+    <div class="calendar">
+      <div class="calendar-header">
+        <button id="prevMonth">← Önceki</button>
+        <div id="monthLabel"></div>
+        <button id="nextMonth">Sonraki →</button>
+      </div>
+
+      <div class="days">
+        <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div>
+        <div>Cum</div><div>Cmt</div><div>Paz</div>
+      </div>
+
+      <div id="cells" class="cells"></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* --- FIREBASE CONFIG --- */
+const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:124c2004605d68b32700f1",
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+/* --- DOM --- */
+const loadingEl  = document.getElementById("loading");
+const agendaWrap = document.getElementById("agendaWrap");
+const hoursList  = document.getElementById("hoursList");
+const monthLabel = document.getElementById("monthLabel");
+const cellsEl    = document.getElementById("cells");
+
+let BUSINESS_ID = null;
+
+/* --- SAAT ARALIĞI (İşletme verisinden gelecek) --- */
+let workHours = [];
+
+/* --- BUGÜNÜN TARİHİ --- */
+let currentMonth = new Date();
+currentMonth.setDate(1);
+
+/* --- GİRİŞ KONTROLÜ --- */
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    window.location.href = "business-login.html";
+    return;
+  }
+  BUSINESS_ID = user.uid;
+  await loadBusinessSettings();
+  renderHours();
+  renderCalendar();
+});
+
+/* --- İŞLETME AYARLARI (çalışma saatleri) --- */
+async function loadBusinessSettings(){
+  const ref = doc(db,"businesses",BUSINESS_ID);
+  const snap = await getDoc(ref);
+
+  if(!snap.exists()){
+    workHours = [];
+  } else {
+    workHours = snap.data().workHours || [];
+  }
+
+  loadingEl.style.display = "none";
+  agendaWrap.style.display = "grid";
+}
+/* --- SAATLERİ GÖSTER --- */
+function renderHours(){
+  hoursList.innerHTML = "";
+  workHours.forEach(h=>{
+    const div = document.createElement("div");
+    div.className = "hour";
+    div.textContent = h;
+    hoursList.appendChild(div);
+  });
+}
+
+/* --- AY TAKVİMİ --- */
+function renderCalendar(){
+  cellsEl.innerHTML = "";
+
+  const year  = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+
+  monthLabel.textContent = currentMonth.toLocaleDateString("tr-TR", {
+    year:"numeric",
+    month:"long"
+  });
+
+  const firstDay = new Date(year,month,1);
+  const lastDay  = new Date(year,month+1,0);
+  const start = firstDay.getDay() === 0 ? 6 : firstDay.getDay()-1;
+
+  for(let i=0;i<start;i++){
+    const empty = document.createElement("div");
+    empty.className = "cell";
+    empty.style.opacity = "0.2";
+    cellsEl.appendChild(empty);
+  }
+
+  for(let d=1; d<=lastDay.getDate(); d++){
+    const date = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.date = date;
+
+    cell.innerHTML = `<div class="date">${d}</div>`;
+
+    cellsEl.appendChild(cell);
+
+    loadDayAppointments(date, cell);
+  }
+}
+
+/* --- SEÇİLİ GÜNE RANDEVULARI ÇEK --- */
+async function loadDayAppointments(date, cell){
+  const qRef = query(
+    collection(db,"appointments"),
+    where("businessID","==", BUSINESS_ID),
+    where("date","==", date)
+  );
+
+  const snap = await getDocs(qRef);
+
+  snap.forEach(docSnap=>{
+    const ap = docSnap.data();
+
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.textContent = `${ap.time} - ${ap.serviceID}`;
+    cell.appendChild(div);
+  });
+}
+
+/* --- AY GEÇİŞ BUTONLARI --- */
+document.getElementById("prevMonth").onclick = ()=>{
+  currentMonth.setMonth(currentMonth.getMonth()-1);
+  renderCalendar();
+};
+document.getElementById("nextMonth").onclick = ()=>{
+  currentMonth.setMonth(currentMonth.getMonth()+1);
+  renderCalendar();
+};
+</script>
+</body>
+</html>
