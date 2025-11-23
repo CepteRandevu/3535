@@ -6,139 +6,79 @@
 <title>Randevu Oluştur | Cepterandevu</title>
 
 <style>
+/* --- TASARIM AYNI, KOD TEMİZLENDİ --- */
 :root{
-  --bg:#050816;
-  --card:#0f172a;
-  --accent:#22c55e;
-  --accent-soft:rgba(34,197,94,0.15);
-  --text:#f1f5f9;
-  --muted:#94a3b8;
+  --bg:#050816; --card:#0f172a; --accent:#22c55e;
+  --text:#f1f5f9; --muted:#94a3b8; --border:rgba(148,163,184,0.18);
   --radius:16px;
-  --border:rgba(148,163,184,0.18);
 }
-*{box-sizing:border-box;margin:0;padding:0;}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-  margin:0;
   background:radial-gradient(circle at top,#111827,#020617 55%);
-  color:var(--text);
-  font-family:system-ui;
-  padding:16px;
+  font-family:system-ui; color:var(--text);
+  padding:16px; display:flex; justify-content:center;
   min-height:100vh;
-  display:flex;
-  justify-content:center;
 }
-
 .container{width:100%;max-width:960px;}
 
-.top-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;
-}
-.logo-group{display:flex;align-items:center;gap:10px;}
-.logo-mark{
-  width:32px;height:32px;border-radius:14px;
-  background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-  display:flex;align-items:center;justify-content:center;
-  color:#ecfdf5;font-weight:800;font-size:18px;
-}
-.logo-text-main{font-weight:700;font-size:16px;}
-.logo-text-sub{font-size:11px;color:var(--muted);}
-
-.biz-logo-box{
-  width:86px;height:86px;border-radius:14px;background:#020617;
-  border:1px solid rgba(148,163,184,0.35);
-  margin-bottom:10px;display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.biz-logo-box img{width:100%;height:100%;object-fit:contain;}
-
-.card-grid{
-  display:grid;gap:16px;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
-}
-
 .card{
-  background:var(--card);padding:18px;border-radius:var(--radius);
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
   border:1px solid var(--border);
+  margin-bottom:16px;
   box-shadow:0 18px 45px rgba(15,23,42,0.85);
 }
 
-h2{font-size:20px;margin-bottom:8px;}
-
-.biz-name{font-size:18px;font-weight:600;}
-.biz-location{font-size:13px;color:var(--muted);margin-bottom:8px;}
-.biz-meta{font-size:12px;color:var(--muted);}
-
-label{font-size:13px;color:var(--muted);margin-bottom:4px;display:block;}
 select,input{
-  width:100%;padding:10px;border-radius:var(--radius);
-  border:1px solid rgba(255,255,255,0.15);background:#020617;
-  color:var(--text);margin-bottom:12px;font-size:14px;
+  width:100%; padding:10px; margin-bottom:10px;
+  background:#020617; border-radius:var(--radius);
+  border:1px solid var(--border); color:var(--text);
 }
-select:focus,input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 1px var(--accent);
-}
-
 .btn-primary{
-  width:100%;padding:12px;border-radius:var(--radius);border:0;
+  width:100%; padding:12px;
   background:linear-gradient(135deg,var(--accent),#16a34a);
-  color:#022c22;font-weight:600;font-size:15px;
+  border:0; border-radius:var(--radius);
+  font-size:15px; font-weight:600; color:#022c22;
 }
 .error-box{
-  background:rgba(239,68,68,0.15);
-  border:1px solid rgba(239,68,68,0.45);
-  color:#fecaca;padding:8px;border-radius:12px;
-  font-size:12px;margin-bottom:10px;display:none;
-}
-
-@media(max-width:768px){
-  .card-grid{grid-template-columns:1fr;}
+  display:none; background:rgba(239,68,68,0.15);
+  padding:10px; border-radius:14px;
+  border:1px solid rgba(239,68,68,0.4);
+  color:#fecaca; font-size:13px; margin-bottom:8px;
 }
 </style>
 </head>
+
 <body>
-
 <div class="container">
-
-  <div class="top-bar">
-    <div class="logo-group">
-      <div class="logo-mark">C</div>
-      <div>
-        <div class="logo-text-main">Cepterandevu</div>
-        <div class="logo-text-sub">Randevunu birkaç adımda tamamla</div>
-      </div>
-    </div>
-  </div>
 
   <div id="loading" class="card">İşletme bilgileri yükleniyor...</div>
 
-  <div id="bookingWrap" class="card-grid" style="display:none;">
-    
-    <!-- SOL BİLGİ KISMI -->
-    <section class="card">
+  <div id="bookingWrap" style="display:none;">
+
+    <div class="card">
       <h2>İşletme Bilgisi</h2>
+      <div class="biz-logo-box" style="width:90px;height:90px;border-radius:14px;
+      border:1px solid var(--border); background:#020617; overflow:hidden;margin-bottom:10px;">
+        <img id="bizLogo" style="width:100%;height:100%;object-fit:contain;">
+      </div>
 
-      <div class="biz-logo-box"><img id="bizLogo"></div>
+      <div id="bizName" style="font-size:18px;font-weight:600;"></div>
+      <div id="bizLocation" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizMeta" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+    </div>
 
-      <div class="biz-name" id="bizName"></div>
-      <div class="biz-location" id="bizLocation"></div>
-      <div class="biz-meta" id="bizMeta"></div>
-
-      <div id="slotInfo" class="info-box" style="margin-top:10px;display:none;"></div>
-    </section>
-
-    <!-- SAĞ FORM -->
-    <section class="card">
+    <div class="card">
       <h2>Randevu Oluştur</h2>
 
       <div id="errorBox" class="error-box"></div>
 
-      <label>Hizmet Seç</label>
+      <label>Hizmet</label>
       <select id="serviceSelect"><option>Yükleniyor...</option></select>
 
-      <label>Çalışan Seç</label>
+      <label>Çalışan</label>
       <select id="employeeSelect"><option>Önce hizmet seçin</option></select>
 
       <label>Tarih</label>
@@ -148,20 +88,17 @@ select:focus,input:focus{
       <select id="timeSelect"></select>
 
       <button id="createBtn" class="btn-primary">Randevuyu Oluştur</button>
-    </section>
-
+    </div>
   </div>
-
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, doc, getDoc,
-  collection, query, where, getDocs, addDoc
+  getFirestore, doc, getDoc, collection,
+  query, where, getDocs, addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 /* ------------------ DEFAULT LOGO ------------------ */
 const DEFAULT_BIZ_LOGO =
@@ -175,12 +112,12 @@ const DEFAULT_BIZ_LOGO =
 
 /* ------------------ FIREBASE ------------------ */
 const firebaseConfig = {
-  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-  authDomain: "cepterandevu-35fe4.firebaseapp.com",
-  projectId: "cepterandevu-35fe4",
-  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-  messagingSenderId: "86298180836",
-  appId: "1:86298180836:web:124c2004605d68b32700f1",
+  apiKey:"AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain:"cepterandevu-35fe4.firebaseapp.com",
+  projectId:"cepterandevu-35fe4",
+  storageBucket:"cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId:"86298180836",
+  appId:"1:86298180836:web:124c2004605d68b32700f1",
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
@@ -195,7 +132,7 @@ const bizLocationEl = document.getElementById("bizLocation");
 const bizMetaEl = document.getElementById("bizMeta");
 
 const loadingEl = document.getElementById("loading");
-const bookingWrap= document.getElementById("bookingWrap");
+const wrapEl = document.getElementById("bookingWrap");
 
 const serviceSelect  = document.getElementById("serviceSelect");
 const employeeSelect = document.getElementById("employeeSelect");
@@ -211,19 +148,18 @@ const dayKeyMap = {
 };
 
 let businessData = null;
-let currentUser = null;
+let serviceDuration = 0;
 
 /* ------------------ AUTH ------------------ */
 onAuthStateChanged(auth, async user=>{
   if(!user){
-    location.href = "/al/customer-login.html?redirect=" + encodeURIComponent(location.href);
+    location.href="/al/customer-login.html?redirect="+location.href;
     return;
   }
-  currentUser = user;
   await loadBusiness();
 });
 
-/* ------------------ BUSINESS ------------------ */
+/* ------------------ BUSINESS LOAD ------------------ */
 async function loadBusiness(){
   const ref = doc(db,"businesses",businessId);
   const snap= await getDoc(ref);
@@ -236,24 +172,21 @@ async function loadBusiness(){
   businessData = snap.data();
 
   bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
-  bizNameEl.textContent = businessData.name || "İşletme";
-  bizLocationEl.textContent = `${businessData.city||""}${businessData.district?" · "+businessData.district:""}`;
+  bizNameEl.textContent = businessData.name || "";
+  bizLocationEl.textContent = `${businessData.city||""} ${businessData.district||""}`;
   bizMetaEl.textContent = businessData.phone || "";
 
   loadingEl.style.display="none";
-  bookingWrap.style.display="grid";
+  wrapEl.style.display="block";
 
-  setDateLimit();
-  await loadServices();
+  setDateMin();
+  loadServices();
 }
 
-/* ------------------ DATE MIN ------------------ */
-function setDateLimit(){
-  const t = new Date();
-  const y = t.getFullYear();
-  const m = String(t.getMonth()+1).padStart(2,"0");
-  const d = String(t.getDate()).padStart(2,"0");
-  dateInput.min = `${y}-${m}-${d}`;
+/* ------------------ DATE LIMIT ------------------ */
+function setDateMin(){
+  const t=new Date();
+  dateInput.min = t.toISOString().substring(0,10);
 }
 
 /* ------------------ SERVICES ------------------ */
@@ -264,17 +197,20 @@ async function loadServices(){
   );
   const snap = await getDocs(qRef);
 
-  serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
+  serviceSelect.innerHTML="<option value=''>Hizmet seçin</option>";
 
   snap.forEach(s=>{
-    const d = s.data();
+    const d=s.data();
     const opt=document.createElement("option");
     opt.value=s.id;
     opt.textContent=`${d.name} (${d.duration} dk)`;
+    opt.dataset.duration=d.duration;
     serviceSelect.appendChild(opt);
   });
 
-  serviceSelect.addEventListener("change",()=>{
+  serviceSelect.addEventListener("change", ()=>{
+    employeeSelect.innerHTML="<option>Yükleniyor...</option>";
+    serviceDuration = parseInt(serviceSelect.selectedOptions[0].dataset.duration || 0);
     loadEmployees(serviceSelect.value);
     timeSelect.innerHTML="";
   });
@@ -284,8 +220,6 @@ async function loadServices(){
 
 /* ------------------ EMPLOYEES ------------------ */
 async function loadEmployees(serviceId){
-  employeeSelect.innerHTML="<option>Yükleniyor...</option>";
-
   if(!serviceId){
     employeeSelect.innerHTML="<option>Önce hizmet seçin</option>";
     return;
@@ -301,7 +235,7 @@ async function loadEmployees(serviceId){
 
   snap.forEach(e=>{
     const d=e.data();
-    if(Array.isArray(d.services)&&d.services.includes(serviceId)){
+    if(d.services.includes(serviceId)){
       const opt=document.createElement("option");
       opt.value=e.id;
       opt.textContent=d.name;
@@ -312,16 +246,24 @@ async function loadEmployees(serviceId){
   employeeSelect.addEventListener("change", fillTimes);
 }
 
-/* ------------------ HOURS FROM SCHEDULE ------------------ */
-function generateHours(start,end){
-  const s = parseInt(start.split(":")[0]);
-  const e = parseInt(end.split(":")[0]);
-  const arr=[];
-  for(let h=s;h<=e;h++){
-    arr.push(String(h).padStart(2,"0")+":00");
-    arr.push(String(h).padStart(2,"0")+":30");
+/* ------------------ SLOT GENERATOR (Hizmet süresi ile) ------------------ */
+function generateSlots(start,end,duration){
+  let slots=[];
+  let cur = new Date("2000-01-01 "+start);
+  let close= new Date("2000-01-01 "+end);
+
+  while(cur <= close){
+    let endTime = new Date(cur.getTime() + duration*60000);
+
+    if(endTime <= close){
+      const h = String(cur.getHours()).padStart(2,"0");
+      const m = String(cur.getMinutes()).padStart(2,"0");
+      slots.push(`${h}:${m}`);
+    }
+
+    cur = new Date(cur.getTime() + 30*60000); // 30 dk adım
   }
-  return arr;
+  return slots;
 }
 
 /* ------------------ FILL TIMES ------------------ */
@@ -336,7 +278,6 @@ async function fillTimes(){
   const key = dayKeyMap[day];
 
   const schedule = businessData.schedule || {};
-
   if(!schedule[key] || schedule[key].closed){
     timeSelect.innerHTML="<option>Bu gün kapalı</option>";
     return;
@@ -345,18 +286,36 @@ async function fillTimes(){
   const start=schedule[key].start;
   const end  =schedule[key].end;
 
-  const hours = generateHours(start,end);
-  if(hours.length===0){
+  const possibleSlots = generateSlots(start,end,serviceDuration);
+
+  if(possibleSlots.length===0){
     timeSelect.innerHTML="<option>Saat bulunamadı</option>";
     return;
   }
 
-  hours.forEach(h=>{
-    const opt=document.createElement("option");
-    opt.value=h;
-    opt.textContent=h;
-    timeSelect.appendChild(opt);
+  /* --- DOLU SAATLERİ SİLMEK --- */
+  const qRef = query(
+    collection(db,"appointments"),
+    where("businessID","==",businessId),
+    where("date","==",dateInput.value),
+    where("employeeID","==",employeeSelect.value)
+  );
+  const snap = await getDocs(qRef);
+
+  const booked = snap.docs.map(x=> x.data().time);
+
+  possibleSlots.forEach(s=>{
+    if(!booked.includes(s)){
+      const opt=document.createElement("option");
+      opt.value=s;
+      opt.textContent=s;
+      timeSelect.appendChild(opt);
+    }
   });
+
+  if(timeSelect.innerHTML===""){
+    timeSelect.innerHTML="<option>Tüm saatler dolu</option>";
+  }
 }
 
 /* ------------------ CREATE APPOINTMENT ------------------ */
@@ -364,7 +323,7 @@ createBtn.addEventListener("click", async()=>{
   errorBox.style.display="none";
 
   if(!serviceSelect.value || !employeeSelect.value || !dateInput.value || !timeSelect.value){
-    errorBox.textContent="Lütfen tüm alanları doldurun.";
+    errorBox.textContent="Tüm alanları doldurun.";
     errorBox.style.display="block";
     return;
   }
@@ -377,21 +336,22 @@ createBtn.addEventListener("click", async()=>{
       businessID:businessId,
       serviceID:serviceSelect.value,
       employeeID:employeeSelect.value,
-      customerUID:currentUser.uid,
+      customerUID:auth.currentUser.uid,
       date:dateInput.value,
       time:timeSelect.value,
+      duration:serviceDuration,
       status:"pending",
       createdAt:Date.now()
     });
 
-    alert("Randevu talebiniz oluşturuldu.");
-
-  }catch(err){
+    alert("Randevu başarıyla oluşturuldu.");
+  }
+  catch(err){
     console.error(err);
     errorBox.textContent="Randevu oluşturulamadı.";
     errorBox.style.display="block";
-
-  }finally{
+  }
+  finally{
     createBtn.disabled=false;
     createBtn.textContent="Randevuyu Oluştur";
   }
