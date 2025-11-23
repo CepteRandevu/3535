@@ -68,6 +68,7 @@
       color:var(--muted);
     }
 
+    /* LOGO KUTUSU (YENİ) */
     .biz-logo-box{
       width:86px;
       height:86px;
@@ -138,6 +139,10 @@
       font-size:14px;
       outline:none;
     }
+    select:focus, input:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px var(--accent);
+    }
 
     .btn-primary{
       width:100%;
@@ -151,6 +156,18 @@
       cursor:pointer;
       margin-top:6px;
       box-shadow:0 12px 30px rgba(34,197,94,0.35);
+      transition:transform 0.1s ease, box-shadow 0.2s ease, filter 0.1s;
+    }
+    .btn-primary:hover{
+      filter:brightness(1.05);
+      transform:translateY(-1px);
+      box-shadow:0 14px 35px rgba(34,197,94,0.55);
+    }
+    .btn-primary:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
     }
 
     .info-box{
@@ -182,6 +199,7 @@
   </style>
 </head>
 <body>
+
 <div class="container">
 
   <div class="top-bar">
@@ -194,33 +212,44 @@
     </div>
   </div>
 
-  <div id="loading" class="card">İşletme bilgileri yükleniyor...</div>
+  <div id="loading" class="card loading">İşletme bilgileri yükleniyor...</div>
 
   <div id="bookingWrap" class="card-grid" style="display:none;">
 
+    <!-- SOL: İşletme özet -->
     <section class="card">
       <h2>İşletme Bilgisi</h2>
 
-      <div class="biz-logo-box"><img id="bizLogo" src=""></div>
+      <!-- LOGO (YENİ EKLENDİ) -->
+      <div class="biz-logo-box">
+        <img id="bizLogo" src="">
+      </div>
 
       <div class="biz-name" id="bizName">İşletme</div>
       <div class="biz-location" id="bizLocation"></div>
       <div class="biz-meta" id="bizMeta"></div>
 
-      <div id="bizHint" class="info-box">Hizmet ve çalışan seçerek randevu oluşturabilirsiniz.</div>
+      <div id="bizHint" class="info-box" style="margin-top:12px;">
+        Hizmet ve çalışan seçerek sağ taraftan randevunuzu oluşturabilirsiniz.
+      </div>
       <div id="slotInfo" class="info-box" style="display:none;"></div>
     </section>
 
+    <!-- SAĞ: Randevu formu -->
     <section class="card">
       <h2>Randevu Oluştur</h2>
 
       <div id="errorBox" class="error-box"></div>
 
       <label>Hizmet Seç</label>
-      <select id="serviceSelect"></select>
+      <select id="serviceSelect">
+        <option value="">Yükleniyor...</option>
+      </select>
 
       <label>Çalışan Seç</label>
-      <select id="employeeSelect"></select>
+      <select id="employeeSelect">
+        <option value="">Önce hizmet seçin</option>
+      </select>
 
       <label>Tarih</label>
       <input type="date" id="dateInput">
@@ -232,264 +261,138 @@
     </section>
 
   </div>
+
 </div>
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc,
+    collection, query, where, getDocs, addDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  /* --- DEFAULT LOGO --- */
+  const DEFAULT_BIZ_LOGO =
+    'data:image/svg+xml;utf8,' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+    '<rect width="256" height="256" fill="%23020a1b"/>' +
+    '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+    '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+    'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+    '</svg>';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-  authDomain: "cepterandevu-35fe4.firebaseapp.com",
-  projectId: "cepterandevu-35fe4",
-  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-  messagingSenderId: "86298180836",
-  appId: "1:86298180836:web:124c2004605d68b32700f1"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+    authDomain: "cepterandevu-35fe4.firebaseapp.com",
+    projectId: "cepterandevu-35fe4",
+    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+    messagingSenderId: "86298180836",
+    appId: "1:86298180836:web:124c2004605d68b32700f1",
+  };
 
-const app   = initializeApp(firebaseConfig);
-const db    = getFirestore(app);
-const auth  = getAuth(app);
+  const app   = initializeApp(firebaseConfig);
+  const db    = getFirestore(app);
+  const auth  = getAuth(app);
 
-const businessId = new URLSearchParams(location.search).get("businessId");
+  const urlParams = new URLSearchParams(window.location.search);
+  const businessId = urlParams.get("businessId");
 
-let BUSINESS = null;
+  const bizLogoEl  = document.getElementById("bizLogo");
+  const bizNameEl  = document.getElementById("bizName");
+  const bizLocationEl = document.getElementById("bizLocation");
+  const bizMetaEl  = document.getElementById("bizMeta");
+  const loadingEl  = document.getElementById("loading");
+  const bookingWrap= document.getElementById("bookingWrap");
 
-const bizLogoEl = document.getElementById("bizLogo");
-const bizNameEl = document.getElementById("bizName");
-const bizLocationEl = document.getElementById("bizLocation");
-const bizMetaEl = document.getElementById("bizMeta");
+  let currentCustomer = null;
 
-const loadingEl = document.getElementById("loading");
-const bookingWrap = document.getElementById("bookingWrap");
-
-const serviceSelect = document.getElementById("serviceSelect");
-const employeeSelect = document.getElementById("employeeSelect");
-const dateInput = document.getElementById("dateInput");
-const timeSelect = document.getElementById("timeSelect");
-const errorBox = document.getElementById("errorBox");
-const createBtn = document.getElementById("createBtn");
-
-/* -------------------------------------------------------
-   DAY MAP
-------------------------------------------------------- */
-function getDayName(dateStr){
-  const d = new Date(dateStr);
-  return [
-    "sunday","monday","tuesday","wednesday",
-    "thursday","friday","saturday"
-  ][d.getDay()];
-}
-
-/* -------------------------------------------------------
-   SLOT ÜRETİCİ
-------------------------------------------------------- */
-function generateSlots(start, end){
-  let [sh, sm] = start.split(":").map(Number);
-  let [eh, em] = end.split(":").map(Number);
-
-  let now = sh*60 + sm;
-  const finish = eh*60 + em;
-
-  const list = [];
-  while(now < finish){
-    const h = String(Math.floor(now/60)).padStart(2,"0");
-    const m = String(now%60).padStart(2,"0");
-    list.push(`${h}:${m}`);
-    now += 30;
-  }
-  return list;
-}
-
-/* -------------------------------------------------------
-   ERROR Helpers
-------------------------------------------------------- */
-function showError(msg){
-  errorBox.style.display = "block";
-  errorBox.textContent = msg;
-}
-function clearError(){
-  errorBox.style.display = "none";
-}
-
-/* -------------------------------------------------------
-   CHECK SLOT AVAILABILITY
-------------------------------------------------------- */
-async function isSlotBusy(businessID, employeeID, date, time){
-  const qRef = query(
-    collection(db,"appointments"),
-    where("businessID","==",businessID),
-    where("employeeID","==",employeeID),
-    where("date","==",date),
-    where("time","==",time)
-  );
-  const snap = await getDocs(qRef);
-  let busy = false;
-  snap.forEach(d=>{
-    if(["pending","approved"].includes(d.data().status)) busy = true;
-  });
-  return busy;
-}
-
-/* -------------------------------------------------------
-   LOAD BUSINESS
-------------------------------------------------------- */
-async function loadBusiness(){
-  const ref = doc(db,"businesses",businessId);
-  const snap = await getDoc(ref);
-
-  if(!snap.exists()){
-    loadingEl.textContent = "İşletme bulunamadı.";
-    return;
-  }
-
-  BUSINESS = snap.data();
-
-  bizLogoEl.src = BUSINESS.logoBase64 || "";
-  bizNameEl.textContent = BUSINESS.name || "İşletme";
-  bizLocationEl.textContent = `${BUSINESS.city} · ${BUSINESS.district}`;
-  bizMetaEl.textContent = BUSINESS.phone || "";
-
-  loadingEl.style.display = "none";
-  bookingWrap.style.display = "grid";
-
-  await loadServices();
-}
-
-/* -------------------------------------------------------
-   SERVICES
-------------------------------------------------------- */
-async function loadServices(){
-  const qRef = query(
-    collection(db,"services"),
-    where("businessID","==",businessId)
-  );
-  const snap = await getDocs(qRef);
-
-  serviceSelect.innerHTML = "<option value=''>Hizmet seç</option>";
-
-  snap.forEach(s=>{
-    const d = s.data();
-    const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = `${d.name} (${d.duration} dk)`;
-    serviceSelect.appendChild(opt);
-  });
-
-  serviceSelect.addEventListener("change",()=> loadEmployees(serviceSelect.value));
-}
-
-/* -------------------------------------------------------
-   EMPLOYEES
-------------------------------------------------------- */
-async function loadEmployees(serviceId){
-  const qRef = query(
-    collection(db,"employees"),
-    where("businessID","==",businessId)
-  );
-  const snap = await getDocs(qRef);
-
-  employeeSelect.innerHTML = "<option value=''>Çalışan seç</option>";
-
-  snap.forEach(e=>{
-    const d = e.data();
-    if(d.services?.includes(serviceId)){
-      const opt = document.createElement("option");
-      opt.value = e.id;
-      opt.textContent = d.name;
-      employeeSelect.appendChild(opt);
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){
+      const redirect = encodeURIComponent(location.href);
+      location.href = `/al/customer-login.html?redirect=${redirect}`;
+      return;
     }
-  });
-}
-
-/* -------------------------------------------------------
-   DATE → SLOT UPDATE
-------------------------------------------------------- */
-dateInput.addEventListener("change", ()=> updateSlots());
-employeeSelect.addEventListener("change", ()=> updateSlots());
-serviceSelect.addEventListener("change", ()=> updateSlots());
-
-async function updateSlots(){
-  clearError();
-  timeSelect.innerHTML = "";
-
-  const date = dateInput.value;
-  const emp  = employeeSelect.value;
-  if(!date || !emp) return;
-
-  const day = getDayName(date);
-  const todaysSchedule = BUSINESS.schedule?.[day];
-
-  if(!todaysSchedule || todaysSchedule.closed){
-    timeSelect.innerHTML = "<option>Bu gün kapalı</option>";
-    timeSelect.disabled = true;
-    return;
-  }
-
-  const slots = generateSlots(
-    todaysSchedule.start,
-    todaysSchedule.end
-  );
-
-  timeSelect.disabled = false;
-  timeSelect.innerHTML = "";
-
-  for(const s of slots){
-    const opt = document.createElement("option");
-    opt.value = s;
-    opt.textContent = s;
-    timeSelect.appendChild(opt);
-  }
-}
-
-/* -------------------------------------------------------
-   ON CREATE APPOINTMENT
-------------------------------------------------------- */
-createBtn.addEventListener("click", async ()=>{
-  clearError();
-
-  const serviceId = serviceSelect.value;
-  const employeeId = employeeSelect.value;
-  const date = dateInput.value;
-  const time = timeSelect.value;
-
-  if(!serviceId || !employeeId || !date || !time){
-    showError("Lütfen tüm alanları doldurun.");
-    return;
-  }
-
-  const busy = await isSlotBusy(businessId, employeeId, date, time);
-  if(busy){
-    showError("Bu saat dolu. Lütfen başka bir saat seçin.");
-    return;
-  }
-
-  await addDoc(collection(db,"appointments"),{
-    businessID: businessId,
-    serviceID: serviceId,
-    employeeID: employeeId,
-    date,
-    time,
-    status:"pending",
-    createdAt: Date.now()
+    await loadCustomerProfile(user.uid);
+    await loadBusiness();
   });
 
-  alert("Randevu talebi oluşturuldu.");
-  location.reload();
-});
-
-/* -------------------------------------------------------
-   AUTH & START
-------------------------------------------------------- */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    location.href = "/al/customer-login.html";
-    return;
+  async function loadCustomerProfile(uid){
+    try{
+      const ref = doc(db,"users",uid);
+      const snap = await getDoc(ref);
+      if(snap.exists()) currentCustomer = snap.data();
+    }catch{}
   }
-  loadBusiness();
-});
+
+  async function loadBusiness(){
+    const ref = doc(db,"businesses",businessId);
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()){
+      loadingEl.textContent = "İşletme bulunamadı.";
+      return;
+    }
+
+    const biz = snap.data();
+
+    bizLogoEl.src = biz.logoBase64 || DEFAULT_BIZ_LOGO;
+    bizNameEl.textContent = biz.name || "İşletme";
+    bizLocationEl.textContent = `${biz.city || ""}${biz.district ? " · "+biz.district : ""}`;
+    bizMetaEl.textContent = biz.phone || "";
+
+    loadingEl.style.display = "none";
+    bookingWrap.style.display = "grid";
+
+    await loadServices(biz);
+  }
+
+  async function loadServices(biz){
+    const serviceSelect = document.getElementById("serviceSelect");
+    const employeeSelect = document.getElementById("employeeSelect");
+
+    const qRef = query(
+      collection(db,"services"),
+      where("businessID","==", businessId)
+    );
+    const snap = await getDocs(qRef);
+
+    serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
+
+    snap.forEach(s=>{
+      const d = s.data();
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = `${d.name} (${d.duration} dk)`;
+      serviceSelect.appendChild(opt);
+    });
+
+    serviceSelect.addEventListener("change", ()=> loadEmployees(serviceSelect.value));
+  }
+
+  async function loadEmployees(serviceId){
+    const employeeSelect = document.getElementById("employeeSelect");
+    employeeSelect.innerHTML = "<option>Çalışanlar yükleniyor...</option>";
+
+    const qRef = query(
+      collection(db,"employees"),
+      where("businessID","==", businessId)
+    );
+    const snap = await getDocs(qRef);
+
+    employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
+
+    snap.forEach(e=>{
+      const d = e.data();
+      if(Array.isArray(d.services) && d.services.includes(serviceId)){
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = d.name;
+        employeeSelect.appendChild(opt);
+      }
+    });
+  }
 
 </script>
+
+</body>
+</html>
