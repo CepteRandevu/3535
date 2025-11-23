@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Randevu Oluştur | Cepterandevu</title>
 
   <style>
@@ -40,11 +40,13 @@
       justify-content:space-between;
       margin-bottom:16px;
     }
+
     .logo-group{
       display:flex;
       align-items:center;
       gap:10px;
     }
+
     .logo-mark{
       width:32px;
       height:32px;
@@ -58,17 +60,19 @@
       font-size:18px;
       box-shadow:0 10px 30px rgba(34,197,94,0.6);
     }
+
     .logo-text-main{
       font-weight:700;
       letter-spacing:0.03em;
       font-size:16px;
     }
+
     .logo-text-sub{
       font-size:11px;
       color:var(--muted);
     }
 
-    /* LOGO KUTUSU (YENİ) */
+    /* LOGO KUTUSU */
     .biz-logo-box{
       width:86px;
       height:86px;
@@ -112,11 +116,13 @@
       font-size:18px;
       font-weight:600;
     }
+
     .biz-location{
       font-size:13px;
       color:var(--muted);
       margin-bottom:8px;
     }
+
     .biz-meta{
       font-size:12px;
       color:var(--muted);
@@ -128,6 +134,7 @@
       margin-bottom:4px;
       display:block;
     }
+
     select, input{
       width:100%;
       padding:10px;
@@ -139,6 +146,7 @@
       font-size:14px;
       outline:none;
     }
+
     select:focus, input:focus{
       border-color:var(--accent);
       box-shadow:0 0 0 1px var(--accent);
@@ -158,11 +166,13 @@
       box-shadow:0 12px 30px rgba(34,197,94,0.35);
       transition:transform 0.1s ease, box-shadow 0.2s ease, filter 0.1s;
     }
+
     .btn-primary:hover{
       filter:brightness(1.05);
       transform:translateY(-1px);
       box-shadow:0 14px 35px rgba(34,197,94,0.55);
     }
+
     .btn-primary:disabled{
       opacity:0.5;
       cursor:not-allowed;
@@ -216,11 +226,11 @@
 
   <div id="bookingWrap" class="card-grid" style="display:none;">
 
-    <!-- SOL: İşletme özet -->
+    <!-- SOL TARAF: İşletme Bilgisi -->
     <section class="card">
       <h2>İşletme Bilgisi</h2>
 
-      <!-- LOGO (YENİ EKLENDİ) -->
+      <!-- LOGO -->
       <div class="biz-logo-box">
         <img id="bizLogo" src="">
       </div>
@@ -229,33 +239,32 @@
       <div class="biz-location" id="bizLocation"></div>
       <div class="biz-meta" id="bizMeta"></div>
 
-      <div id="bizHint" class="info-box" style="margin-top:12px;">
-        Hizmet ve çalışan seçerek sağ taraftan randevunuzu oluşturabilirsiniz.
-      </div>
       <div id="slotInfo" class="info-box" style="display:none;"></div>
     </section>
 
-    <!-- SAĞ: Randevu formu -->
+    <!-- SAĞ TARAF: Randevu Formu -->
     <section class="card">
       <h2>Randevu Oluştur</h2>
 
       <div id="errorBox" class="error-box"></div>
 
-      <label>Hizmet Seç</label>
+      <label for="serviceSelect">Hizmet Seç</label>
       <select id="serviceSelect">
         <option value="">Yükleniyor...</option>
       </select>
 
-      <label>Çalışan Seç</label>
+      <label for="employeeSelect">Çalışan Seç</label>
       <select id="employeeSelect">
         <option value="">Önce hizmet seçin</option>
       </select>
 
-      <label>Tarih</label>
+      <label for="dateInput">Tarih</label>
       <input type="date" id="dateInput">
 
-      <label>Saat</label>
-      <select id="timeSelect"></select>
+      <label for="timeSelect">Saat</label>
+      <select id="timeSelect">
+        <option value="">Önce tarih seçin</option>
+      </select>
 
       <button id="createBtn" class="btn-primary">Randevuyu Oluştur</button>
     </section>
@@ -269,9 +278,13 @@
     getFirestore, doc, getDoc,
     collection, query, where, getDocs, addDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  /* --- DEFAULT LOGO --- */
+  /* ---------------------------------------------------------
+      DEFAULT LOGO (boş geldiğinde göstermek için)
+  --------------------------------------------------------- */
   const DEFAULT_BIZ_LOGO =
     'data:image/svg+xml;utf8,' +
     '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
@@ -281,6 +294,9 @@
     'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
     '</svg>';
 
+  /* ---------------------------------------------------------
+      FIREBASE CONFIG
+  --------------------------------------------------------- */
   const firebaseConfig = {
     apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
     authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -290,73 +306,94 @@
     appId: "1:86298180836:web:124c2004605d68b32700f1",
   };
 
-  const app   = initializeApp(firebaseConfig);
-  const db    = getFirestore(app);
-  const auth  = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const auth = getAuth(app);
 
-  const urlParams = new URLSearchParams(window.location.search);
+  /* ---------------------------------------------------------
+      DOM
+  --------------------------------------------------------- */
+  const urlParams  = new URLSearchParams(window.location.search);
   const businessId = urlParams.get("businessId");
 
-  const bizLogoEl  = document.getElementById("bizLogo");
-  const bizNameEl  = document.getElementById("bizName");
-  const bizLocationEl = document.getElementById("bizLocation");
-  const bizMetaEl  = document.getElementById("bizMeta");
-  const loadingEl  = document.getElementById("loading");
-  const bookingWrap= document.getElementById("bookingWrap");
+  const bizLogoEl      = document.getElementById("bizLogo");
+  const bizNameEl      = document.getElementById("bizName");
+  const bizLocationEl  = document.getElementById("bizLocation");
+  const bizMetaEl      = document.getElementById("bizMeta");
+  const loadingEl      = document.getElementById("loading");
+  const bookingWrap    = document.getElementById("bookingWrap");
+  const errorBox       = document.getElementById("errorBox");
 
-  let currentCustomer = null;
+  const serviceSelect  = document.getElementById("serviceSelect");
+  const employeeSelect = document.getElementById("employeeSelect");
+  const dateInput      = document.getElementById("dateInput");
+  const timeSelect     = document.getElementById("timeSelect");
+  const createBtn      = document.getElementById("createBtn");
 
+  let businessData = null;
+  let currentUser  = null;
+
+  /* ---------------------------------------------------------
+      LOGIN KONTROLÜ
+  --------------------------------------------------------- */
   onAuthStateChanged(auth, async(user)=>{
     if(!user){
       const redirect = encodeURIComponent(location.href);
       location.href = `/al/customer-login.html?redirect=${redirect}`;
       return;
     }
-    await loadCustomerProfile(user.uid);
+    currentUser = user;
     await loadBusiness();
   });
 
-  async function loadCustomerProfile(uid){
-    try{
-      const ref = doc(db,"users",uid);
-      const snap = await getDoc(ref);
-      if(snap.exists()) currentCustomer = snap.data();
-    }catch{}
-  }
-
+  /* ---------------------------------------------------------
+      İŞLETME VERİLERİ
+  --------------------------------------------------------- */
   async function loadBusiness(){
-    const ref = doc(db,"businesses",businessId);
-    const snap = await getDoc(ref);
+    try{
+      if(!businessId){
+        loadingEl.textContent = "businessId bulunamadı.";
+        return;
+      }
 
-    if(!snap.exists()){
-      loadingEl.textContent = "İşletme bulunamadı.";
-      return;
+      const ref  = doc(db,"businesses", businessId);
+      const snap = await getDoc(ref);
+
+      if(!snap.exists()){
+        loadingEl.textContent = "İşletme kaydı bulunamadı.";
+        return;
+      }
+
+      businessData = snap.data();
+
+      bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
+      bizNameEl.textContent = businessData.name || "İşletme";
+      bizLocationEl.textContent = `${businessData.city || ""}${businessData.district ? " · " + businessData.district : ""}`;
+      bizMetaEl.textContent = businessData.phone || "";
+
+      loadingEl.style.display = "none";
+      bookingWrap.style.display = "grid";
+
+      loadServices();
+      setupDateInput();
     }
-
-    const biz = snap.data();
-
-    bizLogoEl.src = biz.logoBase64 || DEFAULT_BIZ_LOGO;
-    bizNameEl.textContent = biz.name || "İşletme";
-    bizLocationEl.textContent = `${biz.city || ""}${biz.district ? " · "+biz.district : ""}`;
-    bizMetaEl.textContent = biz.phone || "";
-
-    loadingEl.style.display = "none";
-    bookingWrap.style.display = "grid";
-
-    await loadServices(biz);
+    catch(e){
+      console.error("İşletme verisi okunamadı:", e);
+      loadingEl.textContent = "Veri yüklenirken hata oluştu.";
+    }
   }
 
-  async function loadServices(biz){
-    const serviceSelect = document.getElementById("serviceSelect");
-    const employeeSelect = document.getElementById("employeeSelect");
+  /* ---------------------------------------------------------
+      HİZMETLERİ YÜKLE
+  --------------------------------------------------------- */
+  async function loadServices(){
+    serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
 
     const qRef = query(
       collection(db,"services"),
       where("businessID","==", businessId)
     );
     const snap = await getDocs(qRef);
-
-    serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
 
     snap.forEach(s=>{
       const d = s.data();
@@ -369,17 +406,18 @@
     serviceSelect.addEventListener("change", ()=> loadEmployees(serviceSelect.value));
   }
 
+  /* ---------------------------------------------------------
+      ÇALIŞANLAR
+  --------------------------------------------------------- */
   async function loadEmployees(serviceId){
-    const employeeSelect = document.getElementById("employeeSelect");
-    employeeSelect.innerHTML = "<option>Çalışanlar yükleniyor...</option>";
+    employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
+    if(!serviceId) return;
 
     const qRef = query(
       collection(db,"employees"),
       where("businessID","==", businessId)
     );
     const snap = await getDocs(qRef);
-
-    employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
 
     snap.forEach(e=>{
       const d = e.data();
@@ -392,7 +430,133 @@
     });
   }
 
-</script>
+  /* ---------------------------------------------------------
+      TARİH Seçimi → Çalışma saatlerine göre saat üret
+  --------------------------------------------------------- */
+  function setupDateInput(){
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm   = String(today.getMonth()+1).padStart(2,"0");
+    const dd   = String(today.getDate()).padStart(2,"0");
 
+    dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+    dateInput.addEventListener("change", ()=> fillTimes());
+  }
+
+  /* ---------------------------------------------------------
+      SAAT DİLİMLERİ ÜRET (işletmenin çalışma saatine göre)
+  --------------------------------------------------------- */
+  function fillTimes(){
+    timeSelect.innerHTML = "";
+
+    if(!businessData?.workingHours){
+      timeSelect.innerHTML = "<option value=''>Saat bulunamadı</option>";
+      return;
+    }
+
+    const date = dateInput.value;
+    if(!date){
+      timeSelect.innerHTML = "<option value=''>Önce tarih seçin</option>";
+      return;
+    }
+
+    const dObj = new Date(date);
+    const day  = dObj.getDay(); // 0 pazar
+
+    const hours = businessData.workingHours[String(day)];
+    if(!hours){
+      timeSelect.innerHTML = "<option value=''>Bugün kapalı</option>";
+      return;
+    }
+
+    const { start, end } = hours;
+
+    if(!start || !end){
+      timeSelect.innerHTML = "<option value=''>Bugün kapalı</option>";
+      return;
+    }
+
+    // saat dilimi oluştur
+    let list = [];
+    let [sh, sm] = start.split(":").map(Number);
+    let [eh, em] = end.split(":").map(Number);
+
+    let cur = sh*60 + sm;
+    const finish = eh*60 + em;
+
+    while(cur <= finish){
+      const hh = String(Math.floor(cur/60)).padStart(2,"0");
+      const mm = String(cur%60).padStart(2,"0");
+      list.push(`${hh}:${mm}`);
+      cur += 30; // 30 dk
+    }
+
+    list.forEach(t=>{
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      timeSelect.appendChild(opt);
+    });
+  }
+
+  /* ---------------------------------------------------------
+      RANDEVU OLUŞTUR
+  --------------------------------------------------------- */
+  createBtn.addEventListener("click", async()=>{
+    errorBox.style.display = "none";
+
+    const serviceId = serviceSelect.value;
+    const employeeId = employeeSelect.value;
+    const date = dateInput.value;
+    const time = timeSelect.value;
+
+    if(!serviceId || !employeeId || !date || !time){
+      showError("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    try{
+      // aynı saat dolu mu?
+      const qRef = query(
+        collection(db,"appointments"),
+        where("businessID","==", businessId),
+        where("employeeID","==", employeeId),
+        where("date","==", date),
+        where("time","==", time)
+      );
+
+      const snap = await getDocs(qRef);
+      if(!snap.empty){
+        showError("Bu saat dolu. Farklı bir saat seçin.");
+        return;
+      }
+
+      // randevuyu kaydet
+      await addDoc(collection(db,"appointments"), {
+        businessID: businessId,
+        serviceID: serviceId,
+        employeeID: employeeId,
+        customerUID: currentUser.uid,
+        date: date,
+        time: time,
+        status: "pending",
+        createdAt: Date.now()
+      });
+
+      alert("Randevu talebiniz oluşturuldu!");
+
+    }catch(e){
+      console.error(e);
+      showError("Randevu oluşturulamadı.");
+    }
+  });
+
+  function showError(msg){
+    errorBox.style.display = "block";
+    errorBox.textContent = msg;
+  }
+
+</script>
 </body>
 </html>
