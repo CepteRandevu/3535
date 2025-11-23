@@ -1,212 +1,102 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Randevu Oluştur | Cepterandevu</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Randevu Oluştur | Cepterandevu</title>
 
-  <style>
-    :root{
-      --bg:#050816;
-      --card:#0f172a;
-      --accent:#22c55e;
-      --accent-soft:rgba(34,197,94,0.15);
-      --text:#f1f5f9;
-      --muted:#94a3b8;
-      --radius:16px;
-      --border:rgba(148,163,184,0.18);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;}
+<style>
+:root{
+  --bg:#050816;
+  --card:#0f172a;
+  --accent:#22c55e;
+  --accent-soft:rgba(34,197,94,0.15);
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --radius:16px;
+  --border:rgba(148,163,184,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
 
-    body{
-      margin:0;
-      background:radial-gradient(circle at top,#111827,#020617 55%);
-      color:var(--text);
-      font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      padding:16px;
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-    }
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  color:var(--text);
+  font-family:system-ui;
+  padding:16px;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
 
-    .container{
-      width:100%;
-      max-width:960px;
-    }
+.container{width:100%;max-width:960px;}
 
-    .top-bar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:16px;
-    }
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.logo-group{display:flex;align-items:center;gap:10px;}
+.logo-mark{
+  width:32px;height:32px;border-radius:14px;
+  background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+  display:flex;align-items:center;justify-content:center;
+  color:#ecfdf5;font-weight:800;font-size:18px;
+}
+.logo-text-main{font-weight:700;font-size:16px;}
+.logo-text-sub{font-size:11px;color:var(--muted);}
 
-    .logo-group{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+.biz-logo-box{
+  width:86px;height:86px;border-radius:14px;background:#020617;
+  border:1px solid rgba(148,163,184,0.35);
+  margin-bottom:10px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.biz-logo-box img{width:100%;height:100%;object-fit:contain;}
 
-    .logo-mark{
-      width:32px;
-      height:32px;
-      border-radius:14px;
-      background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#ecfdf5;
-      font-weight:800;
-      font-size:18px;
-      box-shadow:0 10px 30px rgba(34,197,94,0.6);
-    }
+.card-grid{
+  display:grid;gap:16px;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+}
 
-    .logo-text-main{
-      font-weight:700;
-      letter-spacing:0.03em;
-      font-size:16px;
-    }
+.card{
+  background:var(--card);padding:18px;border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:0 18px 45px rgba(15,23,42,0.85);
+}
 
-    .logo-text-sub{
-      font-size:11px;
-      color:var(--muted);
-    }
+h2{font-size:20px;margin-bottom:8px;}
 
-    /* LOGO KUTUSU */
-    .biz-logo-box{
-      width:86px;
-      height:86px;
-      border-radius:14px;
-      background:#020617;
-      border:1px solid rgba(148,163,184,0.35);
-      margin-bottom:10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-    .biz-logo-box img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-    }
+.biz-name{font-size:18px;font-weight:600;}
+.biz-location{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.biz-meta{font-size:12px;color:var(--muted);}
 
-    .card-grid{
-      display:grid;
-      grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
-      gap:16px;
-    }
+label{font-size:13px;color:var(--muted);margin-bottom:4px;display:block;}
+select,input{
+  width:100%;padding:10px;border-radius:var(--radius);
+  border:1px solid rgba(255,255,255,0.15);background:#020617;
+  color:var(--text);margin-bottom:12px;font-size:14px;
+}
+select:focus,input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent);
+}
 
-    .card{
-      background:var(--card);
-      padding:18px;
-      margin-bottom:14px;
-      border-radius:var(--radius);
-      border:1px solid var(--border);
-      box-shadow:0 18px 45px rgba(15,23,42,0.85);
-    }
+.btn-primary{
+  width:100%;padding:12px;border-radius:var(--radius);border:0;
+  background:linear-gradient(135deg,var(--accent),#16a34a);
+  color:#022c22;font-weight:600;font-size:15px;
+}
+.error-box{
+  background:rgba(239,68,68,0.15);
+  border:1px solid rgba(239,68,68,0.45);
+  color:#fecaca;padding:8px;border-radius:12px;
+  font-size:12px;margin-bottom:10px;display:none;
+}
 
-    h2{
-      margin-top:0;
-      font-size:20px;
-      margin-bottom:8px;
-    }
-
-    .biz-name{
-      font-size:18px;
-      font-weight:600;
-    }
-
-    .biz-location{
-      font-size:13px;
-      color:var(--muted);
-      margin-bottom:8px;
-    }
-
-    .biz-meta{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    label{
-      font-size:13px;
-      color:var(--muted);
-      margin-bottom:4px;
-      display:block;
-    }
-
-    select, input{
-      width:100%;
-      padding:10px;
-      border-radius:var(--radius);
-      border:1px solid rgba(255,255,255,0.15);
-      background:#020617;
-      color:var(--text);
-      margin-bottom:12px;
-      font-size:14px;
-      outline:none;
-    }
-
-    select:focus, input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px var(--accent);
-    }
-
-    .btn-primary{
-      width:100%;
-      padding:12px;
-      border:0;
-      border-radius:var(--radius);
-      background:linear-gradient(135deg,var(--accent),#16a34a);
-      color:#022c22;
-      font-weight:600;
-      font-size:15px;
-      cursor:pointer;
-      margin-top:6px;
-      box-shadow:0 12px 30px rgba(34,197,94,0.35);
-      transition:transform 0.1s ease, box-shadow 0.2s ease, filter 0.1s;
-    }
-
-    .btn-primary:hover{
-      filter:brightness(1.05);
-      transform:translateY(-1px);
-      box-shadow:0 14px 35px rgba(34,197,94,0.55);
-    }
-
-    .btn-primary:disabled{
-      opacity:0.5;
-      cursor:not-allowed;
-      box-shadow:none;
-      transform:none;
-    }
-
-    .info-box{
-      background:rgba(148,163,184,0.12);
-      border:1px solid rgba(148,163,184,0.4);
-      color:var(--muted);
-      padding:8px 10px;
-      border-radius:12px;
-      font-size:12px;
-      margin-bottom:10px;
-    }
-
-    .error-box{
-      background:rgba(239,68,68,0.12);
-      border:1px solid rgba(239,68,68,0.5);
-      color:#fecaca;
-      padding:8px 10px;
-      border-radius:12px;
-      font-size:12px;
-      margin-bottom:10px;
-      display:none;
-    }
-
-    @media (max-width:768px){
-      .card-grid{
-        grid-template-columns:minmax(0,1fr);
-      }
-    }
-  </style>
+@media(max-width:768px){
+  .card-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
 
@@ -222,49 +112,40 @@
     </div>
   </div>
 
-  <div id="loading" class="card loading">İşletme bilgileri yükleniyor...</div>
+  <div id="loading" class="card">İşletme bilgileri yükleniyor...</div>
 
   <div id="bookingWrap" class="card-grid" style="display:none;">
-
-    <!-- SOL TARAF: İşletme Bilgisi -->
+    
+    <!-- SOL BİLGİ KISMI -->
     <section class="card">
       <h2>İşletme Bilgisi</h2>
 
-      <!-- LOGO -->
-      <div class="biz-logo-box">
-        <img id="bizLogo" src="">
-      </div>
+      <div class="biz-logo-box"><img id="bizLogo"></div>
 
-      <div class="biz-name" id="bizName">İşletme</div>
+      <div class="biz-name" id="bizName"></div>
       <div class="biz-location" id="bizLocation"></div>
       <div class="biz-meta" id="bizMeta"></div>
 
-      <div id="slotInfo" class="info-box" style="display:none;"></div>
+      <div id="slotInfo" class="info-box" style="margin-top:10px;display:none;"></div>
     </section>
 
-    <!-- SAĞ TARAF: Randevu Formu -->
+    <!-- SAĞ FORM -->
     <section class="card">
       <h2>Randevu Oluştur</h2>
 
       <div id="errorBox" class="error-box"></div>
 
-      <label for="serviceSelect">Hizmet Seç</label>
-      <select id="serviceSelect">
-        <option value="">Yükleniyor...</option>
-      </select>
+      <label>Hizmet Seç</label>
+      <select id="serviceSelect"><option>Yükleniyor...</option></select>
 
-      <label for="employeeSelect">Çalışan Seç</label>
-      <select id="employeeSelect">
-        <option value="">Önce hizmet seçin</option>
-      </select>
+      <label>Çalışan Seç</label>
+      <select id="employeeSelect"><option>Önce hizmet seçin</option></select>
 
-      <label for="dateInput">Tarih</label>
+      <label>Tarih</label>
       <input type="date" id="dateInput">
 
-      <label for="timeSelect">Saat</label>
-      <select id="timeSelect">
-        <option value="">Önce tarih seçin</option>
-      </select>
+      <label>Saat</label>
+      <select id="timeSelect"></select>
 
       <button id="createBtn" class="btn-primary">Randevuyu Oluştur</button>
     </section>
@@ -273,290 +154,249 @@
 
 </div>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getFirestore, doc, getDoc,
-    collection, query, where, getDocs, addDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import {
-    getAuth, onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, doc, getDoc,
+  collection, query, where, getDocs, addDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  /* ---------------------------------------------------------
-      DEFAULT LOGO (boş geldiğinde göstermek için)
-  --------------------------------------------------------- */
-  const DEFAULT_BIZ_LOGO =
-    'data:image/svg+xml;utf8,' +
-    '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
-    '<rect width="256" height="256" fill="%23020a1b"/>' +
-    '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
-    '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
-    'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
-    '</svg>';
+/* ------------------ DEFAULT LOGO ------------------ */
+const DEFAULT_BIZ_LOGO =
+'data:image/svg+xml;utf8,' +
+'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+'<rect width="256" height="256" fill="%23020a1b"/>' +
+'<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+'<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"' +
+' font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+'</svg>';
 
-  /* ---------------------------------------------------------
-      FIREBASE CONFIG
-  --------------------------------------------------------- */
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain: "cepterandevu-35fe4.firebaseapp.com",
-    projectId: "cepterandevu-35fe4",
-    storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId: "86298180836",
-    appId: "1:86298180836:web:124c2004605d68b32700f1",
-  };
+/* ------------------ FIREBASE ------------------ */
+const firebaseConfig = {
+  apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+  authDomain: "cepterandevu-35fe4.firebaseapp.com",
+  projectId: "cepterandevu-35fe4",
+  storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+  messagingSenderId: "86298180836",
+  appId: "1:86298180836:web:124c2004605d68b32700f1",
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const auth= getAuth(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  const auth = getAuth(app);
+/* ------------------ DOM ------------------ */
+const businessId = new URLSearchParams(location.search).get("businessId");
 
-  /* ---------------------------------------------------------
-      DOM
-  --------------------------------------------------------- */
-  const urlParams  = new URLSearchParams(window.location.search);
-  const businessId = urlParams.get("businessId");
+const bizLogoEl = document.getElementById("bizLogo");
+const bizNameEl = document.getElementById("bizName");
+const bizLocationEl = document.getElementById("bizLocation");
+const bizMetaEl = document.getElementById("bizMeta");
 
-  const bizLogoEl      = document.getElementById("bizLogo");
-  const bizNameEl      = document.getElementById("bizName");
-  const bizLocationEl  = document.getElementById("bizLocation");
-  const bizMetaEl      = document.getElementById("bizMeta");
-  const loadingEl      = document.getElementById("loading");
-  const bookingWrap    = document.getElementById("bookingWrap");
-  const errorBox       = document.getElementById("errorBox");
+const loadingEl = document.getElementById("loading");
+const bookingWrap= document.getElementById("bookingWrap");
 
-  const serviceSelect  = document.getElementById("serviceSelect");
-  const employeeSelect = document.getElementById("employeeSelect");
-  const dateInput      = document.getElementById("dateInput");
-  const timeSelect     = document.getElementById("timeSelect");
-  const createBtn      = document.getElementById("createBtn");
+const serviceSelect  = document.getElementById("serviceSelect");
+const employeeSelect = document.getElementById("employeeSelect");
+const dateInput      = document.getElementById("dateInput");
+const timeSelect     = document.getElementById("timeSelect");
+const errorBox       = document.getElementById("errorBox");
+const createBtn      = document.getElementById("createBtn");
 
-  let businessData = null;
-  let currentUser  = null;
+/* ------------------ DAY KEY MAP ------------------ */
+const dayKeyMap = {
+  1:"monday", 2:"tuesday", 3:"wednesday",
+  4:"thursday", 5:"friday", 6:"saturday", 0:"sunday"
+};
 
-  /* ---------------------------------------------------------
-      LOGIN KONTROLÜ
-  --------------------------------------------------------- */
-  onAuthStateChanged(auth, async(user)=>{
-    if(!user){
-      const redirect = encodeURIComponent(location.href);
-      location.href = `/al/customer-login.html?redirect=${redirect}`;
-      return;
-    }
-    currentUser = user;
-    await loadBusiness();
+let businessData = null;
+let currentUser = null;
+
+/* ------------------ AUTH ------------------ */
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    location.href = "/al/customer-login.html?redirect=" + encodeURIComponent(location.href);
+    return;
+  }
+  currentUser = user;
+  await loadBusiness();
+});
+
+/* ------------------ BUSINESS ------------------ */
+async function loadBusiness(){
+  const ref = doc(db,"businesses",businessId);
+  const snap= await getDoc(ref);
+
+  if(!snap.exists()){
+    loadingEl.textContent="İşletme bulunamadı.";
+    return;
+  }
+
+  businessData = snap.data();
+
+  bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
+  bizNameEl.textContent = businessData.name || "İşletme";
+  bizLocationEl.textContent = `${businessData.city||""}${businessData.district?" · "+businessData.district:""}`;
+  bizMetaEl.textContent = businessData.phone || "";
+
+  loadingEl.style.display="none";
+  bookingWrap.style.display="grid";
+
+  setDateLimit();
+  await loadServices();
+}
+
+/* ------------------ DATE MIN ------------------ */
+function setDateLimit(){
+  const t = new Date();
+  const y = t.getFullYear();
+  const m = String(t.getMonth()+1).padStart(2,"0");
+  const d = String(t.getDate()).padStart(2,"0");
+  dateInput.min = `${y}-${m}-${d}`;
+}
+
+/* ------------------ SERVICES ------------------ */
+async function loadServices(){
+  const qRef = query(
+    collection(db,"services"),
+    where("businessID","==",businessId)
+  );
+  const snap = await getDocs(qRef);
+
+  serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
+
+  snap.forEach(s=>{
+    const d = s.data();
+    const opt=document.createElement("option");
+    opt.value=s.id;
+    opt.textContent=`${d.name} (${d.duration} dk)`;
+    serviceSelect.appendChild(opt);
   });
 
-  /* ---------------------------------------------------------
-      İŞLETME VERİLERİ
-  --------------------------------------------------------- */
-  async function loadBusiness(){
-    try{
-      if(!businessId){
-        loadingEl.textContent = "businessId bulunamadı.";
-        return;
-      }
+  serviceSelect.addEventListener("change",()=>{
+    loadEmployees(serviceSelect.value);
+    timeSelect.innerHTML="";
+  });
 
-      const ref  = doc(db,"businesses", businessId);
-      const snap = await getDoc(ref);
+  dateInput.addEventListener("change", fillTimes);
+}
 
-      if(!snap.exists()){
-        loadingEl.textContent = "İşletme kaydı bulunamadı.";
-        return;
-      }
+/* ------------------ EMPLOYEES ------------------ */
+async function loadEmployees(serviceId){
+  employeeSelect.innerHTML="<option>Yükleniyor...</option>";
 
-      businessData = snap.data();
-
-      bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
-      bizNameEl.textContent = businessData.name || "İşletme";
-      bizLocationEl.textContent = `${businessData.city || ""}${businessData.district ? " · " + businessData.district : ""}`;
-      bizMetaEl.textContent = businessData.phone || "";
-
-      loadingEl.style.display = "none";
-      bookingWrap.style.display = "grid";
-
-      loadServices();
-      setupDateInput();
-    }
-    catch(e){
-      console.error("İşletme verisi okunamadı:", e);
-      loadingEl.textContent = "Veri yüklenirken hata oluştu.";
-    }
+  if(!serviceId){
+    employeeSelect.innerHTML="<option>Önce hizmet seçin</option>";
+    return;
   }
 
-  /* ---------------------------------------------------------
-      HİZMETLERİ YÜKLE
-  --------------------------------------------------------- */
-  async function loadServices(){
-    serviceSelect.innerHTML = "<option value=''>Hizmet seçin</option>";
+  const qRef = query(
+    collection(db,"employees"),
+    where("businessID","==",businessId)
+  );
+  const snap = await getDocs(qRef);
 
-    const qRef = query(
-      collection(db,"services"),
-      where("businessID","==", businessId)
-    );
-    const snap = await getDocs(qRef);
+  employeeSelect.innerHTML="<option value=''>Çalışan seçin</option>";
 
-    snap.forEach(s=>{
-      const d = s.data();
-      const opt = document.createElement("option");
-      opt.value = s.id;
-      opt.textContent = `${d.name} (${d.duration} dk)`;
-      serviceSelect.appendChild(opt);
-    });
-
-    serviceSelect.addEventListener("change", ()=> loadEmployees(serviceSelect.value));
-  }
-
-  /* ---------------------------------------------------------
-      ÇALIŞANLAR
-  --------------------------------------------------------- */
-  async function loadEmployees(serviceId){
-    employeeSelect.innerHTML = "<option value=''>Çalışan seçin</option>";
-    if(!serviceId) return;
-
-    const qRef = query(
-      collection(db,"employees"),
-      where("businessID","==", businessId)
-    );
-    const snap = await getDocs(qRef);
-
-    snap.forEach(e=>{
-      const d = e.data();
-      if(Array.isArray(d.services) && d.services.includes(serviceId)){
-        const opt = document.createElement("option");
-        opt.value = e.id;
-        opt.textContent = d.name;
-        employeeSelect.appendChild(opt);
-      }
-    });
-  }
-
-  /* ---------------------------------------------------------
-      TARİH Seçimi → Çalışma saatlerine göre saat üret
-  --------------------------------------------------------- */
-  function setupDateInput(){
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm   = String(today.getMonth()+1).padStart(2,"0");
-    const dd   = String(today.getDate()).padStart(2,"0");
-
-    dateInput.min = `${yyyy}-${mm}-${dd}`;
-
-    dateInput.addEventListener("change", ()=> fillTimes());
-  }
-
-  /* ---------------------------------------------------------
-      SAAT DİLİMLERİ ÜRET (işletmenin çalışma saatine göre)
-  --------------------------------------------------------- */
-  function fillTimes(){
-    timeSelect.innerHTML = "";
-
-    if(!businessData?.schedule){
-      timeSelect.innerHTML = "<option value=''>Saat bulunamadı</option>";
-      return;
-    }
-
-    const date = dateInput.value;
-    if(!date){
-      timeSelect.innerHTML = "<option value=''>Önce tarih seçin</option>";
-      return;
-    }
-
-    const dObj = new Date(date);
-    const day  = dObj.getDay(); // 0 pazar
-
-    const hours = businessData.schedule[dayKeyMap[day]];
-    if(!hours){
-      timeSelect.innerHTML = "<option value=''>Bugün kapalı</option>";
-      return;
-    }
-
-    const { start, end } = hours;
-
-    if(!start || !end){
-      timeSelect.innerHTML = "<option value=''>Bugün kapalı</option>";
-      return;
-    }
-
-    // saat dilimi oluştur
-    let list = [];
-    let [sh, sm] = start.split(":").map(Number);
-    let [eh, em] = end.split(":").map(Number);
-
-    let cur = sh*60 + sm;
-    const finish = eh*60 + em;
-
-    while(cur <= finish){
-      const hh = String(Math.floor(cur/60)).padStart(2,"0");
-      const mm = String(cur%60).padStart(2,"0");
-      list.push(`${hh}:${mm}`);
-      cur += 30; // 30 dk
-    }
-
-    list.forEach(t=>{
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      timeSelect.appendChild(opt);
-    });
-  }
-
-  /* ---------------------------------------------------------
-      RANDEVU OLUŞTUR
-  --------------------------------------------------------- */
-  createBtn.addEventListener("click", async()=>{
-    errorBox.style.display = "none";
-
-    const serviceId = serviceSelect.value;
-    const employeeId = employeeSelect.value;
-    const date = dateInput.value;
-    const time = timeSelect.value;
-
-    if(!serviceId || !employeeId || !date || !time){
-      showError("Lütfen tüm alanları doldurun.");
-      return;
-    }
-
-    try{
-      // aynı saat dolu mu?
-      const qRef = query(
-        collection(db,"appointments"),
-        where("businessID","==", businessId),
-        where("employeeID","==", employeeId),
-        where("date","==", date),
-        where("time","==", time)
-      );
-
-      const snap = await getDocs(qRef);
-      if(!snap.empty){
-        showError("Bu saat dolu. Farklı bir saat seçin.");
-        return;
-      }
-
-      // randevuyu kaydet
-      await addDoc(collection(db,"appointments"), {
-        businessID: businessId,
-        serviceID: serviceId,
-        employeeID: employeeId,
-        customerUID: currentUser.uid,
-        date: date,
-        time: time,
-        status: "pending",
-        createdAt: Date.now()
-      });
-
-      alert("Randevu talebiniz oluşturuldu!");
-
-    }catch(e){
-      console.error(e);
-      showError("Randevu oluşturulamadı.");
+  snap.forEach(e=>{
+    const d=e.data();
+    if(Array.isArray(d.services)&&d.services.includes(serviceId)){
+      const opt=document.createElement("option");
+      opt.value=e.id;
+      opt.textContent=d.name;
+      employeeSelect.appendChild(opt);
     }
   });
 
-  function showError(msg){
-    errorBox.style.display = "block";
-    errorBox.textContent = msg;
+  employeeSelect.addEventListener("change", fillTimes);
+}
+
+/* ------------------ HOURS FROM SCHEDULE ------------------ */
+function generateHours(start,end){
+  const s = parseInt(start.split(":")[0]);
+  const e = parseInt(end.split(":")[0]);
+  const arr=[];
+  for(let h=s;h<=e;h++){
+    arr.push(String(h).padStart(2,"0")+":00");
+    arr.push(String(h).padStart(2,"0")+":30");
+  }
+  return arr;
+}
+
+/* ------------------ FILL TIMES ------------------ */
+async function fillTimes(){
+  timeSelect.innerHTML="";
+
+  if(!dateInput.value || !employeeSelect.value || !serviceSelect.value){
+    return;
   }
 
+  const day = new Date(dateInput.value).getDay();
+  const key = dayKeyMap[day];
+
+  const schedule = businessData.schedule || {};
+
+  if(!schedule[key] || schedule[key].closed){
+    timeSelect.innerHTML="<option>Bu gün kapalı</option>";
+    return;
+  }
+
+  const start=schedule[key].start;
+  const end  =schedule[key].end;
+
+  const hours = generateHours(start,end);
+  if(hours.length===0){
+    timeSelect.innerHTML="<option>Saat bulunamadı</option>";
+    return;
+  }
+
+  hours.forEach(h=>{
+    const opt=document.createElement("option");
+    opt.value=h;
+    opt.textContent=h;
+    timeSelect.appendChild(opt);
+  });
+}
+
+/* ------------------ CREATE APPOINTMENT ------------------ */
+createBtn.addEventListener("click", async()=>{
+  errorBox.style.display="none";
+
+  if(!serviceSelect.value || !employeeSelect.value || !dateInput.value || !timeSelect.value){
+    errorBox.textContent="Lütfen tüm alanları doldurun.";
+    errorBox.style.display="block";
+    return;
+  }
+
+  createBtn.disabled=true;
+  createBtn.textContent="Oluşturuluyor...";
+
+  try{
+    await addDoc(collection(db,"appointments"),{
+      businessID:businessId,
+      serviceID:serviceSelect.value,
+      employeeID:employeeSelect.value,
+      customerUID:currentUser.uid,
+      date:dateInput.value,
+      time:timeSelect.value,
+      status:"pending",
+      createdAt:Date.now()
+    });
+
+    alert("Randevu talebiniz oluşturuldu.");
+
+  }catch(err){
+    console.error(err);
+    errorBox.textContent="Randevu oluşturulamadı.";
+    errorBox.style.display="block";
+
+  }finally{
+    createBtn.disabled=false;
+    createBtn.textContent="Randevuyu Oluştur";
+  }
+});
 </script>
+
 </body>
 </html>
