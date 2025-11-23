@@ -450,7 +450,7 @@
   function fillTimes(){
     timeSelect.innerHTML = "";
 
-    if(!businessData?.workingHours){
+    if(!businessData?.schedule){
       timeSelect.innerHTML = "<option value=''>Saat bulunamadı</option>";
       return;
     }
@@ -464,7 +464,7 @@
     const dObj = new Date(date);
     const day  = dObj.getDay(); // 0 pazar
 
-    const hours = businessData.workingHours[String(day)];
+    const hours = businessData.schedule[dayKeyMap[day]];
     if(!hours){
       timeSelect.innerHTML = "<option value=''>Bugün kapalı</option>";
       return;
