@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ajandam | Cepterandevu</title>
 
   <style>
@@ -12,10 +12,11 @@
       --accent:#22c55e;
       --accent-soft:rgba(34,197,94,0.18);
       --accent-strong:#16a34a;
-      --text:#f1f5f9;
+      --text:#f9faff;
       --muted:#94a3b8;
-      --border:rgba(148,163,184,0.22);
-      --radius:14px;
+      --border:rgba(148,163,184,0.25);
+      --radius:16px;
+      --danger:#ef4444;
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -24,125 +25,198 @@
       background:radial-gradient(circle at top,#111827,#020617 55%);
       color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      padding:20px;
+      min-height:100vh;
       display:flex;
       justify-content:center;
-      min-height:100vh;
+      padding:18px;
     }
 
     .container{
       width:100%;
-      max-width:1100px;
+      max-width:1120px;
     }
 
-    h1{
-      font-size:22px;
-      margin-bottom:8px;
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
     }
 
-    .subtitle{
-      font-size:13px;
+    .logo-group{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .logo-mark{
+      width:32px;
+      height:32px;
+      border-radius:14px;
+      background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#ecfdf5;
+      font-weight:800;
+      font-size:18px;
+      box-shadow:0 10px 30px rgba(34,197,94,0.6);
+    }
+
+    .logo-text-main{
+      font-weight:700;
+      font-size:16px;
+      letter-spacing:0.04em;
+    }
+
+    .logo-text-sub{
+      font-size:11px;
       color:var(--muted);
-      margin-bottom:14px;
     }
 
-    /* TAKVİM KUTUSU */
-    .calendar-col{
+    .title-wrap h1{
+      font-size:20px;
+      margin-bottom:2px;
+    }
+
+    .title-wrap p{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill-soft{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(34,197,94,0.16);
+      color:#bbf7d0;
+      font-size:11px;
+      border:1px solid rgba(34,197,94,0.5);
+    }
+
+    /* TAKVİM KARTI */
+    .agenda-card{
       background:var(--card);
       border-radius:var(--radius);
       border:1px solid var(--border);
       padding:12px;
+      margin-top:10px;
+      box-shadow:0 18px 40px rgba(15,23,42,0.9);
     }
 
     .calendar-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:8px;
-    }
-
-    .calendar-header button{
-      background:var(--accent);
-      border:0;
-      padding:6px 10px;
-      border-radius:8px;
-      font-size:12px;
-      color:#022c22;
-      font-weight:600;
-      cursor:pointer;
+      margin-bottom:10px;
+      gap:10px;
     }
 
     .month-label{
-      font-size:14px;
+      font-size:15px;
       font-weight:600;
     }
 
-    .days{
-      display:grid;
-      grid-template-columns:repeat(7,1fr);
-      margin-bottom:4px;
-      font-size:12px;
-      color:var(--muted);
+    .nav-buttons{
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
-    .cells{
+    .btn-nav{
+      border:0;
+      border-radius:10px;
+      background:#020617;
+      color:var(--muted);
+      padding:5px 9px;
+      font-size:12px;
+      cursor:pointer;
+      border:1px solid var(--border);
+    }
+
+    .btn-nav:hover{
+      border-color:var(--accent);
+      color:var(--text);
+    }
+
+    .calendar-grid{
+      margin-top:6px;
+    }
+
+    .weekdays{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:4px;
+      padding:0 2px;
+    }
+
+    .weekdays div{
+      text-align:center;
+      padding-bottom:4px;
+    }
+
+    .days-grid{
       display:grid;
       grid-template-columns:repeat(7,1fr);
       gap:6px;
     }
 
-    .cell{
-      background:#0b1220;
-      border:1px solid var(--border);
-      border-radius:10px;
-      min-height:120px;
-      padding:6px;
+    .day-cell{
+      background:#020617;
+      border-radius:12px;
+      border:1px solid rgba(15,23,42,0.9);
+      min-height:96px;
+      padding:6px 5px;
       position:relative;
       cursor:pointer;
-      font-size:11px;
+      transition:border-color 0.16s ease, transform 0.1s ease;
     }
 
-    .cell:hover{
+    .day-cell:hover{
       border-color:var(--accent);
+      transform:translateY(-1px);
     }
 
-    .cell .date{
+    .day-cell.disabled{
+      opacity:.25;
+      cursor:default;
+    }
+
+    .day-number{
       font-size:12px;
       color:var(--muted);
       margin-bottom:4px;
     }
 
-    .badge-closed{
-      display:inline-block;
-      padding:2px 6px;
-      border-radius:999px;
-      background:rgba(239,68,68,0.2);
-      color:#fecaca;
+    .appt-count{
       font-size:10px;
-      margin-bottom:2px;
+      color:#a5b4fc;
+      margin-bottom:4px;
     }
 
-    .badge-partial{
-      display:inline-block;
-      padding:2px 6px;
-      border-radius:999px;
-      background:rgba(234,179,8,0.15);
-      color:#facc15;
+    .slot-mini{
       font-size:10px;
-      margin-bottom:2px;
-    }
-
-    .slot{
       background:var(--accent-soft);
-      margin-bottom:3px;
-      padding:3px 4px;
       border-radius:6px;
-      font-size:11px;
+      padding:2px 4px;
       color:#bbf7d0;
+      margin-bottom:2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .slot strong{
-      font-weight:600;
+    .badge-today{
+      position:absolute;
+      top:6px;
+      right:6px;
+      font-size:9px;
+      padding:2px 5px;
+      border-radius:999px;
+      background:rgba(59,130,246,0.18);
+      color:#bfdbfe;
     }
 
     #loading{
@@ -156,7 +230,7 @@
       position:fixed;
       inset:0;
       background:rgba(0,0,0,0.55);
-      backdrop-filter:blur(2px);
+      backdrop-filter:blur(3px);
       display:none;
       justify-content:center;
       align-items:center;
@@ -165,13 +239,14 @@
 
     .modal{
       width:95%;
-      max-width:440px;
-      background:#0f172a;
+      max-width:460px;
+      max-height:90vh;
+      overflow:auto;
+      background:#020617;
       border-radius:16px;
       border:1px solid var(--border);
       padding:12px 14px 14px;
-      max-height:90vh;
-      overflow:auto;
+      box-shadow:0 24px 70px rgba(0,0,0,0.8);
     }
 
     .modal-header{
@@ -182,8 +257,8 @@
     }
 
     .modal-title-wrap h3{
-      margin-bottom:2px;
       font-size:17px;
+      margin-bottom:2px;
     }
 
     .modal-date{
@@ -202,32 +277,72 @@
 
     .section-title{
       font-size:13px;
+      color:var(--muted);
       margin-top:8px;
       margin-bottom:4px;
-      color:var(--muted);
       font-weight:600;
     }
 
-    .hours-checkbox-list{
-      display:flex;
-      flex-wrap:wrap;
-      gap:4px;
-    }
-
-    .hour-chip{
-      display:inline-flex;
-      align-items:center;
-      gap:4px;
-      font-size:11px;
-      background:#020617;
-      border-radius:999px;
-      padding:4px 8px;
+    .appt-list{
+      border-radius:10px;
       border:1px solid rgba(148,163,184,0.4);
+      background:#020617;
+      padding:6px;
+      font-size:11px;
+      max-height:170px;
+      overflow:auto;
     }
 
-    .hour-chip input{
-      width:12px;
-      height:12px;
+    .appt-item{
+      border-radius:8px;
+      border:1px solid rgba(148,163,184,0.4);
+      padding:4px 5px;
+      margin-bottom:4px;
+      cursor:pointer;
+    }
+
+    .appt-item:hover{
+      border-color:var(--accent);
+    }
+
+    .appt-empty{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .appt-item-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:2px;
+    }
+
+    .appt-time{
+      font-weight:600;
+      color:#bbf7d0;
+      font-size:11px;
+    }
+
+    .appt-caption{
+      font-size:10px;
+      color:#fca5a5;
+    }
+
+    .badge-status{
+      font-size:10px;
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      color:#e5e7eb;
+    }
+
+    .badge-status.pending{
+      border-color:#facc15;
+      color:#facc15;
+    }
+    .badge-status.approved{
+      border-color:#22c55e;
+      color:#4ade80;
     }
 
     .modal label{
@@ -250,16 +365,20 @@
     }
 
     .btn{
+      width:100%;
       padding:9px;
       border-radius:10px;
       border:0;
-      width:100%;
-      margin-top:9px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:8px;
+    }
+
+    .btn-primary{
       background:linear-gradient(135deg,var(--accent),var(--accent-strong));
       color:#022c22;
-      font-weight:600;
-      font-size:14px;
-      cursor:pointer;
+      box-shadow:0 12px 30px rgba(34,197,94,0.4);
     }
 
     .btn-secondary{
@@ -269,45 +388,50 @@
     }
 
     .btn-danger{
-      background:#ef4444;
-      color:white;
+      background:var(--danger);
+      color:#fff;
     }
 
-    .appt-list{
+    .error-text{
+      font-size:11px;
+      color:#fecaca;
       margin-top:4px;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,0.25);
-      background:#020617;
-      padding:6px;
-      font-size:11px;
-      max-height:160px;
-      overflow:auto;
+      display:none;
     }
 
-    .appt-item{
-      padding:4px 4px;
-      border-radius:8px;
-      border:1px solid rgba(148,163,184,0.25);
-      margin-bottom:4px;
-      cursor:pointer;
-    }
+    /* MOBİL ADAPTASYON */
+    @media (max-width:768px){
+      body{
+        padding:12px;
+      }
 
-    .appt-item:hover{
-      border-color:var(--accent);
-    }
-
-    .appt-item strong{
-      font-size:11px;
-    }
-
-    .appt-empty{
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    @media(max-width:700px){
-      .calendar-col{
+      .agenda-card{
         padding:10px;
+      }
+
+      .day-cell{
+        min-height:72px;
+        padding:5px 4px;
+      }
+
+      .slot-mini{
+        font-size:9px;
+      }
+
+      .top-bar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+
+      .modal{
+        max-width:100%;
+        width:100%;
+        border-radius:18px 18px 0 0;
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
       }
     }
   </style>
@@ -316,30 +440,42 @@
 <body>
 <div class="container">
 
-  <h1>📅 Ajandam</h1>
-  <div class="subtitle">
-    Aylık takvim üzerinden günlere tıklayarak çalışma saatlerini yönetebilir,
-    randevu ekleyip silebilirsin. Aynı saate ikinci randevuya izin verilmez.
+  <div class="top-bar">
+    <div class="logo-group">
+      <div class="logo-mark">C</div>
+      <div>
+        <div class="logo-text-main">Cepterandevu</div>
+        <div class="logo-text-sub">İşletme ajandanız</div>
+      </div>
+    </div>
+    <div class="title-wrap">
+      <h1>Ajandam</h1>
+      <p>Günlere tıklayarak randevuları görüntüleyebilir, yeni randevu ekleyip silebilirsiniz.</p>
+    </div>
   </div>
+
+  <span class="pill-soft">Aynı saate ikinci randevuya izin verilmez.</span>
 
   <div id="loading">Takvim yükleniyor...</div>
 
-  <div id="calendarShell" style="display:none;">
-    <div class="calendar-col">
-      <div class="calendar-header">
-        <button id="prevMonth">←</button>
-        <div id="monthLabel" class="month-label"></div>
-        <button id="nextMonth">→</button>
+  <div id="agendaWrap" class="agenda-card" style="display:none;">
+    <div class="calendar-header">
+      <div class="month-label" id="monthLabel"></div>
+      <div class="nav-buttons">
+        <button id="prevMonth" class="btn-nav">Önceki</button>
+        <button id="nextMonth" class="btn-nav">Sonraki</button>
       </div>
+    </div>
 
-      <div class="days">
+    <div class="calendar-grid">
+      <div class="weekdays">
         <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div>
         <div>Cum</div><div>Cmt</div><div>Paz</div>
       </div>
-
-      <div id="cells" class="cells"></div>
+      <div class="days-grid" id="daysGrid"></div>
     </div>
   </div>
+
 </div>
 
 <!-- MODAL -->
@@ -347,7 +483,7 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title-wrap">
-        <h3 id="modalTitle">Gün planı</h3>
+        <h3 id="modalTitle">Gün detayları</h3>
         <div id="modalDate" class="modal-date"></div>
       </div>
       <button id="modalCloseIcon" class="modal-close-icon">✕</button>
@@ -355,400 +491,334 @@
 
     <div id="modalInner"></div>
 
-    <button id="modalClose" class="btn btn-secondary">Kapat</button>
+    <button id="modalCloseBtn" class="btn btn-secondary">Kapat</button>
   </div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore, doc, getDoc, setDoc,
-    collection, query, where, getDocs, addDoc, deleteDoc
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { firebaseConfig } from "../js/firebase-config.js";
+  import { AgendaUtils }    from "../js/ajanda-utils.js";
 
-  /* ---------- FIREBASE ---------- */
-  const firebaseConfig = {
-    apiKey:"AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-    authDomain:"cepterandevu-35fe4.firebaseapp.com",
-    projectId:"cepterandevu-35fe4",
-    storageBucket:"cepterandevu-35fe4.firebasestorage.app",
-    messagingSenderId:"86298180836",
-    appId:"1:86298180836:web:124c2004605d68b32700f1"
-  };
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore, collection, query, where, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const app  = initializeApp(firebaseConfig);
   const db   = getFirestore(app);
   const auth = getAuth(app);
 
-  /* ---------- DOM ---------- */
-  const loadingEl    = document.getElementById("loading");
-  const calendarShell= document.getElementById("calendarShell");
-  const cellsEl      = document.getElementById("cells");
-  const monthLabel   = document.getElementById("monthLabel");
-  const modalBg      = document.getElementById("modalBg");
-  const modalInner   = document.getElementById("modalInner");
-  const modalTitle   = document.getElementById("modalTitle");
-  const modalDateEl  = document.getElementById("modalDate");
-  const modalClose   = document.getElementById("modalClose");
-  const modalCloseIcon = document.getElementById("modalCloseIcon");
-
-  modalClose.onclick = () => { modalBg.style.display = "none"; };
-  modalCloseIcon.onclick = () => { modalBg.style.display = "none"; };
-
-  /* ---------- GLOBAL DURUM ---------- */
+  /* ---------- SABİT GENEL ÇALIŞMA SAATLERİ (AJANDA İÇİN) ---------- */
   const DEFAULT_HOURS = [
     "09:00","09:30","10:00","10:30",
     "11:00","11:30","13:00","13:30",
     "14:00","14:30","15:00","15:30",
     "16:00","16:30","17:00"
   ];
+  AgendaUtils.cache.workHours = DEFAULT_HOURS;
 
-  let BUSINESS_ID   = null;
-  let workHours     = [];
-  let currentMonth  = new Date();
+  /* ---------- DOM ---------- */
+  const loadingEl   = document.getElementById("loading");
+  const agendaWrap  = document.getElementById("agendaWrap");
+  const daysGrid    = document.getElementById("daysGrid");
+  const monthLabel  = document.getElementById("monthLabel");
+
+  const modalBg       = document.getElementById("modalBg");
+  const modalTitle    = document.getElementById("modalTitle");
+  const modalDateEl   = document.getElementById("modalDate");
+  const modalInner    = document.getElementById("modalInner");
+  const modalCloseBtn = document.getElementById("modalCloseBtn");
+  const modalCloseIcon= document.getElementById("modalCloseIcon");
+
+  let BUSINESS_ID = null;
+  let currentMonth = new Date();
   currentMonth.setDate(1);
 
-  // Günlük çalışma saatleri: { "2025-11-23": ["09:00","10:00", ...], ... }
-  let dayHoursMap   = {};
+  /* ---------- MODAL KAPATMA ---------- */
+  function closeModal(){
+    modalBg.style.display = "none";
+  }
+  modalCloseBtn.addEventListener("click", closeModal);
+  modalCloseIcon.addEventListener("click", closeModal);
 
+  /* ---------- AUTH ---------- */
   onAuthStateChanged(auth, async user => {
     if (!user){
       window.location.href = "business-login.html";
       return;
     }
-
     BUSINESS_ID = user.uid;
 
-    await loadBusinessSettings();
-    await renderCalendar();
+    await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
+    renderCalendar();
 
-    loadingEl.style.display   = "none";
-    calendarShell.style.display = "block";
+    loadingEl.style.display = "none";
+    agendaWrap.style.display = "block";
   });
 
-  /* ---------- GENEL SAATLER (İŞLETME AYARI) ---------- */
-  async function loadBusinessSettings(){
-    try{
-      const ref  = doc(db,"businesses",BUSINESS_ID);
-      const snap = await getDoc(ref);
-      if (snap.exists()){
-        const d = snap.data();
-        if (Array.isArray(d.workHours) && d.workHours.length > 0){
-          workHours = d.workHours;
-        } else {
-          workHours = DEFAULT_HOURS;
-        }
-      } else {
-        workHours = DEFAULT_HOURS;
-      }
-    }catch(e){
-      console.error("İşletme ayarları okunamadı:", e);
-      workHours = DEFAULT_HOURS;
-    }
-  }
-
-  /* ---------- TAKVİM RENDER ---------- */
-  async function renderCalendar(){
-    cellsEl.innerHTML = "";
+  /* ---------- TAKVİM ÇİZ ---------- */
+  function renderCalendar(){
+    daysGrid.innerHTML = "";
 
     const year  = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-
     monthLabel.textContent = currentMonth.toLocaleDateString("tr-TR", {
-      year:"numeric",
-      month:"long"
+      year: "numeric",
+      month: "long"
     });
 
-    await loadMonthDayHours(year, month);
+    const days = AgendaUtils.generateMonthDays(currentMonth);
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay  = new Date(year, month + 1, 0);
-    const start = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    const todayStr = new Date().toISOString().slice(0,10);
 
-    for (let i = 0; i < start; i++){
-      const empty = document.createElement("div");
-      empty.className = "cell";
-      empty.style.opacity = "0.25";
-      cellsEl.appendChild(empty);
-    }
-
-    for (let d = 1; d <= lastDay.getDate(); d++){
-      const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    days.forEach(d=>{
+      if (d.type === "empty"){
+        const div = document.createElement("div");
+        div.className = "day-cell disabled";
+        daysGrid.appendChild(div);
+        return;
+      }
 
       const cell = document.createElement("div");
-      cell.className = "cell";
-      cell.dataset.date = dateStr;
+      cell.className = "day-cell";
+      cell.dataset.date = d.dateStr;
 
-      const header = document.createElement("div");
-      header.className = "date";
-      header.textContent = d;
-      cell.appendChild(header);
+      const num = document.createElement("div");
+      num.className = "day-number";
+      num.textContent = d.day;
+      cell.appendChild(num);
 
-      const hoursForDay = dayHoursMap[dateStr] ?? null;
-      if (hoursForDay && hoursForDay.length === 0){
+      if (d.dateStr === todayStr){
         const badge = document.createElement("div");
-        badge.className = "badge-closed";
-        badge.textContent = "Kapalı";
-        cell.appendChild(badge);
-      } else if (hoursForDay && hoursForDay.length > 0 && hoursForDay.length < workHours.length){
-        const badge = document.createElement("div");
-        badge.className = "badge-partial";
-        badge.textContent = "Kısmi çalışma";
+        badge.className = "badge-today";
+        badge.textContent = "Bugün";
         cell.appendChild(badge);
       }
 
-      await loadAppointmentsForDay(dateStr, cell);
+      const appts = AgendaUtils.getAppointmentsForDay(d.dateStr);
+      if (appts.length > 0){
+        const count = document.createElement("div");
+        count.className = "appt-count";
+        count.textContent = `${appts.length} randevu`;
+        cell.appendChild(count);
 
-      cell.addEventListener("click", () => {
-        openDayModal(dateStr);
-      });
-
-      cellsEl.appendChild(cell);
-    }
-  }
-
-  /* ---------- AYLIK GÜNLÜK SAATLERİ ÇEK ---------- */
-  async function loadMonthDayHours(year, month){
-    dayHoursMap = {};
-
-    const startDate = `${year}-${String(month+1).padStart(2,"0")}-01`;
-    const endDate   = `${year}-${String(month+1).padStart(2,"0")}-31`;
-
-    try{
-      const qRef = query(
-        collection(db,"businessDayHours"),
-        where("businessID","==",BUSINESS_ID),
-        where("date",">=",startDate),
-        where("date","<=",endDate)
-      );
-      const snap = await getDocs(qRef);
-      snap.forEach(docSnap=>{
-        const d = docSnap.data();
-        if (d.date){
-          dayHoursMap[d.date] = Array.isArray(d.hours) ? d.hours : [];
-        }
-      });
-    }catch(e){
-      console.error("Günlük saatler okunamadı:", e);
-    }
-  }
-
-  /* ---------- BİR GÜNÜN RANDEVULARINI HÜCREYE YAZ ---------- */
-  async function loadAppointmentsForDay(dateStr, cell){
-    try{
-      const appts = await fetchAppointmentsForDate(dateStr);
-      appts.forEach(ap=>{
-        const slot = document.createElement("div");
-        slot.className = "slot";
-        const cust  = ap.customerName || "Müşteri";
-        const serv  = ap.serviceName  || "Hizmet";
-        const emp   = ap.employeeName || "";
-        slot.innerHTML = `<strong>${ap.time}</strong> · ${cust}<br><span style="color:#a5b4fc;">${serv}${emp ? " · " + emp : ""}</span>`;
-        slot.addEventListener("click", (e)=>{
-          e.stopPropagation();
-          openDayModal(dateStr); // Detay ve silme aynı modalde
+        const maxShow = 2;
+        appts.slice(0,maxShow).forEach(a=>{
+          const mini = document.createElement("div");
+          mini.className = "slot-mini";
+          const cust = a.customerName || "Müşteri";
+          mini.textContent = `${a.time} · ${cust}`;
+          cell.appendChild(mini);
         });
-        cell.appendChild(slot);
+
+        if (appts.length > maxShow){
+          const extra = document.createElement("div");
+          extra.className = "slot-mini";
+          extra.textContent = `+${appts.length - maxShow} daha`;
+          cell.appendChild(extra);
+        }
+      }
+
+      cell.addEventListener("click", ()=>{
+        openDayModal(d.dateStr);
       });
-    }catch(e){
-      console.error("Randevular okunamadı:", e);
+
+      daysGrid.appendChild(cell);
+    });
+  }
+
+  /* ---------- GÜN HÜCRESİNİ TEK BAŞINA GÜNCELLE ---------- */
+  function refreshDayCell(dateStr){
+    const cell = daysGrid.querySelector(`.day-cell[data-date="${dateStr}"]`);
+    if (!cell) return;
+
+    // header dışındakileri temizle
+    const keep = [];
+    cell.childNodes.forEach((node, idx)=>{
+      if (idx === 0 || node.classList?.contains("badge-today")) keep.push(node);
+    });
+    cell.innerHTML = "";
+    keep.forEach(k=>cell.appendChild(k));
+
+    const appts = AgendaUtils.getAppointmentsForDay(dateStr);
+    if (appts.length > 0){
+      const count = document.createElement("div");
+      count.className = "appt-count";
+      count.textContent = `${appts.length} randevu`;
+      cell.appendChild(count);
+
+      const maxShow = 2;
+      appts.slice(0,maxShow).forEach(a=>{
+        const mini = document.createElement("div");
+        mini.className = "slot-mini";
+        const cust = a.customerName || "Müşteri";
+        mini.textContent = `${a.time} · ${cust}`;
+        cell.appendChild(mini);
+      });
+
+      if (appts.length > maxShow){
+        const extra = document.createElement("div");
+        extra.className = "slot-mini";
+        extra.textContent = `+${appts.length - maxShow} daha`;
+        cell.appendChild(extra);
+      }
     }
   }
 
-  async function fetchAppointmentsForDate(dateStr){
-    const list = [];
-    try{
-      const qRef = query(
-        collection(db,"appointments"),
-        where("businessID","==",BUSINESS_ID),
-        where("date","==",dateStr)
-      );
-      const snap = await getDocs(qRef);
-      snap.forEach(docSnap=>{
-        list.push({id:docSnap.id, ...docSnap.data()});
-      });
-      list.sort((a,b)=> (a.time||"").localeCompare(b.time||""));
-    }catch(e){
-      console.error(e);
-    }
-    return list;
-  }
-
-  /* ---------- GÜN MODALI: SAAT AYARI + RANDEVU LİSTESİ + YENİ RANDEVU ---------- */
+  /* ---------- GÜN MODALI ---------- */
   async function openDayModal(dateStr){
-    modalTitle.textContent = "Gün planı";
-    modalDateEl.textContent = dateStr;
+    modalTitle.textContent = "Gün detayları";
+    modalDateEl.textContent = AgendaUtils.formatDateHuman(dateStr);
 
-    const hoursForDay = dayHoursMap[dateStr] ?? null;
-    const activeHours = hoursForDay === null ? workHours : hoursForDay;
-
-    const appts = await fetchAppointmentsForDate(dateStr);
+    const appts = AgendaUtils.getAppointmentsForDay(dateStr).slice()
+      .sort((a,b)=>(a.time||"").localeCompare(b.time||""));
 
     modalInner.innerHTML = "";
 
-    // Çalışma saatleri
-    const sec1 = document.createElement("div");
-    sec1.innerHTML = `<div class="section-title">Bu gün çalışılan saatler</div>`;
-    const listDiv = document.createElement("div");
-    listDiv.className = "hours-checkbox-list";
-
-    workHours.forEach(h=>{
-      const chip = document.createElement("label");
-      chip.className = "hour-chip";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.value = h;
-      cb.checked = activeHours.includes(h);
-
-      chip.appendChild(cb);
-      chip.appendChild(document.createTextNode(h));
-      listDiv.appendChild(chip);
-    });
-
-    sec1.appendChild(listDiv);
-
-    const btnSaveHours = document.createElement("button");
-    btnSaveHours.className = "btn";
-    btnSaveHours.textContent = "Çalışma saatlerini kaydet";
-    btnSaveHours.onclick = async () => {
-      const selected = Array.from(listDiv.querySelectorAll("input[type=checkbox]"))
-        .filter(x => x.checked)
-        .map(x => x.value);
-
-      try{
-        await setDoc(
-          doc(db,"businessDayHours", `${BUSINESS_ID}_${dateStr}`),
-          {
-            businessID: BUSINESS_ID,
-            date: dateStr,
-            hours: selected
-          },
-          { merge:true }
-        );
-        dayHoursMap[dateStr] = selected;
-        alert("Gün çalışma saatleri kaydedildi.");
-        await renderCalendar();
-      }catch(e){
-        console.error(e);
-        alert("Saatler kaydedilirken hata oluştu.");
-      }
-    };
-    sec1.appendChild(btnSaveHours);
-
-    modalInner.appendChild(sec1);
-
     // Randevu listesi
-    const sec2 = document.createElement("div");
-    sec2.innerHTML = `<div class="section-title">Bu gündeki randevular</div>`;
-    const apptBox = document.createElement("div");
-    apptBox.className = "appt-list";
+    const sec1 = document.createElement("div");
+    sec1.innerHTML = `<div class="section-title">Bu gündeki randevular</div>`;
+    const listBox = document.createElement("div");
+    listBox.className = "appt-list";
 
     if (appts.length === 0){
       const empty = document.createElement("div");
       empty.className = "appt-empty";
       empty.textContent = "Bu güne kayıtlı randevu yok.";
-      apptBox.appendChild(empty);
+      listBox.appendChild(empty);
     } else {
       appts.forEach(ap=>{
         const item = document.createElement("div");
         item.className = "appt-item";
-        item.innerHTML = `
-          <div><strong>${ap.time}</strong> · ${ap.customerName || "Müşteri"}</div>
-          <div>${ap.serviceName || "Hizmet"}${ap.employeeName ? " · " + ap.employeeName : ""}</div>
-          <div style="color:#f97373;font-size:10px;margin-top:2px;">Silmek için tıklayın</div>
-        `;
-        item.onclick = async () => {
+
+        const header = document.createElement("div");
+        header.className = "appt-item-header";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<span class="appt-time">${ap.time}</span> · ${ap.customerName || "Müşteri"}`;
+
+        const right = document.createElement("div");
+        const statusSpan = document.createElement("span");
+        statusSpan.className = "badge-status " + (ap.status || "pending");
+        statusSpan.textContent = ap.status === "approved" ? "Onaylı" : "Beklemede";
+        right.appendChild(statusSpan);
+
+        header.appendChild(left);
+        header.appendChild(right);
+
+        const line2 = document.createElement("div");
+        line2.style.fontSize = "10px";
+        line2.style.color   = "#e5e7eb";
+        line2.textContent   = `${ap.serviceName || "Hizmet"}${ap.employeeName ? " · " + ap.employeeName : ""}`;
+
+        const line3 = document.createElement("div");
+        line3.className = "appt-caption";
+        line3.textContent = "Silmek için tıklayın";
+
+        item.appendChild(header);
+        item.appendChild(line2);
+        item.appendChild(line3);
+
+        item.addEventListener("click", async ()=>{
           if (!confirm("Bu randevuyu silmek istiyor musunuz?")) return;
           try{
-            await deleteDoc(doc(db,"appointments", ap.id));
+            await AgendaUtils.deleteAppointment(db, ap.id, dateStr);
             alert("Randevu silindi.");
-            openDayModal(dateStr);        // modal içini yeniden doldur
-            await renderCalendar();       // takvimi tazele
+            // listeyi yeniden oluştur
+            openDayModal(dateStr);
+            refreshDayCell(dateStr);
           }catch(e){
             console.error(e);
-            alert("Randevu silinemedi.");
+            alert("Randevu silinirken hata oluştu.");
           }
-        };
-        apptBox.appendChild(item);
+        });
+
+        listBox.appendChild(item);
       });
     }
 
-    sec2.appendChild(apptBox);
-    modalInner.appendChild(sec2);
+    sec1.appendChild(listBox);
+    modalInner.appendChild(sec1);
 
-    // Yeni randevu ekleme
-    const sec3 = document.createElement("div");
-    sec3.innerHTML = `<div class="section-title">Elle yeni randevu ekle</div>`;
+    // Elle randevu ekleme
+    const sec2 = document.createElement("div");
+    sec2.innerHTML = `<div class="section-title">Elle yeni randevu ekle</div>`;
 
-    const labelTime = document.createElement("label");
-    labelTime.textContent = "Saat";
+    const lblTime = document.createElement("label");
+    lblTime.textContent = "Saat";
     const selTime = document.createElement("select");
     selTime.id = "newTime";
 
-    const baseHours = dayHoursMap[dateStr] === null || dayHoursMap[dateStr] === undefined
-      ? workHours
-      : dayHoursMap[dateStr];
-
-    baseHours.forEach(h=>{
+    DEFAULT_HOURS.forEach(h=>{
       const opt = document.createElement("option");
       opt.value = h;
       opt.textContent = h;
       selTime.appendChild(opt);
     });
+    lblTime.appendChild(selTime);
+    sec2.appendChild(lblTime);
 
-    labelTime.appendChild(selTime);
-    sec3.appendChild(labelTime);
-
-    const labelCust = document.createElement("label");
-    labelCust.textContent = "Müşteri adı";
+    const lblCust = document.createElement("label");
+    lblCust.textContent = "Müşteri Adı";
     const inpCust = document.createElement("input");
     inpCust.id = "newCust";
     inpCust.placeholder = "Ad soyad";
-    labelCust.appendChild(inpCust);
-    sec3.appendChild(labelCust);
+    lblCust.appendChild(inpCust);
+    sec2.appendChild(lblCust);
 
-    const labelServ = document.createElement("label");
-    labelServ.textContent = "Hizmet";
+    const lblServ = document.createElement("label");
+    lblServ.textContent = "Hizmet";
     const inpServ = document.createElement("input");
     inpServ.id = "newServ";
     inpServ.placeholder = "Örn: Saç kesim";
-    labelServ.appendChild(inpServ);
-    sec3.appendChild(labelServ);
+    lblServ.appendChild(inpServ);
+    sec2.appendChild(lblServ);
 
-    const labelEmp = document.createElement("label");
-    labelEmp.textContent = "Çalışan";
+    const lblEmp = document.createElement("label");
+    lblEmp.textContent = "Çalışan";
     const inpEmp = document.createElement("input");
     inpEmp.id = "newEmp";
-    inpEmp.placeholder = "Çalışan adı";
-    labelEmp.appendChild(inpEmp);
-    sec3.appendChild(labelEmp);
+    inpEmp.placeholder = "Çalışan adı (isteğe bağlı)";
+    lblEmp.appendChild(inpEmp);
+    sec2.appendChild(lblEmp);
+
+    const errorText = document.createElement("div");
+    errorText.className = "error-text";
+    errorText.id = "newErr";
+    errorText.textContent = "Hata mesajı";
+    sec2.appendChild(errorText);
 
     const btnAdd = document.createElement("button");
-    btnAdd.className = "btn";
+    btnAdd.className = "btn btn-primary";
     btnAdd.textContent = "Randevu ekle";
-    btnAdd.onclick = async () => {
+
+    btnAdd.addEventListener("click", async ()=>{
+      errorText.style.display = "none";
+      errorText.textContent   = "";
+
       const time = selTime.value;
       const customerName = inpCust.value.trim();
       const serviceName  = inpServ.value.trim();
       const employeeName = inpEmp.value.trim();
 
       if (!time || !customerName || !serviceName){
-        alert("Saat, müşteri adı ve hizmet zorunlu.");
+        errorText.textContent = "Saat, müşteri adı ve hizmet alanları zorunludur.";
+        errorText.style.display = "block";
         return;
       }
 
-      // ❗ Aynı saate ikinci randevuyu engelle
-      const existing = await fetchAppointmentsForDate(dateStr);
-      const hasSameTime = existing.some(a => (a.time || "") === time);
-      if (hasSameTime){
-        alert("Bu saat için zaten bir randevu var. Aynı saate ikinci randevu oluşturamazsınız.");
+      // Aynı saate ikinci randevu engeli
+      if (AgendaUtils.isHourBusy(dateStr, time)){
+        errorText.textContent = "Bu saat için zaten randevu var. Aynı saate ikinci randevu ekleyemezsiniz.";
+        errorText.style.display = "block";
         return;
       }
 
       try{
-        await addDoc(collection(db,"appointments"), {
+        await AgendaUtils.addAppointment(db, {
           businessID:  BUSINESS_ID,
           date:        dateStr,
           time,
@@ -758,30 +828,36 @@
           status: "approved",
           createdAt: Date.now()
         });
+
         alert("Randevu eklendi.");
-        openDayModal(dateStr);    // modal içini güncelle
-        await renderCalendar();   // takvimi tazele
+        // modal içeriğini güncelle + hücreyi tazele
+        openDayModal(dateStr);
+        refreshDayCell(dateStr);
       }catch(e){
         console.error(e);
-        alert("Randevu eklenemedi.");
+        errorText.textContent = "Randevu eklenirken hata oluştu.";
+        errorText.style.display = "block";
       }
-    };
+    });
 
-    sec3.appendChild(btnAdd);
-    modalInner.appendChild(sec3);
+    sec2.appendChild(btnAdd);
+
+    modalInner.appendChild(sec2);
 
     modalBg.style.display = "flex";
   }
 
   /* ---------- AY GEÇİŞ BUTONLARI ---------- */
   document.getElementById("prevMonth").addEventListener("click", async ()=>{
-    currentMonth.setMonth(currentMonth.getMonth()-1);
-    await renderCalendar();
+    currentMonth.setMonth(currentMonth.getMonth() - 1);
+    await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
+    renderCalendar();
   });
 
   document.getElementById("nextMonth").addEventListener("click", async ()=>{
-    currentMonth.setMonth(currentMonth.getMonth()+1);
-    await renderCalendar();
+    currentMonth.setMonth(currentMonth.getMonth() + 1);
+    await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
+    renderCalendar();
   });
 </script>
 
