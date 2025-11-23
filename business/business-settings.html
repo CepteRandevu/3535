@@ -79,7 +79,6 @@
 
   .logo-title{font-size:16px;font-weight:600;}
   .top-menu-row{padding-left:16px;}
-
   .menu-btn{
     background:var(--accent);border:0;color:#022c22;
     padding:7px 14px;border-radius:10px;font-weight:600;
@@ -92,23 +91,6 @@
     display:none;flex-direction:column;gap:14px;z-index:800;
   }
 
-  .logo-box{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-  .biz-name-small{font-size:15px;font-weight:600;}
-
-  .menu button{
-    width:100%;padding:10px 12px;background:transparent;border:0;
-    text-align:left;color:var(--muted);cursor:pointer;border-radius:12px;
-    font-size:14px;display:flex;align-items:center;gap:8px;
-  }
-
-  .menu button:hover{
-    background:rgba(34,197,94,0.12);color:var(--text);
-  }
-
-  .menu button.active{
-    background:var(--accent);color:#022c22;font-weight:600;
-  }
-
   .main-area{padding:20px 18px 28px;}
   .page-title{font-size:20px;font-weight:700;margin-bottom:16px;}
 
@@ -118,8 +100,7 @@
     margin-bottom:18px;box-shadow:var(--shadow-soft);
   }
 
-  .card h3{font-size:16px;margin-bottom:10px;}
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
+  label{font-size:13px;color:var(--muted);margin-bottom:6px;display:block;}
 
   input, select, textarea{
     width:100%;padding:9px 11px;border-radius:12px;background:#020617;
@@ -131,116 +112,14 @@
     border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);
   }
 
-  textarea{height:70px;resize:none;}
-
-  .row-two{display:flex;gap:10px;flex-wrap:wrap;}
-  .row-two > div{flex:1 1 0;min-width:140px;}
-
-  .logo-box2{
-      display:flex;
-      align-items:center;
-      gap:16px;
-      margin-bottom:12px;
-  }
-
   .logo-preview{
-    width:95px;
-    height:95px;
-    border-radius:14px;
-    border:2px solid var(--accent);
-    object-fit:contain;
-    background:#020617;
-  }
-
-  .upload-btn{
-      background:var(--accent);
-      border:0;
-      padding:10px 12px;
-      color:#022c22;
-      font-weight:600;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:13px;
-  }
-
-  .btn-primary{
-    width:100%;background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-    border:0;padding:11px 12px;border-radius:12px;font-weight:700;
-    font-size:14px;color:#022c22;cursor:pointer;margin-top:4px;
-    box-shadow:0 10px 28px rgba(34,197,94,0.45);
-  }
-  .btn-primary:disabled{opacity:.6;cursor:not-allowed;box-shadow:none;}
-
-  .logout-btn{
-    width:100%;background:#ef4444;color:white;border:0;
-    padding:11px 12px;border-radius:12px;font-weight:600;
-    font-size:14px;cursor:pointer;margin-top:8px;
-  }
-
-  /* ÇALIŞMA SAATLERİ */
-  .schedule-info{
-    font-size:12px;
-    color:var(--muted);
-    margin-bottom:8px;
-  }
-
-  .schedule-grid{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-bottom:8px;
-  }
-
-  .schedule-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:6px 8px;
-    border-radius:10px;
-    background:#020617;
-    border:1px solid rgba(148,163,184,0.25);
-  }
-
-  .schedule-day{
-    width:90px;
-    font-size:13px;
-    font-weight:500;
-  }
-
-  .schedule-times{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    flex:1;
-    flex-wrap:wrap;
-  }
-
-  .schedule-times input[type="time"]{
-    width:110px;
-    margin-bottom:0;
-    padding:6px 8px;
-    border-radius:8px;
-  }
-
-  .closed-label{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    font-size:12px;
-    color:var(--muted);
-  }
-
-  @media(min-width:900px){
-    body{flex-direction:row;}
-    .sidebar{display:flex;}
-    .top-header{display:none;}
-    .main-area{margin-left:240px;padding:26px 26px 32px;}
+    width:95px;height:95px;border-radius:14px;border:2px solid var(--accent);
+    object-fit:contain;background:#020617;
   }
 </style>
 </head>
 
 <body>
-
 <!-- Drawer -->
 <div id="drawerOverlay" class="drawer-overlay"></div>
 <div id="drawerMenu" class="drawer-menu">
@@ -281,19 +160,26 @@
 <main class="main-area">
   <h1 class="page-title">Ayarlar</h1>
 
+  <!-- İŞLETME BİLGİLERİ -->
   <section class="card">
     <h3>İşletme Bilgileri</h3>
 
     <label>Logo</label>
-
-    <div class="logo-box2">
-        <img id="logoPreview" class="logo-preview" src="" alt="Logo">
+    <div class="logo-box2" style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+      <img id="logoPreview" class="logo-preview" src="" alt="Logo">
+      <div>
         <input type="file" id="logoInput" accept="image/*" style="display:none;">
-        <button class="upload-btn" onclick="document.getElementById('logoInput').click();">Logo Seç</button>
+        <button class="upload-btn" onclick="document.getElementById('logoInput').click();">
+          Logo Seç
+        </button>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+          Küçük kare logo önerilir. JPG / PNG kullanılabilir.
+        </div>
+      </div>
     </div>
 
     <label>İşletme Adı</label>
-    <input id="bizNameInput">
+    <input id="bizNameInput" placeholder="Örn: Cepter Kuaför">
 
     <div class="row-two">
       <div>
@@ -311,17 +197,18 @@
     </div>
 
     <label>Telefon</label>
-    <input id="bizPhoneInput">
+    <input id="bizPhoneInput" placeholder="Örn: 0 555 555 55 55">
 
     <label>Adres</label>
-    <textarea id="bizAddressInput"></textarea>
+    <textarea id="bizAddressInput" placeholder="İşletme adresinizi yazın"></textarea>
 
     <label>Açıklama</label>
-    <textarea id="bizAboutInput"></textarea>
+    <textarea id="bizAboutInput" placeholder="Örn: 10 yılı aşkın tecrübeli kuaför hizmeti..."></textarea>
 
     <button id="saveBizBtn" class="btn-primary">İşletme Bilgilerini Kaydet</button>
   </section>
 
+  <!-- ÇALIŞMA SAATLERİ -->
   <section class="card">
     <h3>Çalışma Saatleri</h3>
     <p class="schedule-info">
@@ -334,10 +221,11 @@
     <button id="saveScheduleBtn" class="btn-primary">Çalışma Saatlerini Kaydet</button>
   </section>
 
+  <!-- ŞİFRE -->
   <section class="card">
     <h3>Şifre Değiştir</h3>
     <label>Yeni Şifre</label>
-    <input type="password" id="newPassInput">
+    <input type="password" id="newPassInput" placeholder="Yeni şifre">
     <button id="savePassBtn" class="btn-primary">Şifreyi Güncelle</button>
   </section>
 
@@ -366,7 +254,6 @@
     overlay.addEventListener("click", closeDrawer);
   }
 </script>
-
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
 
@@ -395,18 +282,19 @@
   let cityFromDB = "";
   let districtFromDB = "";
 
-  const bizNameSmall   = document.getElementById("bizNameSmall");
-  const bizNameMobile  = document.getElementById("bizNameMobile");
-  const logoInput      = document.getElementById("logoInput");
-  const logoPreview    = document.getElementById("logoPreview");
-  const bizNameInput   = document.getElementById("bizNameInput");
-  const bizPhoneInput  = document.getElementById("bizPhoneInput");
-  const bizAddressInput= document.getElementById("bizAddressInput");
-  const bizAboutInput  = document.getElementById("bizAboutInput");
-  const citySelect     = document.getElementById("citySelect");
-  const districtSelect = document.getElementById("districtSelect");
-  const saveBizBtn     = document.getElementById("saveBizBtn");
-  const saveScheduleBtn= document.getElementById("saveScheduleBtn");
+  const bizNameSmall    = document.getElementById("bizNameSmall");
+  const bizNameMobile   = document.getElementById("bizNameMobile");
+  const logoInput       = document.getElementById("logoInput");
+  const logoPreview     = document.getElementById("logoPreview");
+  const bizNameInput    = document.getElementById("bizNameInput");
+  const bizPhoneInput   = document.getElementById("bizPhoneInput");
+  const bizAddressInput = document.getElementById("bizAddressInput");
+  const bizAboutInput   = document.getElementById("bizAboutInput");
+  const citySelect      = document.getElementById("citySelect");
+  const districtSelect  = document.getElementById("districtSelect");
+  const saveBizBtn      = document.getElementById("saveBizBtn");
+  const saveScheduleBtn = document.getElementById("saveScheduleBtn");
+  const scheduleRowsEl  = document.getElementById("scheduleRows");
 
   // Günler (schedule için)
   const DAYS = [
@@ -419,7 +307,7 @@
     { key:"sunday",    label:"Pazar" },
   ];
 
-  // Default logo göster
+  // Sayfa açılır açılmaz default logo göster
   logoPreview.src = DEFAULT_LOGO;
 
   /* -------- LOGO: BASE64 KAYIT -------- */
@@ -524,8 +412,6 @@
 
   /* ---------- ÇALIŞMA SAATLERİ SATIRLARINI OLUŞTUR ---------- */
 
-  const scheduleRowsEl = document.getElementById("scheduleRows");
-
   function buildScheduleRows() {
     scheduleRowsEl.innerHTML = "";
     DAYS.forEach(d => {
@@ -556,9 +442,9 @@
       const endEl    = document.getElementById(`end_${d.key}`);
       const closedEl = document.getElementById(`closed_${d.key}`);
 
-      if (startEl)  startEl.value  = cfg.start  || "";
-      if (endEl)    endEl.value    = cfg.end    || "";
-      if (closedEl) closedEl.checked = !!cfg.closed;
+      if (startEl)  startEl.value      = cfg.start  || "";
+      if (endEl)    endEl.value        = cfg.end    || "";
+      if (closedEl) closedEl.checked   = !!cfg.closed;
     });
   }
 
@@ -573,7 +459,6 @@
       const end    = endEl?.value   || "";
       const closed = !!(closedEl && closedEl.checked);
 
-      // Kapalı değilse ve saatlerden biri boşsa uyarı vereceğiz (save sırasında)
       scheduleToSave[d.key] = { start, end, closed };
     }
     return scheduleToSave;
@@ -664,7 +549,7 @@
 
     const scheduleToSave = collectScheduleFromUI();
 
-    // Basit doğrulama: kapalı değilse, start & end dolu olmalı
+    // Kapalı olmayan günlerde start & end zorunlu
     for (const d of DAYS) {
       const cfg = scheduleToSave[d.key];
       if (!cfg.closed) {
