@@ -204,6 +204,28 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
+      transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    /* YENİ BEKLEYEN RANDEVU HIGHLIGHT */
+    .appt-row.new-pending {
+      animation: pulseRow 1.2s ease-in-out infinite;
+      border-color: rgba(34,197,94,0.9);
+    }
+
+    @keyframes pulseRow {
+      0% {
+        background: rgba(34,197,94,0.10);
+        box-shadow: 0 0 0 0 rgba(34,197,94,0.55);
+      }
+      50% {
+        background: rgba(34,197,94,0.22);
+        box-shadow: 0 0 0 8px rgba(34,197,94,0.05);
+      }
+      100% {
+        background: rgba(34,197,94,0.10);
+        box-shadow: 0 0 0 0 rgba(34,197,94,0.0);
+      }
     }
 
     .appt-left {
@@ -491,6 +513,9 @@
     const serviceCache = {};
     const employeeCache = {};
 
+    // Yeni pending randevuyu vurgulama süresi (ms)
+    const NEW_PENDING_WINDOW_MS = 20000;
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "business-login.html";
@@ -532,19 +557,23 @@
       for (const ap of items) {
         const obj = { ...ap };
 
+        // MÜŞTERİ BİLGİSİ: önce "customers", yoksa "users"
         if (ap.customerUID) {
           if (!userCache[ap.customerUID]) {
             try {
-              const usnap = await getDoc(doc(db, "customers", ap.customerUID));
+              let usnap = await getDoc(doc(db, "customers", ap.customerUID));
+              if (!usnap.exists()) {
+                usnap = await getDoc(doc(db, "users", ap.customerUID));
+              }
               userCache[ap.customerUID] = usnap.exists() ? usnap.data() : null;
-            } catch(e) {
+            } catch (e) {
               console.error("Kullanıcı okunamadı:", e);
             }
           }
           const u = userCache[ap.customerUID];
           if (u) {
-            obj.customerName = u.name || "";
-            obj.customerPhone = u.phone || "";
+            obj.customerName = u.name || u.fullName || "";
+            obj.customerPhone = u.phone || u.tel || "";
           }
         }
 
@@ -616,6 +645,12 @@
     function buildAppointmentRow(ap, isPendingSection) {
       const row = document.createElement("div");
       row.className = "appt-row";
+
+      // Yeni & bekleyen randevuysa yanıp sönsün
+      const now = Date.now();
+      if (ap.status === "pending" && ap.createdAt && (now - ap.createdAt) <= NEW_PENDING_WINDOW_MS) {
+        row.classList.add("new-pending");
+      }
 
       const left = document.createElement("div");
       left.className = "appt-left";
