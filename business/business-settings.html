@@ -169,11 +169,65 @@
     font-size:14px;color:#022c22;cursor:pointer;margin-top:4px;
     box-shadow:0 10px 28px rgba(34,197,94,0.45);
   }
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed;box-shadow:none;}
 
   .logout-btn{
     width:100%;background:#ef4444;color:white;border:0;
     padding:11px 12px;border-radius:12px;font-weight:600;
     font-size:14px;cursor:pointer;margin-top:8px;
+  }
+
+  /* ÇALIŞMA SAATLERİ */
+  .schedule-info{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+
+  .schedule-grid{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:8px;
+  }
+
+  .schedule-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 8px;
+    border-radius:10px;
+    background:#020617;
+    border:1px solid rgba(148,163,184,0.25);
+  }
+
+  .schedule-day{
+    width:90px;
+    font-size:13px;
+    font-weight:500;
+  }
+
+  .schedule-times{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex:1;
+    flex-wrap:wrap;
+  }
+
+  .schedule-times input[type="time"]{
+    width:110px;
+    margin-bottom:0;
+    padding:6px 8px;
+    border-radius:8px;
+  }
+
+  .closed-label{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    color:var(--muted);
   }
 
   @media(min-width:900px){
@@ -187,6 +241,18 @@
 
 <body>
 
+<!-- Drawer -->
+<div id="drawerOverlay" class="drawer-overlay"></div>
+<div id="drawerMenu" class="drawer-menu">
+  <div class="drawer-title">Cepterandevu</div>
+  <div class="drawer-links">
+    <a href="business-panel.html">Panel</a>
+    <a href="business-services.html">Hizmetler</a>
+    <a href="business-employees.html">Çalışanlar</a>
+    <a href="business-appointments.html">Randevular</a>
+    <a href="business-settings.html" class="active">Ayarlar</a>
+  </div>
+</div>
 
 <header class="top-header">
   <div class="top-center">
@@ -211,7 +277,6 @@
     <button class="active">Ayarlar</button>
   </div>
 </aside>
-
 
 <main class="main-area">
   <h1 class="page-title">Ayarlar</h1>
@@ -258,6 +323,18 @@
   </section>
 
   <section class="card">
+    <h3>Çalışma Saatleri</h3>
+    <p class="schedule-info">
+      Haftanın her günü için açılış ve kapanış saatini belirleyin. “Kapalı” işaretli günlerde
+      ajanda ve müşteri randevu ekranında saat gösterilmez.
+    </p>
+
+    <div id="scheduleRows" class="schedule-grid"></div>
+
+    <button id="saveScheduleBtn" class="btn-primary">Çalışma Saatlerini Kaydet</button>
+  </section>
+
+  <section class="card">
     <h3>Şifre Değiştir</h3>
     <label>Yeni Şifre</label>
     <input type="password" id="newPassInput">
@@ -267,7 +344,28 @@
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 </main>
 
+<!-- Drawer script -->
+<script>
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
 
+  function openDrawer(){
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
+  function closeDrawer(){
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
+
+  if(menuBtn){
+    menuBtn.addEventListener("click", openDrawer);
+  }
+  if(overlay){
+    overlay.addEventListener("click", closeDrawer);
+  }
+</script>
 
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
@@ -278,18 +376,18 @@
   import { getFirestore, doc, getDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  /* DEFAULT BASE64 LOGO */
+  // Default gömülü SVG logo (kırılmaz, dışa bağımlı değil)
   const DEFAULT_LOGO =
     'data:image/svg+xml;utf8,' +
-    '<svg xmlns="http://www.w3.org/2000/svg"width="256"height="256"viewBox="0 0 256 256">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">' +
     '<rect width="256" height="256" fill="%23020a1b"/>' +
     '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
     '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
-    'font-family="system-ui" font-size="40" fill="%2322c55e">Logo</text>' +
+    'font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif" font-size="40" fill="%2322c55e">Logo</text>' +
     '</svg>';
 
   let BUSINESS_ID = null;
@@ -297,6 +395,8 @@
   let cityFromDB = "";
   let districtFromDB = "";
 
+  const bizNameSmall   = document.getElementById("bizNameSmall");
+  const bizNameMobile  = document.getElementById("bizNameMobile");
   const logoInput      = document.getElementById("logoInput");
   const logoPreview    = document.getElementById("logoPreview");
   const bizNameInput   = document.getElementById("bizNameInput");
@@ -306,9 +406,24 @@
   const citySelect     = document.getElementById("citySelect");
   const districtSelect = document.getElementById("districtSelect");
   const saveBizBtn     = document.getElementById("saveBizBtn");
+  const saveScheduleBtn= document.getElementById("saveScheduleBtn");
 
+  // Günler (schedule için)
+  const DAYS = [
+    { key:"monday",    label:"Pazartesi" },
+    { key:"tuesday",   label:"Salı" },
+    { key:"wednesday", label:"Çarşamba" },
+    { key:"thursday",  label:"Perşembe" },
+    { key:"friday",    label:"Cuma" },
+    { key:"saturday",  label:"Cumartesi" },
+    { key:"sunday",    label:"Pazar" },
+  ];
 
-  /* ---------------- DOSYAYI BASE64'E ÇEVİR ---------------- */
+  // Default logo göster
+  logoPreview.src = DEFAULT_LOGO;
+
+  /* -------- LOGO: BASE64 KAYIT -------- */
+
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -318,32 +433,37 @@
     });
   }
 
-
-  /* ---------------- LOGO SEÇİLDİ ---------------- */
   logoInput.addEventListener("change", async () => {
     const file = logoInput.files[0];
     if (!file || !BUSINESS_ID) return;
 
     try {
+      saveBizBtn.disabled = true;
+
       const base64 = await fileToBase64(file);
 
+      // Önce ekranda göster
       logoPreview.src = base64;
 
+      // Firestore'a kaydet
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         { logoBase64: base64 },
         { merge:true }
       );
 
-      alert("Logo başarıyla güncellendi.");
+      alert("Logo güncellendi.");
     } catch (err) {
+      console.error(err);
       logoPreview.src = DEFAULT_LOGO;
-      alert("Logo yüklenemedi.");
+      alert("Logo yüklenirken hata oluştu.");
+    } finally {
+      saveBizBtn.disabled = false;
     }
   });
 
+  /* ---------- ŞEHİR JSON YÜKLEME ---------- */
 
-  /* ---------------- ŞEHİR JSON YÜKLEME ---------------- */
   async function loadCities() {
     try {
       const res = await fetch("/al/js/turkey-cities.json");
@@ -398,28 +518,92 @@
     if (selected) districtSelect.value = selected;
   }
 
-
   citySelect.addEventListener("change", () => {
     fillDistricts(citySelect.value);
   });
 
+  /* ---------- ÇALIŞMA SAATLERİ SATIRLARINI OLUŞTUR ---------- */
 
-  /* ---------------- İŞLETME VERİLERİNİ YÜKLE ---------------- */
-  async function loadBusiness() {
-    const ref  = doc(db, "businesses", BUSINESS_ID);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      logoPreview.src = DEFAULT_LOGO;
+  const scheduleRowsEl = document.getElementById("scheduleRows");
+
+  function buildScheduleRows() {
+    scheduleRowsEl.innerHTML = "";
+    DAYS.forEach(d => {
+      const row = document.createElement("div");
+      row.className = "schedule-row";
+      row.innerHTML = `
+        <div class="schedule-day">${d.label}</div>
+        <div class="schedule-times">
+          <input type="time" id="start_${d.key}">
+          <span>–</span>
+          <input type="time" id="end_${d.key}">
+          <label class="closed-label">
+            <input type="checkbox" id="closed_${d.key}"> Kapalı
+          </label>
+        </div>
+      `;
+      scheduleRowsEl.appendChild(row);
+    });
+  }
+
+  buildScheduleRows();
+
+  function fillScheduleFromDB(scheduleObj) {
+    const schedule = scheduleObj || {};
+    DAYS.forEach(d => {
+      const cfg = schedule[d.key] || {};
+      const startEl  = document.getElementById(`start_${d.key}`);
+      const endEl    = document.getElementById(`end_${d.key}`);
+      const closedEl = document.getElementById(`closed_${d.key}`);
+
+      if (startEl)  startEl.value  = cfg.start  || "";
+      if (endEl)    endEl.value    = cfg.end    || "";
+      if (closedEl) closedEl.checked = !!cfg.closed;
+    });
+  }
+
+  function collectScheduleFromUI() {
+    const scheduleToSave = {};
+    for (const d of DAYS) {
+      const startEl  = document.getElementById(`start_${d.key}`);
+      const endEl    = document.getElementById(`end_${d.key}`);
+      const closedEl = document.getElementById(`closed_${d.key}`);
+
+      const start  = startEl?.value || "";
+      const end    = endEl?.value   || "";
+      const closed = !!(closedEl && closedEl.checked);
+
+      // Kapalı değilse ve saatlerden biri boşsa uyarı vereceğiz (save sırasında)
+      scheduleToSave[d.key] = { start, end, closed };
+    }
+    return scheduleToSave;
+  }
+
+  /* --------- AUTH DURUMU -------- */
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      window.location.href = "business-login.html";
       return;
     }
+    BUSINESS_ID = user.uid;
+    await loadCities();
+    await loadBusiness();
+  });
+
+  async function loadBusiness() {
+    if (!BUSINESS_ID) return;
+
+    const ref  = doc(db, "businesses", BUSINESS_ID);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
 
     const d = snap.data();
 
-    // LOGO
-    if (d.logoBase64) logoPreview.src = d.logoBase64;
-    else logoPreview.src = DEFAULT_LOGO;
+    const name = d.name || "İşletme";
+    bizNameSmall.textContent  = name;
+    bizNameMobile.textContent = name;
 
-    // Diğer bilgiler
     bizNameInput.value    = d.name    || "";
     bizPhoneInput.value   = d.phone   || "";
     bizAddressInput.value = d.address || "";
@@ -428,13 +612,23 @@
     cityFromDB     = d.city     || "";
     districtFromDB = d.district || "";
 
-    if (citiesData.length > 0) {
-      fillCities();
+    if (d.logoBase64 && d.logoBase64.trim() !== "") {
+      logoPreview.src = d.logoBase64;
+    } else {
+      logoPreview.src = DEFAULT_LOGO;
     }
+
+    if (cityFromDB) {
+      citySelect.value = cityFromDB;
+      fillDistricts(cityFromDB, districtFromDB);
+    }
+
+    // Çalışma saatlerini yükle
+    fillScheduleFromDB(d.schedule || {});
   }
 
+  /* --------- İŞLETME KAYDET -------- */
 
-  /* ---------------- VERİLERİ KAYDET ---------------- */
   saveBizBtn.addEventListener("click", async () => {
     if (!BUSINESS_ID) return;
 
@@ -444,40 +638,63 @@
       await setDoc(
         doc(db, "businesses", BUSINESS_ID),
         {
-          name:     bizNameInput.value.trim(),
-          phone:    bizPhoneInput.value.trim(),
-          address:  bizAddressInput.value.trim(),
-          about:    bizAboutInput.value.trim(),
-          city:     citySelect.value,
-          district: districtSelect.value
+          name:    bizNameInput.value.trim(),
+          phone:   bizPhoneInput.value.trim(),
+          address: bizAddressInput.value.trim(),
+          about:   bizAboutInput.value.trim(),
+          city:    citySelect.value,
+          district:districtSelect.value
         },
-        { merge:true }
+        { merge: true }
       );
 
       alert("İşletme bilgileri kaydedildi.");
     } catch (err) {
-      alert("Kayıt sırasında hata oluştu.");
+      console.error(err);
+      alert("Bilgiler kaydedilirken hata oluştu.");
     } finally {
       saveBizBtn.disabled = false;
     }
   });
 
+  /* --------- ÇALIŞMA SAATLERİNİ KAYDET -------- */
 
-  /* ---------------- AUTH KONTROLÜ ---------------- */
-  onAuthStateChanged(auth, async user => {
-    if (!user) {
-      location.href = "business-login.html";
-      return;
+  saveScheduleBtn.addEventListener("click", async () => {
+    if (!BUSINESS_ID) return;
+
+    const scheduleToSave = collectScheduleFromUI();
+
+    // Basit doğrulama: kapalı değilse, start & end dolu olmalı
+    for (const d of DAYS) {
+      const cfg = scheduleToSave[d.key];
+      if (!cfg.closed) {
+        if (!cfg.start || !cfg.end) {
+          alert(`${d.label} günü için açılış / kapanış saatini doldurmalısınız ya da "Kapalı" işaretlemelisiniz.`);
+          return;
+        }
+      }
     }
 
-    BUSINESS_ID = user.uid;
+    saveScheduleBtn.disabled = true;
 
-    await loadCities();   
-    await loadBusiness();
+    try {
+      await setDoc(
+        doc(db, "businesses", BUSINESS_ID),
+        { schedule: scheduleToSave },
+        { merge: true }
+      );
+
+      alert("Çalışma saatleri kaydedildi.");
+    } catch (err) {
+      console.error(err);
+      alert("Çalışma saatleri kaydedilirken hata oluştu.");
+    } finally {
+      saveScheduleBtn.disabled = false;
+    }
   });
 
+  /* --------- ŞİFRE -------- */
 
-  /* ---------------- ŞİFRE ---------------- */
   document.getElementById("savePassBtn").addEventListener("click", async () => {
     const pass = document.getElementById("newPassInput").value;
 
@@ -490,15 +707,15 @@
       await updatePassword(auth.currentUser, pass);
       alert("Şifre güncellendi.");
     } catch (err) {
-      alert("Şifre değişmedi, tekrar giriş gerekli olabilir.");
+      console.error(err);
+      alert("Şifre güncellenemedi. Tekrar giriş yapman gerekebilir.");
     }
   });
 
-
-  /* ---------------- ÇIKIŞ ---------------- */
+  /* --------- ÇIKIŞ -------- */
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
-    location.href = "business-login.html";
+    window.location.href = "business-login.html";
   });
 
 </script>
