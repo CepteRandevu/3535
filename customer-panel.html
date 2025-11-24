@@ -32,10 +32,7 @@
       padding:20px 12px 32px;
     }
 
-    .app{
-      width:100%;
-      max-width:900px;
-    }
+    .app{ width:100%; max-width:900px; }
 
     header{
       display:flex;
@@ -44,19 +41,16 @@
       margin-bottom:16px;
     }
 
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      cursor:pointer;
-    }
+    .logo{ display:flex; align-items:center; gap:10px; cursor:pointer; }
     .logo-mark{
-      width:32px;height:32px;border-radius:14px;
+      width:32px; height:32px;
+      border-radius:14px;
       background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-      display:flex;align-items:center;justify-content:center;
-      font-size:18px;font-weight:800;color:#ecfdf5;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; font-weight:800; color:#ecfdf5;
       box-shadow:0 10px 30px rgba(34,197,94,0.6);
     }
+
     .logo-text-main{font-weight:600;font-size:16px;}
     .logo-text-sub{font-size:11px;color:var(--muted);}
 
@@ -71,7 +65,9 @@
       grid-template-columns:minmax(0,1.1fr) minmax(0,1.2fr);
       gap:16px;
     }
-    @media(max-width:780px){ .grid{grid-template-columns:minmax(0,1fr);} }
+    @media(max-width:780px){
+      .grid{ grid-template-columns:minmax(0,1fr); }
+    }
 
     .card{
       background:rgba(15,23,42,0.96);
@@ -82,38 +78,46 @@
       margin-bottom:16px;
     }
 
-    /* PROFiL FOTO */
-    .pfp-wrap{
-      display:flex;flex-direction:column;align-items:center;gap:8px;
-    }
+    /* PROFİL FOTO */
+    .pfp-wrap{ display:flex; flex-direction:column; align-items:center; gap:8px; }
     .pfp{
-      width:120px;height:120px;border-radius:999px;
-      object-fit:cover;object-position:center;
-      background:#020617;border:2px solid var(--accent);
+      width:120px; height:120px;
+      border-radius:999px;
+      object-fit:cover; object-position:center;
+      background:#020617;
+      border:2px solid var(--accent);
     }
+
     .pfp-btn{
-      padding:7px 14px;border-radius:12px;border:0;
-      cursor:pointer;font-size:12px;font-weight:600;
+      padding:7px 14px;border-radius:12px;border:0;cursor:pointer;
+      font-size:12px;font-weight:600;
       background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-      color:#022c22;box-shadow:0 8px 18px rgba(34,197,94,0.35);
+      color:#022c22;
+      box-shadow:0 8px 18px rgba(34,197,94,0.35);
     }
 
     input{
-      width:100%;padding:9px 11px;border-radius:12px;
+      width:100%;
+      padding:9px 11px;
+      border-radius:12px;
       border:1px solid rgba(148,163,184,0.35);
-      background:#020617;color:var(--text);font-size:13px;margin-bottom:10px;
+      background:#020617;
+      color:var(--text);
+      font-size:13px;
+      margin-bottom:10px;
     }
 
-    input:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+    input:focus{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
 
     .btn-primary{
-      width:100%;padding:10px;border-radius:12px;border:0;
-      cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-      color:#022c22;font-weight:600;font-size:14px;
-      box-shadow:0 12px 28px rgba(34,197,94,0.4);margin-top:4px;
+      width:100%; padding:10px; border-radius:12px; border:0; cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+      color:#022c22; font-weight:600; font-size:14px;
+      box-shadow:0 12px 28px rgba(34,197,94,0.4);
+      margin-top:4px;
     }
 
-    /* --- Randevu Kartları Profesyonel Tasarım --- */
+    /* Randevu Kartları */
     .appt-box{
       display:flex;
       gap:12px;
@@ -130,25 +134,27 @@
       object-fit:cover;
     }
 
-    .appt-info{flex:1;font-size:13px;}
+    .appt-info{ flex:1; font-size:13px; }
 
-    .appt-title{font-weight:600;font-size:14px;margin-bottom:4px;}
-    .appt-sub{color:var(--muted);font-size:12px;margin-bottom:3px;}
-    .appt-date{font-size:12px;margin-top:3px;margin-bottom:5px;}
+    .appt-title{ font-weight:600; font-size:14px; margin-bottom:4px; }
+    .appt-sub{ color:var(--muted); font-size:12px; margin-bottom:3px; }
+    .appt-date{ font-size:12px; margin-top:3px; margin-bottom:5px; }
 
-    .status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;margin-top:5px;}
+    .status{
+      display:inline-block;padding:3px 8px;border-radius:999px;
+      font-size:11px;margin-top:5px;
+    }
     .status.pending{background:rgba(234,179,8,0.2);color:#facc15;}
     .status.approved{background:rgba(34,197,94,0.2);color:#4ade80;}
     .status.rejected{background:rgba(239,68,68,0.2);color:#ef4444;}
     .status.cancelled{background:rgba(148,163,184,0.2);color:#e5e7eb;}
 
     .small-btn{
-      padding:5px 10px;border-radius:10px;border:0;font-size:11px;cursor:pointer;
-      background:var(--danger);color:#fff;margin-top:6px;
+      padding:5px 10px;border-radius:10px;border:0;font-size:11px;
+      cursor:pointer;background:var(--danger);color:#fff;margin-top:6px;
     }
   </style>
 </head>
-
 <body>
 <div class="app">
 
@@ -164,6 +170,7 @@
   </header>
 
   <main class="grid">
+
     <!-- PROFİL -->
     <section>
       <div class="card">
@@ -171,6 +178,7 @@
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Bilgilerini güncel tut.</div>
 
         <div style="display:flex;gap:14px;">
+
           <div class="pfp-wrap">
             <img id="pfp" class="pfp">
             <button id="choosePhotoBtn" class="pfp-btn">Fotoğraf Seç</button>
@@ -191,6 +199,7 @@
 
               <button id="saveProfileBtn" class="btn-primary">Profili Kaydet</button>
             </div>
+
           </div>
         </div>
       </div>
@@ -200,10 +209,11 @@
         <button id="reminderBtn" class="btn-primary" style="background:#020617;border:1px solid var(--border);color:var(--text);">15 gün sonra hatırlat</button>
         <div id="reminderInfo" style="font-size:12px;color:var(--muted);margin-top:6px;"></div>
       </div>
-    </section>
 
+    </section>
     <!-- RANDEVULAR -->
     <section>
+
       <div class="card">
         <h2>Yaklaşan Randevularım</h2>
         <div id="upcomingList">Yükleniyor...</div>
@@ -213,12 +223,12 @@
         <h2>Geçmiş Randevularım</h2>
         <div id="historyList">Yükleniyor...</div>
       </div>
+
     </section>
 
   </main>
+
 </div>
-
-
 <script type="module">
 import { firebaseConfig } from "./js/firebase-config.js";
 
@@ -227,6 +237,7 @@ import {
   getFirestore, doc, getDoc, updateDoc, collection, query,
   where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 import {
   getAuth, onAuthStateChanged, signOut, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -256,6 +267,7 @@ document.getElementById("homeLogo").onclick = ()=>{
   location.href = "https://cepterandevu.github.io/al/";
 };
 
+// Base64 dönüştürücü
 function fileToBase64(file){
   return new Promise((resolve,reject)=>{
     const r=new FileReader();
@@ -273,18 +285,18 @@ onAuthStateChanged(auth, async user=>{
   listenAppointmentsRealtime();
 });
 
-/* PROFIL YÜKLE */
+/* PROFİL VERİSİ YÜKLE */
 async function loadProfile(){
   const ref = doc(db,"customers",currentUID);
   const snap = await getDoc(ref);
   if(!snap.exists()) return;
 
-  const d=snap.data();
+  const d = snap.data();
 
-  pNameEl.textContent=d.name;
-  pPhoneEl.textContent=d.phone;
+  pNameEl.textContent = d.name;
+  pPhoneEl.textContent = d.phone;
   if(d.createdAt?.toDate)
-    pJoinEl.textContent=d.createdAt.toDate().toLocaleDateString("tr-TR");
+    pJoinEl.textContent = d.createdAt.toDate().toLocaleDateString("tr-TR");
 
   pfpEl.src = d.photoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
@@ -293,35 +305,38 @@ async function loadProfile(){
 
 /* FOTO YÜKLE */
 choosePhotoBtn.onclick=()=> photoInput.click();
-photoInput.onchange= async()=>{
-  const f=photoInput.files[0];
-  if(!f) return;
 
-  choosePhotoBtn.disabled=true;
-  choosePhotoBtn.textContent="Yükleniyor...";
+photoInput.onchange = async()=>{
+  const file = photoInput.files[0];
+  if(!file) return;
+
+  choosePhotoBtn.disabled = true;
+  choosePhotoBtn.textContent = "Yükleniyor...";
 
   try{
-    const b64= await fileToBase64(f);
-    await updateDoc(doc(db,"customers",currentUID),{ photoBase64:b64 });
-    pfpEl.src=b64;
-    choosePhotoBtn.textContent="Fotoğrafı Değiştir";
+    const base64 = await fileToBase64(file);
+    await updateDoc(doc(db,"customers",currentUID),{ photoBase64:base64 });
+    pfpEl.src = base64;
+    choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
   }catch(e){
-    choosePhotoBtn.textContent="Tekrar Dene";
+    choosePhotoBtn.textContent = "Tekrar Dene";
   }
-  choosePhotoBtn.disabled=false;
+
+  choosePhotoBtn.disabled = false;
 };
 
 /* PROFİL KAYDET */
-saveProfileBtn.onclick= async()=>{
-  const nm=editNameInput.value.trim();
-  const pw=editPasswordInput.value;
+saveProfileBtn.onclick = async()=>{
+
+  const nm = editNameInput.value.trim();
+  const pw = editPasswordInput.value;
 
   if(nm){
-    await updateDoc(doc(db,"customers",currentUID),{name:nm});
+    await updateDoc(doc(db,"customers",currentUID),{ name:nm });
   }
 
   if(pw){
-    if(pw.length<6){ alert("Şifre minimum 6 karakter"); return; }
+    if(pw.length < 6){ alert("Şifre minimum 6 karakter olmalı."); return; }
     await updatePassword(auth.currentUser,pw);
   }
 
@@ -329,62 +344,98 @@ saveProfileBtn.onclick= async()=>{
   loadProfile();
 };
 
-/* RANDEVULAR */
+/* RANDEVULARI DİNLE */
 function listenAppointmentsRealtime(){
-  const q = query(collection(db,"appointments"), where("customerUID","==",currentUID));
 
-  onSnapshot(q, snap=>{
+  const q = query(
+    collection(db,"appointments"),
+    where("customerUID","==",currentUID)
+  );
+
+  onSnapshot(q,snap=>{
+
     const list=[];
-    snap.forEach(s=> list.push({id:s.id, ...s.data()}));
+    snap.forEach(s => list.push({id:s.id, ...s.data()}));
 
-    const t=new Date();t.setHours(0,0,0,0);
-    const up=[], old=[];
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const upcoming = [];
+    const old = [];
 
     list.forEach(ap=>{
-      const d=new Date(ap.date+"T00:00:00");
-      if(d>=t && ap.status!=="cancelled" && ap.status!=="rejected") up.push(ap);
-      else old.push(ap);
+      const d = new Date(ap.date+"T00:00:00");
+
+      if(d >= today && ap.status!=="cancelled" && ap.status!=="rejected"){
+        upcoming.push(ap);
+      } else {
+        old.push(ap);
+      }
     });
 
-    renderUpcoming(up);
+    renderUpcoming(upcoming);
     renderHistory(old);
   });
 }
 
-/* KART OLUŞTURAN FONKSİYON */
+/* KART OLUŞTUR */
 function createAppointmentBox(ap){
+
+  const logo = ap.businessLogo || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+  const bName = ap.businessName || "İşletme Bilgisi Yok";
+  const sName = ap.serviceName || "Hizmet Bilgisi Yok";
+  const eName = ap.employeeName || "Çalışan Bilgisi Yok";
+
   return `
-  <div class="appt-box">
-      <img class="appt-logo" src="${ap.businessLogo || ''}">
+    <div class="appt-box">
+      <img class="appt-logo" src="${logo}">
       <div class="appt-info">
-          <div class="appt-title">${ap.businessName}</div>
-          <div class="appt-sub">${ap.serviceName} · ${ap.employeeName}</div>
+
+          <div class="appt-title">${bName}</div>
+
+          <div class="appt-sub">${sName} · ${eName}</div>
+
           <div class="appt-date">${ap.date} · ${ap.time}</div>
+
           <span class="status ${ap.status}">${ap.status}</span><br>
-          ${ap.status!=="cancelled" ? `<button class="small-btn" onclick="cancelAppointment('${ap.id}')">Randevuyu İptal Et</button>` : ""}
+
+          ${
+            ap.status!=="cancelled"
+            ? `<button class="small-btn" onclick="cancelAppointment('${ap.id}')">Randevuyu İptal Et</button>`
+            : ""
+          }
+
       </div>
-  </div>`;
+    </div>
+  `;
 }
 
-/* YAKLAŞAN */
+/* LİSTELEME */
 function renderUpcoming(arr){
-  if(arr.length===0){ upcomingList.textContent="Yaklaşan randevu yok."; return; }
+  if(arr.length===0){
+    upcomingList.textContent="Yaklaşan randevu yok.";
+    return;
+  }
+
   upcomingList.innerHTML = arr
     .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))
     .map(createAppointmentBox)
     .join("");
 }
 
-/* GEÇMİŞ */
 function renderHistory(arr){
-  if(arr.length===0){ historyList.textContent="Geçmiş randevu yok."; return; }
+  if(arr.length===0){
+    historyList.textContent="Geçmiş randevu yok.";
+    return;
+  }
+
   historyList.innerHTML = arr
     .sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time))
     .map(createAppointmentBox)
     .join("");
 }
 
-/* RANDEVU İPTAL */
+/* İPTAL */
 window.cancelAppointment = async(id)=>{
   if(!confirm("Bu randevuyu iptal etmek istiyor musun?")) return;
   await updateDoc(doc(db,"appointments",id),{status:"cancelled"});
@@ -392,7 +443,7 @@ window.cancelAppointment = async(id)=>{
 };
 
 /* ÇIKIŞ */
-logoutBtn.onclick=async()=>{
+logoutBtn.onclick = async()=>{
   await signOut(auth);
   location.href="customer-login.html";
 };
