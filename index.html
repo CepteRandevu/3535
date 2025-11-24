@@ -134,6 +134,7 @@
             grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
             gap: 18px;
         }
+
         /* HERO */
         .card-hero {
             border-radius: var(--radius-xl);
@@ -382,7 +383,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 12px; /* logo + içerik için */
             padding: 10px 12px;
             border-radius: 12px;
             margin-bottom: 8px;
@@ -427,6 +428,7 @@
             padding: 2px 6px;
             border-radius: 6px;
         }
+
         .business-meta {
             display: flex;
             flex-direction: column;
@@ -678,406 +680,665 @@
 
                     <div class="pager">
                         <button id="prevPageBtn" disabled>Önceki</button>
-                        <button id="nextPageBtn" disabled>Sonr<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-        getAuth,
-        onAuthStateChanged,
-        signOut
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-        getFirestore,
-        collection,
-        getDocs,
-        doc,
-        getDoc,
-        query,
-        where,
-        orderBy,
-        limit,
-        setDoc,
-        serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    /* ---- DEFAULT BUSINESS LOGO ---- */
-    const DEFAULT_BIZ_LOGO =
-        'data:image/svg+xml;utf8,' +
-        '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
-        '<rect width="256" height="256" fill="%23020a1b"/>' +
-        '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
-        '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
-        'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
-        '</svg>';
-
-    /* FIREBASE CONFIG */
-    const firebaseConfig = {
-        apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-        authDomain: "cepterandevu-35fe4.firebaseapp.com",
-        projectId: "cepterandevu-35fe4",
-        storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-        messagingSenderId: "86298180836",
-        appId: "1:86298180836:web:124c2004605d68b32700f1",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    /* DOM */
-    const headerActions = document.getElementById("headerActions");
-
-    let currentUser = null;
-    let currentProfile = null;
-
-    /* ----------------------------- */
-    /*         HEADER LOGIC          */
-    /* ----------------------------- */
-
-    function renderLoggedOutHeader() {
-        headerActions.innerHTML = "";
-
-        const btnBiz = document.createElement("button");
-        btnBiz.className = "btn btn-outline";
-        btnBiz.textContent = "İşletme Girişi";
-        btnBiz.onclick = () => (window.location.href = "business/business-login.html");
-
-        const btnCust = document.createElement("button");
-        btnCust.className = "btn btn-primary";
-        btnCust.textContent = "Müşteri Girişi";
-        btnCust.onclick = () => (window.location.href = "customer-login.html");
-
-        headerActions.appendChild(btnBiz);
-        headerActions.appendChild(btnCust);
-    }
-
-    /* ------------------------------------------ */
-    /*   EN KRİTİK FONKSİYON (DÜZELTİLMİŞ HALİ)    */
-    /* ------------------------------------------ */
-
-    function renderLoggedInHeader() {
-        headerActions.innerHTML = "";
-
-        const name =
-            currentProfile?.name ||
-            currentProfile?.displayName ||
-            currentUser?.email?.split("@")[0] ||
-            "Kullanıcı";
-
-        /* Kullanıcı tipi */
-        const userType =
-            currentProfile?.userType ||
-            localStorage.getItem("userType") ||
-            "customer";
-
-        /* Panele göre yönlendirme */
-        let targetPanel = "customer-panel.html";
-        if (userType === "business") {
-            targetPanel = "business/business-panel.html";
-        }
-
-        /* Ad */
-        const nameSpan = document.createElement("span");
-        nameSpan.style.fontSize = "12px";
-        nameSpan.style.color = "#e5e7eb";
-        nameSpan.textContent = `Hoş geldin, ${name}`;
-
-        /* Profil butonu */
-        const profileBtn = document.createElement("button");
-        profileBtn.className = "btn btn-outline";
-        profileBtn.textContent = "Profilim";
-        profileBtn.onclick = () => (window.location.href = targetPanel);
-
-        /* Çıkış */
-        const logoutBtn = document.createElement("button");
-        logoutBtn.className = "btn btn-outline";
-        logoutBtn.textContent = "Çıkış";
-        logoutBtn.onclick = async () => {
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.error("Çıkış hatası:", e);
-            }
-        };
-
-        /* Avatar */
-        const avatarInitial = (name[0] || "M").toUpperCase();
-        const avatarUrl = currentProfile?.photoURL || null;
-
-        const avatar = document.createElement("div");
-        avatar.style.width = "32px";
-        avatar.style.height = "32px";
-        avatar.style.borderRadius = "999px";
-        avatar.style.display = "flex";
-        avatar.style.alignItems = "center";
-        avatar.style.justifyContent = "center";
-        avatar.style.fontSize = "14px";
-        avatar.style.fontWeight = "600";
-        avatar.style.cursor = "pointer";
-        avatar.style.color = "#ecfdf5";
-        avatar.style.background =
-            "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
-        avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
-        avatar.onclick = () => (window.location.href = targetPanel);
-
-        if (avatarUrl) {
-            avatar.style.backgroundImage = `url(${avatarUrl})`;
-            avatar.style.backgroundSize = "cover";
-            avatar.style.backgroundPosition = "center";
-            avatar.textContent = "";
-        } else {
-            avatar.textContent = avatarInitial;
-        }
-
-        /* Ekle */
-        headerActions.appendChild(nameSpan);
-        headerActions.appendChild(profileBtn);
-        headerActions.appendChild(logoutBtn);
-        headerActions.appendChild(avatar);
-    }
-
-    /* ----------------------------- */
-    /*          LOAD PROFILE          */
-    /* ----------------------------- */
-
-    async function loadCurrentProfile() {
-        if (!currentUser) return null;
-
-        const collections = ["customers", "businesses"];
-
-        for (const col of collections) {
-            try {
-                const ref = doc(db, col, currentUser.uid);
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    return snap.data();
-                }
-            } catch {}
-        }
-        return null;
-    }
-
-    /* ----------------------------- */
-    /*          AUTH STATE           */
-    /* ----------------------------- */
-
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user || null;
-
-        if (!currentUser) {
-            currentProfile = null;
-            renderLoggedOutHeader();
-        } else {
-            currentProfile = await loadCurrentProfile();
-            renderLoggedInHeader();
-        }
-    });
-
-</script>
-
-</body>
-</html>
-aki</button>
+                        <button id="nextPageBtn" disabled>Sonraki</button>
                     </div>
                 </div>
             </section>
 
         </main>
     </div>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-        getAuth,
-        onAuthStateChanged,
-        signOut
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-        getFirestore,
-        collection,
-        getDocs,
-        doc,
-        getDoc,
-        query,
-        where,
-        orderBy,
-        limit,
-        setDoc,
-        serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            getDoc,
+            query,
+            where,
+            orderBy,
+            limit,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /* ---- DEFAULT BUSINESS LOGO ---- */
-    const DEFAULT_BIZ_LOGO =
-        'data:image/svg+xml;utf8,' +
-        '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
-        '<rect width="256" height="256" fill="%23020a1b"/>' +
-        '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
-        '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
-        'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
-        '</svg>';
+        /* ---- DEFAULT BUSINESS LOGO ---- */
+        const DEFAULT_BIZ_LOGO =
+          'data:image/svg+xml;utf8,' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+          '<rect width="256" height="256" fill="%23020a1b"/>' +
+          '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+          '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+          'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+          '</svg>';
 
-    /* FIREBASE CONFIG */
-    const firebaseConfig = {
-        apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-        authDomain: "cepterandevu-35fe4.firebaseapp.com",
-        projectId: "cepterandevu-35fe4",
-        storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-        messagingSenderId: "86298180836",
-        appId: "1:86298180836:web:124c2004605d68b32700f1",
-    };
+        /* 🔧 FIREBASE CONFIG */
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+            authDomain: "cepterandevu-35fe4.firebaseapp.com",
+            projectId: "cepterandevu-35fe4",
+            storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+            messagingSenderId: "86298180836",
+            appId: "1:86298180836:web:124c2004605d68b32700f1",
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    /* DOM */
-    const headerActions = document.getElementById("headerActions");
+        /* ---------- DOM ELEMANLARI ---------- */
+        const headerActions = document.getElementById("headerActions");
 
-    let currentUser = null;
-    let currentProfile = null;
+        const citySelect = document.getElementById("citySelect");
+        const districtSelect = document.getElementById("districtSelect");
+        const searchBtn = document.getElementById("searchBtn");
 
-    /* ----------------------------- */
-    /*         HEADER LOGIC          */
-    /* ----------------------------- */
+        const listSubtitle = document.getElementById("listSubtitle");
+        const businessCountPill = document.getElementById("businessCountPill");
+        const businessList = document.getElementById("businessList");
+        const pageInfo = document.getElementById("pageInfo");
+        const prevPageBtn = document.getElementById("prevPageBtn");
+        const nextPageBtn = document.getElementById("nextPageBtn");
 
-    function renderLoggedOutHeader() {
-        headerActions.innerHTML = "";
+        const lastAppointmentCard = document.getElementById("lastAppointmentCard");
+        const popularBusinessesBox = document.getElementById("popularBusinesses");
 
-        const btnBiz = document.createElement("button");
-        btnBiz.className = "btn btn-outline";
-        btnBiz.textContent = "İşletme Girişi";
-        btnBiz.onclick = () => (window.location.href = "business/business-login.html");
+        /* ---------- GLOBAL DURUMLAR ---------- */
+        let currentUser = null;
+        let currentProfile = null;
 
-        const btnCust = document.createElement("button");
-        btnCust.className = "btn btn-primary";
-        btnCust.textContent = "Müşteri Girişi";
-        btnCust.onclick = () => (window.location.href = "customer-login.html");
+        let ALL_BUSINESSES = [];
+        let ALL_CITIES = [];
 
-        headerActions.appendChild(btnBiz);
-        headerActions.appendChild(btnCust);
-    }
+        let filteredBusinesses = [];
+        const PAGE_SIZE = 5;
+        let currentPage = 1;
 
-    /* ------------------------------------------ */
-    /*   EN KRİTİK FONKSİYON (DÜZELTİLMİŞ HALİ)    */
-    /* ------------------------------------------ */
+        /* ---------- HEADER UI (LOGIN / AVATAR) ---------- */
 
-    function renderLoggedInHeader() {
-        headerActions.innerHTML = "";
+        function renderLoggedOutHeader() {
+            headerActions.innerHTML = "";
 
-        const name =
-            currentProfile?.name ||
-            currentProfile?.displayName ||
-            currentUser?.email?.split("@")[0] ||
-            "Kullanıcı";
+            const btnBiz = document.createElement("button");
+            btnBiz.className = "btn btn-outline";
+            btnBiz.textContent = "İşletme Girişi";
+            btnBiz.onclick = () => (window.location.href = "business/business-login.html");
 
-        /* Kullanıcı tipi */
-        const userType =
-            currentProfile?.userType ||
-            localStorage.getItem("userType") ||
-            "customer";
+            const btnCust = document.createElement("button");
+            btnCust.className = "btn btn-primary";
+            btnCust.textContent = "Müşteri Girişi";
+            btnCust.onclick = () => (window.location.href = "customer-login.html");
 
-        /* Panele göre yönlendirme */
-        let targetPanel = "customer-panel.html";
-        if (userType === "business") {
-            targetPanel = "business/business-panel.html";
+            headerActions.appendChild(btnBiz);
+            headerActions.appendChild(btnCust);
         }
 
-        /* Ad */
-        const nameSpan = document.createElement("span");
-        nameSpan.style.fontSize = "12px";
-        nameSpan.style.color = "#e5e7eb";
-        nameSpan.textContent = `Hoş geldin, ${name}`;
+        function renderLoggedInHeader() {
+            headerActions.innerHTML = "";
 
-        /* Profil butonu */
-        const profileBtn = document.createElement("button");
-        profileBtn.className = "btn btn-outline";
-        profileBtn.textContent = "Profilim";
-        profileBtn.onclick = () => (window.location.href = targetPanel);
+            const name =
+                currentProfile?.name ||
+                currentProfile?.displayName ||
+                currentUser?.email?.split("@")[0] ||
+                "Müşteri";
 
-        /* Çıkış */
-        const logoutBtn = document.createElement("button");
-        logoutBtn.className = "btn btn-outline";
-        logoutBtn.textContent = "Çıkış";
-        logoutBtn.onclick = async () => {
+            const avatarInitial = (name[0] || "M").toUpperCase();
+            const avatarUrl = currentProfile?.photoURL || null;
+
+            const nameSpan = document.createElement("span");
+            nameSpan.style.fontSize = "12px";
+            nameSpan.style.color = "#e5e7eb";
+            nameSpan.textContent = `Hoş geldin, ${name}`;
+
+            const profileBtn = document.createElement("button");
+            profileBtn.className = "btn btn-outline";
+            profileBtn.textContent = "Profilim";
+            profileBtn.onclick = () => (window.location.href = "customer-panel.html");
+
+            const logoutBtn = document.createElement("button");
+            logoutBtn.className = "btn btn-outline";
+            logoutBtn.textContent = "Çıkış";
+            logoutBtn.onclick = async () => {
+                try {
+                    await signOut(auth);
+                } catch (e) {
+                    console.error("Çıkış hatası:", e);
+                }
+            };
+
+            const avatar = document.createElement("div");
+            avatar.style.width = "32px";
+            avatar.style.height = "32px";
+            avatar.style.borderRadius = "999px";
+            avatar.style.display = "flex";
+            avatar.style.alignItems = "center";
+            avatar.style.justifyContent = "center";
+            avatar.style.fontSize = "14px";
+            avatar.style.fontWeight = "600";
+            avatar.style.cursor = "pointer";
+            avatar.style.color = "#ecfdf5";
+            avatar.style.background =
+                "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
+            avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
+            avatar.onclick = () => (window.location.href = "customer-panel.html");
+
+            if (avatarUrl) {
+                avatar.style.backgroundImage = `url(${avatarUrl})`;
+                avatar.style.backgroundSize = "cover";
+                avatar.style.backgroundPosition = "center";
+                avatar.textContent = "";
+            } else {
+                avatar.textContent = avatarInitial;
+            }
+
+            headerActions.appendChild(nameSpan);
+            headerActions.appendChild(profileBtn);
+            headerActions.appendChild(logoutBtn);
+            headerActions.appendChild(avatar);
+        }
+
+        async function loadCurrentProfile() {
+            if (!currentUser) return null;
+
+            const tryCollections = ["customers", "users"];
+
+            for (const col of tryCollections) {
+                try {
+                    const ref = doc(db, col, currentUser.uid);
+                    const snap = await getDoc(ref);
+                    if (snap.exists()) {
+                        return snap.data();
+                    }
+                } catch (e) {
+                    console.warn(col, "koleksiyonundan profil alınamadı:", e);
+                }
+            }
+            return null;
+        }
+
+        /* ---------- ONESIGNAL ENTEGRASYONU ---------- */
+
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function (OneSignal) {
             try {
-                await signOut(auth);
+                await OneSignal.init({
+                    appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
+                });
             } catch (e) {
-                console.error("Çıkış hatası:", e);
+                console.warn("OneSignal init hatası:", e);
+            }
+        });
+
+        async function setupOneSignalForUser() {
+            if (!currentUser) return;
+            try {
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function (OneSignal) {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        const sub = OneSignal.User.PushSubscription;
+                        const token = sub?.token;
+                        if (!token) return;
+
+                        await setDoc(
+                            doc(db, "userPushTokens", currentUser.uid),
+                            {
+                                uid: currentUser.uid,
+                                email: currentUser.email || null,
+                                token,
+                                updatedAt: serverTimestamp()
+                            },
+                            { merge: true }
+                        );
+                    } catch (e) {
+                        console.warn("OneSignal kullanıcı bağlama hatası:", e);
+                    }
+                });
+            } catch (e) {
+                console.warn("OneSignal global hatası:", e);
+            }
+        }
+
+        /* ---------- BUSINESS / ŞEHİR YÜKLEME ---------- */
+
+        async function loadBusinesses() {
+            try {
+                const snap = await getDocs(collection(db, "businesses"));
+                ALL_BUSINESSES = [];
+                ALL_CITIES = [];
+
+                snap.forEach((docSnap) => {
+                    const d = docSnap.data();
+                    const city = d.city || d.cityName || "";
+                    const district = d.district || d.districtName || "";
+
+                    ALL_BUSINESSES.push({
+                        id: docSnap.id,
+                        name: d.name || "İsimsiz İşletme",
+                        cityId: city,
+                        cityName: city,
+                        districtId: district,
+                        districtName: district,
+                        tags: Array.isArray(d.tags) ? d.tags : [],
+                        rating: typeof d.rating === "number" ? d.rating : 0,
+                        reviewCount:
+                            typeof d.reviewCount === "number" ? d.reviewCount : 0,
+                        freeSlotsToday:
+                            typeof d.freeSlotsToday === "number" ? d.freeSlotsToday : 0,
+                        logoBase64: d.logoBase64 || null
+                    });
+
+                    if (city && !ALL_CITIES.includes(city)) {
+                        ALL_CITIES.push(city);
+                    }
+                });
+
+                ALL_CITIES.sort();
+                populateCities();
+                renderPopularBusinesses();
+            } catch (e) {
+                console.error("İşletme listesi alınamadı:", e);
+            }
+        }
+
+        function populateCities() {
+            citySelect.innerHTML = `<option value="">İl seç</option>`;
+            ALL_CITIES.forEach((c) => {
+                const opt = document.createElement("option");
+                opt.value = c;
+                opt.textContent = c;
+                citySelect.appendChild(opt);
+            });
+
+            districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+            districtSelect.disabled = true;
+        }
+
+        function populateDistricts(city) {
+            districtSelect.innerHTML = "";
+            if (!city) {
+                districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+                districtSelect.disabled = true;
+                return;
+            }
+
+            const districts = [
+                ...new Set(
+                    ALL_BUSINESSES
+                        .filter((b) => b.cityId === city)
+                        .map((b) => b.districtName)
+                )
+            ].filter(Boolean).sort();
+
+            districtSelect.disabled = false;
+            districtSelect.innerHTML = `<option value="">Tüm ilçeler</option>`;
+
+            districts.forEach((d) => {
+                const opt = document.createElement("option");
+                opt.value = d;
+                opt.textContent = d;
+                districtSelect.appendChild(opt);
+            });
+        }
+
+        /* ---------- FİLTRE / LİSTE ---------- */
+
+        function filterBusinesses() {
+            const city = citySelect.value;
+            const district = districtSelect.value;
+
+            if (!city) {
+                filteredBusinesses = [];
+                renderBusinessList();
+                listSubtitle.textContent = "İl seçmeden listeleme yapılamaz.";
+                businessCountPill.textContent = "0 işletme";
+                return;
+            }
+
+            filteredBusinesses = ALL_BUSINESSES.filter((b) => {
+                if (b.cityId !== city) return false;
+                if (district && b.districtId !== district) return false;
+                return true;
+            });
+
+            currentPage = 1;
+
+            const displayDistrict = district || "Tüm ilçeler";
+            if (filteredBusinesses.length === 0) {
+                listSubtitle.textContent = `${city} / ${displayDistrict} için kayıtlı işletme bulunamadı.`;
+            } else {
+                listSubtitle.textContent = `${city} / ${displayDistrict} bölgesinde ${filteredBusinesses.length} işletme bulundu.`;
+            }
+
+            businessCountPill.textContent = `${filteredBusinesses.length} işletme`;
+            renderBusinessList();
+        }
+
+        function renderBusinessList() {
+            businessList.innerHTML = "";
+
+            if (!filteredBusinesses || filteredBusinesses.length === 0) {
+                const li = document.createElement("li");
+                li.className = "business-empty";
+                li.innerHTML =
+                    'Bu kriterlere ait kayıtlı işletme bulunamadı.<br/>İl / ilçe seçiminizi değiştirip tekrar deneyebilirsiniz.';
+                businessList.appendChild(li);
+                updatePager();
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+
+            const startIndex = (currentPage - 1) * PAGE_SIZE;
+            const pageItems = filteredBusinesses.slice(
+                startIndex,
+                startIndex + PAGE_SIZE
+            );
+
+            pageItems.forEach((b) => {
+                const li = document.createElement("li");
+                li.className = "business-card";
+                li.onclick = () => handleBusinessClick(b);
+
+                const logo = document.createElement("img");
+                logo.src = b.logoBase64 || DEFAULT_BIZ_LOGO;
+                logo.style.width = "54px";
+                logo.style.height = "54px";
+                logo.style.borderRadius = "12px";
+                logo.style.objectFit = "contain";
+                logo.style.background = "#020617";
+                logo.style.border = "1px solid rgba(148,163,184,0.35)";
+                logo.style.marginRight = "12px";
+                logo.style.flexShrink = "0";
+
+                const main = document.createElement("div");
+                main.className = "business-main";
+
+                const nameEl = document.createElement("div");
+                nameEl.className = "business-name";
+                nameEl.textContent = b.name;
+
+                const locEl = document.createElement("div");
+                locEl.className = "business-location";
+                locEl.textContent = `${b.cityName} · ${b.districtName}`;
+
+                const tagsEl = document.createElement("div");
+                tagsEl.className = "business-tags";
+                (b.tags || []).forEach((tag) => {
+                    const t = document.createElement("span");
+                    t.className = "business-tag";
+                    t.textContent = tag;
+                    tagsEl.appendChild(t);
+                });
+
+                main.appendChild(nameEl);
+                main.appendChild(locEl);
+                main.appendChild(tagsEl);
+
+                const meta = document.createElement("div");
+                meta.className = "business-meta";
+
+                const ratingEl = document.createElement("div");
+                ratingEl.className = "rating-pill";
+                ratingEl.innerHTML = `★ ${b.rating.toFixed(1)} <span>(${b.reviewCount}+)</span>`;
+
+                const bottom = document.createElement("div");
+                bottom.className = "business-meta-bottom";
+
+                const slots = document.createElement("span");
+                slots.className = "slots-chip";
+                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
+
+                const btn = document.createElement("button");
+                btn.className = "btn-mini";
+                btn.type = "button";
+                btn.textContent = "Randevu al";
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    handleBusinessClick(b);
+                };
+
+                bottom.appendChild(slots);
+                bottom.appendChild(btn);
+
+                meta.appendChild(ratingEl);
+                meta.appendChild(bottom);
+
+                li.appendChild(logo);
+                li.appendChild(main);
+                li.appendChild(meta);
+
+                businessList.appendChild(li);
+            });
+
+            updatePager();
+        }
+
+        function updatePager() {
+            const total = filteredBusinesses.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            pageInfo.textContent = `Sayfa ${currentPage} / ${totalPages}`;
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages || total === 0;
+        }
+
+        prevPageBtn.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderBusinessList();
+            }
+        });
+
+        nextPageBtn.addEventListener("click", () => {
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderBusinessList();
+            }
+        });
+
+        function handleBusinessClick(business) {
+            const bookingUrl = `booking.html?businessId=${encodeURIComponent(
+                business.id
+            )}`;
+
+            if (!currentUser) {
+                const redirect = encodeURIComponent(bookingUrl);
+                window.location.href = `customer-login.html?redirect=${redirect}`;
+                return;
+            }
+
+            window.location.href = bookingUrl;
+        }
+
+        /* ---------- POPÜLER İŞLETMELER ---------- */
+
+        function renderPopularBusinesses() {
+            popularBusinessesBox.innerHTML = "";
+
+            if (!ALL_BUSINESSES.length) return;
+
+            const sorted = [...ALL_BUSINESSES].sort((a, b) => {
+                const rA = a.rating || 0;
+                const rB = b.rating || 0;
+                if (rB !== rA) return rB - rA;
+                const cA = a.reviewCount || 0;
+                const cB = b.reviewCount || 0;
+                return cB - cA;
+            });
+
+            const top = sorted.slice(0, 3);
+            if (!top.length) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.style.marginBottom = "14px";
+
+            const title = document.createElement("div");
+            title.style.fontSize = "12px";
+            title.style.color = "#9ca3af";
+            title.style.marginBottom = "6px";
+            title.textContent = "Popüler işletmeler";
+
+            wrapper.appendChild(title);
+
+            top.forEach((b) => {
+                const card = document.createElement("div");
+                card.style.borderRadius = "12px";
+                card.style.border = "1px solid rgba(148,163,184,0.45)";
+                card.style.background = "rgba(15,23,42,0.9)";
+                card.style.padding = "8px 10px";
+                card.style.display = "flex";
+                card.style.justifyContent = "space-between";
+                card.style.alignItems = "center";
+                card.style.fontSize = "12px";
+                card.style.marginBottom = "6px";
+                card.style.cursor = "pointer";
+
+                card.onclick = () => handleBusinessClick(b);
+
+                const left = document.createElement("div");
+                left.textContent = b.name;
+
+                const right = document.createElement("div");
+                right.style.fontSize = "11px";
+                right.style.color = "#bbf7d0";
+                right.textContent = `★ ${b.rating.toFixed(1)}`;
+
+                card.appendChild(left);
+                card.appendChild(right);
+                wrapper.appendChild(card);
+            });
+
+            popularBusinessesBox.appendChild(wrapper);
+        }
+
+        /* ---------- SON RANDEVU KARTI ---------- */
+
+        async function loadLastAppointment() {
+            if (!currentUser) {
+                lastAppointmentCard.innerHTML = "";
+                return;
+            }
+
+            try {
+                let qRef;
+                try {
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid),
+                        orderBy("createdAt", "desc"),
+                        limit(1)
+                    );
+                } catch {
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid)
+                    );
+                }
+
+                const snap = await getDocs(qRef);
+                if (snap.empty) {
+                    lastAppointmentCard.innerHTML = "";
+                    return;
+                }
+
+                let last = null;
+                snap.forEach((d) => {
+                    const data = d.data();
+                    last = { id: d.id, ...data };
+                });
+
+                if (!last) return;
+
+                const bizName = last.businessName || last.businessID || "İşletme";
+                const service = last.serviceName || last.serviceID || "Hizmet";
+                const dateStr = last.date || "-";
+                const timeStr = last.time || "";
+                const status = last.status || "Bilinmiyor";
+
+                const box = document.createElement("div");
+                box.style.marginBottom = "12px";
+                box.style.marginTop = "4px";
+                box.style.borderRadius = "14px";
+                box.style.border = "1px solid rgba(148,163,184,0.5)";
+                box.style.background = "rgba(15,23,42,0.9)";
+                box.style.padding = "8px 10px";
+                box.style.fontSize = "12px";
+
+                box.innerHTML = `
+                <div style="font-size:11px;color:#9ca3af;margin-bottom:4px;">Son randevun</div>
+                <div style="font-weight:600;margin-bottom:2px;">${bizName}</div>
+                <div style="color:#9ca3af;margin-bottom:2px;">
+                    ${service} · ${dateStr} ${timeStr ? "· " + timeStr : ""}
+                </div>
+                <div style="font-size:11px;color:#e5e7eb;margin-bottom:6px;">
+                    Durum: <span style="color:#bbf7d0;">${status}</span>
+                </div>
+            `;
+
+                const btn = document.createElement("button");
+                btn.className = "btn btn-primary";
+                btn.style.padding = "5px 10px";
+                btn.style.fontSize = "11px";
+                btn.textContent = "Tekrar randevu al";
+                btn.onclick = () => {
+                    if (last.businessID) {
+                        handleBusinessClick({ id: last.businessID });
+                    }
+                };
+
+                box.appendChild(btn);
+
+                lastAppointmentCard.innerHTML = "";
+                lastAppointmentCard.appendChild(box);
+            } catch (e) {
+                console.warn("Son randevu getirilemedi:", e);
+            }
+        }
+
+        /* ---------- EVENTLER ---------- */
+
+        citySelect.addEventListener("change", () => {
+            populateDistricts(citySelect.value);
+        });
+
+        searchBtn.addEventListener("click", filterBusinesses);
+
+        window.scrollToSearch = function () {
+            const el = document.getElementById("search-panel");
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         };
 
-        /* Avatar */
-        const avatarInitial = (name[0] || "M").toUpperCase();
-        const avatarUrl = currentProfile?.photoURL || null;
+        /* ---------- AUTH DURUMU ---------- */
 
-        const avatar = document.createElement("div");
-        avatar.style.width = "32px";
-        avatar.style.height = "32px";
-        avatar.style.borderRadius = "999px";
-        avatar.style.display = "flex";
-        avatar.style.alignItems = "center";
-        avatar.style.justifyContent = "center";
-        avatar.style.fontSize = "14px";
-        avatar.style.fontWeight = "600";
-        avatar.style.cursor = "pointer";
-        avatar.style.color = "#ecfdf5";
-        avatar.style.background =
-            "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
-        avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
-        avatar.onclick = () => (window.location.href = targetPanel);
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user || null;
 
-        if (avatarUrl) {
-            avatar.style.backgroundImage = `url(${avatarUrl})`;
-            avatar.style.backgroundSize = "cover";
-            avatar.style.backgroundPosition = "center";
-            avatar.textContent = "";
-        } else {
-            avatar.textContent = avatarInitial;
-        }
+            if (!currentUser) {
+                currentProfile = null;
+                renderLoggedOutHeader();
+                lastAppointmentCard.innerHTML = "";
+            } else {
+                currentProfile = await loadCurrentProfile();
+                renderLoggedInHeader();
+                loadLastAppointment();
+                setupOneSignalForUser();
+            }
+        });
 
-        /* Ekle */
-        headerActions.appendChild(nameSpan);
-        headerActions.appendChild(profileBtn);
-        headerActions.appendChild(logoutBtn);
-        headerActions.appendChild(avatar);
-    }
+        /* ---------- BAŞLANGIÇ ---------- */
 
-    /* ----------------------------- */
-    /*          LOAD PROFILE          */
-    /* ----------------------------- */
-
-    async function loadCurrentProfile() {
-        if (!currentUser) return null;
-
-        const collections = ["customers", "businesses"];
-
-        for (const col of collections) {
-            try {
-                const ref = doc(db, col, currentUser.uid);
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    return snap.data();
-                }
-            } catch {}
-        }
-        return null;
-    }
-
-    /* ----------------------------- */
-    /*          AUTH STATE           */
-    /* ----------------------------- */
-
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user || null;
-
-        if (!currentUser) {
-            currentProfile = null;
-            renderLoggedOutHeader();
-        } else {
-            currentProfile = await loadCurrentProfile();
-            renderLoggedInHeader();
-        }
-    });
-
-</script>
-
+        loadBusinesses();
+    </script>
 </body>
+
 </html>
