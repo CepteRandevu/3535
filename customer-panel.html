@@ -78,7 +78,6 @@
       margin-bottom:16px;
     }
 
-    /* PROFİL FOTO */
     .pfp-wrap{ display:flex; flex-direction:column; align-items:center; gap:8px; }
     .pfp{
       width:120px; height:120px;
@@ -117,7 +116,6 @@
       margin-top:4px;
     }
 
-    /* Randevu Kartları */
     .appt-box{
       display:flex;
       gap:12px;
@@ -155,6 +153,7 @@
     }
   </style>
 </head>
+
 <body>
 <div class="app">
 
@@ -171,7 +170,6 @@
 
   <main class="grid">
 
-    <!-- PROFİL -->
     <section>
       <div class="card">
         <h2>Profilim</h2>
@@ -211,7 +209,7 @@
       </div>
 
     </section>
-    <!-- RANDEVULAR -->
+
     <section>
 
       <div class="card">
@@ -229,6 +227,7 @@
   </main>
 
 </div>
+
 <script type="module">
 import { firebaseConfig } from "./js/firebase-config.js";
 
@@ -267,7 +266,6 @@ document.getElementById("homeLogo").onclick = ()=>{
   location.href = "https://cepterandevu.github.io/al/";
 };
 
-// Base64 dönüştürücü
 function fileToBase64(file){
   return new Promise((resolve,reject)=>{
     const r=new FileReader();
@@ -277,7 +275,6 @@ function fileToBase64(file){
   });
 }
 
-/* AUTH */
 onAuthStateChanged(auth, async user=>{
   if(!user){ location.href="customer-login.html"; return; }
   currentUID = user.uid;
@@ -285,58 +282,52 @@ onAuthStateChanged(auth, async user=>{
   listenAppointmentsRealtime();
 });
 
-/* PROFİL VERİSİ YÜKLE */
 async function loadProfile(){
   const ref = doc(db,"customers",currentUID);
   const snap = await getDoc(ref);
   if(!snap.exists()) return;
 
-  const d = snap.data();
+  const d=snap.data();
 
-  pNameEl.textContent = d.name;
-  pPhoneEl.textContent = d.phone;
+  pNameEl.textContent=d.name;
+  pPhoneEl.textContent=d.phone;
   if(d.createdAt?.toDate)
-    pJoinEl.textContent = d.createdAt.toDate().toLocaleDateString("tr-TR");
+    pJoinEl.textContent=d.createdAt.toDate().toLocaleDateString("tr-TR");
 
   pfpEl.src = d.photoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   editNameInput.value = d.name;
 }
 
-/* FOTO YÜKLE */
 choosePhotoBtn.onclick=()=> photoInput.click();
+photoInput.onchange= async()=>{
+  const f=photoInput.files[0];
+  if(!f) return;
 
-photoInput.onchange = async()=>{
-  const file = photoInput.files[0];
-  if(!file) return;
-
-  choosePhotoBtn.disabled = true;
-  choosePhotoBtn.textContent = "Yükleniyor...";
+  choosePhotoBtn.disabled=true;
+  choosePhotoBtn.textContent="Yükleniyor...";
 
   try{
-    const base64 = await fileToBase64(file);
-    await updateDoc(doc(db,"customers",currentUID),{ photoBase64:base64 });
-    pfpEl.src = base64;
-    choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
+    const b64= await fileToBase64(f);
+    await updateDoc(doc(db,"customers",currentUID),{ photoBase64:b64 });
+    pfpEl.src=b64;
+    choosePhotoBtn.textContent="Fotoğrafı Değiştir";
   }catch(e){
-    choosePhotoBtn.textContent = "Tekrar Dene";
+    choosePhotoBtn.textContent="Tekrar Dene";
   }
-
-  choosePhotoBtn.disabled = false;
+  choosePhotoBtn.disabled=false;
 };
 
-/* PROFİL KAYDET */
-saveProfileBtn.onclick = async()=>{
-
-  const nm = editNameInput.value.trim();
-  const pw = editPasswordInput.value;
+saveProfileBtn.onclick= async()=>{
+  const nm=editNameInput.value.trim();
+  const pw=editPasswordInput.value;
 
   if(nm){
-    await updateDoc(doc(db,"customers",currentUID),{ name:nm });
+    await updateDoc(doc(db,"customers",currentUID),{name:nm});
   }
 
   if(pw){
-    if(pw.length < 6){ alert("Şifre minimum 6 karakter olmalı."); return; }
+    if(pw.length<6){ alert("Şifre minimum 6 karakter"); return; }
     await updatePassword(auth.currentUser,pw);
   }
 
@@ -344,60 +335,56 @@ saveProfileBtn.onclick = async()=>{
   loadProfile();
 };
 
-/* RANDEVULARI DİNLE */
 function listenAppointmentsRealtime(){
+  const q = query(collection(db,"appointments"), where("customerUID","==",currentUID));
 
-  const q = query(
-    collection(db,"appointments"),
-    where("customerUID","==",currentUID)
-  );
-
-  onSnapshot(q,snap=>{
-
+  onSnapshot(q, snap=>{
     const list=[];
-    snap.forEach(s => list.push({id:s.id, ...s.data()}));
+    snap.forEach(s=> list.push({id:s.id, ...s.data()}));
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    const upcoming = [];
-    const old = [];
+    const t=new Date();t.setHours(0,0,0,0);
+    const up=[], old=[];
 
     list.forEach(ap=>{
-      const d = new Date(ap.date+"T00:00:00");
-
-      if(d >= today && ap.status!=="cancelled" && ap.status!=="rejected"){
-        upcoming.push(ap);
-      } else {
-        old.push(ap);
-      }
+      const d=new Date(ap.date+"T00:00:00");
+      if(d>=t && ap.status!=="cancelled" && ap.status!=="rejected") up.push(ap);
+      else old.push(ap);
     });
 
-    renderUpcoming(upcoming);
+    renderUpcoming(up);
     renderHistory(old);
   });
 }
 
-/* KART OLUŞTUR */
+/* DURUM ÇEVİRME */
+function convertStatusText(st){
+  return {
+    pending: "Beklemede",
+    approved: "Onaylandı",
+    rejected: "Reddedildi",
+    cancelled: "İptal Edildi"
+  }[st] || st;
+}
+
 function createAppointmentBox(ap){
 
   const logo = ap.businessLogo || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-  const bName = ap.businessName || "İşletme Bilgisi Yok";
-  const sName = ap.serviceName || "Hizmet Bilgisi Yok";
-  const eName = ap.employeeName || "Çalışan Bilgisi Yok";
+  const bName = ap.businessName || "İşletme";
+  const sName = ap.serviceName || "Hizmet";
+  const eName = ap.employeeName || "Çalışan";
+
+  const statusText = convertStatusText(ap.status);
 
   return `
-    <div class="appt-box">
+  <div class="appt-box">
       <img class="appt-logo" src="${logo}">
       <div class="appt-info">
 
           <div class="appt-title">${bName}</div>
-
           <div class="appt-sub">${sName} · ${eName}</div>
-
           <div class="appt-date">${ap.date} · ${ap.time}</div>
 
-          <span class="status ${ap.status}">${ap.status}</span><br>
+          <span class="status ${ap.status}">${statusText}</span><br>
 
           ${
             ap.status!=="cancelled"
@@ -406,17 +393,11 @@ function createAppointmentBox(ap){
           }
 
       </div>
-    </div>
-  `;
+  </div>`;
 }
 
-/* LİSTELEME */
 function renderUpcoming(arr){
-  if(arr.length===0){
-    upcomingList.textContent="Yaklaşan randevu yok.";
-    return;
-  }
-
+  if(arr.length===0){ upcomingList.textContent="Yaklaşan randevu yok."; return; }
   upcomingList.innerHTML = arr
     .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))
     .map(createAppointmentBox)
@@ -424,29 +405,24 @@ function renderUpcoming(arr){
 }
 
 function renderHistory(arr){
-  if(arr.length===0){
-    historyList.textContent="Geçmiş randevu yok.";
-    return;
-  }
-
+  if(arr.length===0){ historyList.textContent="Geçmiş randevu yok."; return; }
   historyList.innerHTML = arr
     .sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time))
     .map(createAppointmentBox)
     .join("");
 }
 
-/* İPTAL */
 window.cancelAppointment = async(id)=>{
   if(!confirm("Bu randevuyu iptal etmek istiyor musun?")) return;
   await updateDoc(doc(db,"appointments",id),{status:"cancelled"});
   alert("Randevu iptal edildi.");
 };
 
-/* ÇIKIŞ */
-logoutBtn.onclick = async()=>{
+logoutBtn.onclick=async()=>{
   await signOut(auth);
   location.href="customer-login.html";
 };
+
 </script>
 
 </body>
