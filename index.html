@@ -593,7 +593,7 @@
                             Hemen randevu ara
                         </button>
 
-                        <button class="btn btn-outline" onclick="window.location.href='business/business-register.html'">
+                        <button class="btn btn-outline" onclick="window.location.href='https://cepterandevu.github.io/al/business/business-register.html'">
                             İşletmemi eklemek istiyorum
                         </button>
                     </div>
@@ -1092,7 +1092,9 @@
                 const bottom = document.createElement("div");
                 bottom.className = "business-meta-bottom";
 
-
+                const slots = document.createElement("span");
+                slots.className = "slots-chip";
+                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
 
                 const btn = document.createElement("button");
                 btn.className = "btn-mini";
