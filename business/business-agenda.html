@@ -93,6 +93,7 @@
       font-size:11px;
       border:1px solid rgba(34,197,94,0.5);
     }
+
     /* TAKVİM KARTI */
     .agenda-card{
       background:var(--card);
@@ -247,6 +248,229 @@
       padding:12px 14px 14px;
       box-shadow:0 24px 70px rgba(0,0,0,0.8);
     }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:6px;
+    }
+
+    .modal-title-wrap h3{
+      font-size:17px;
+      margin-bottom:2px;
+    }
+
+    .modal-date{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .modal-close-icon{
+      background:transparent;
+      border:0;
+      color:var(--muted);
+      font-size:18px;
+      cursor:pointer;
+      padding:2px 4px;
+    }
+
+    .section-title{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+      margin-bottom:4px;
+      font-weight:600;
+    }
+
+    .appt-list{
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.4);
+      background:#020617;
+      padding:6px;
+      font-size:11px;
+      max-height:220px;
+      overflow:auto;
+    }
+
+    .appt-item{
+      border-radius:8px;
+      border:1px solid rgba(148,163,184,0.4);
+      padding:6px 6px;
+      margin-bottom:6px;
+      cursor:pointer;
+    }
+
+    .appt-item:hover{
+      border-color:var(--accent);
+    }
+
+    .appt-empty{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .appt-item-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:2px;
+      gap:6px;
+    }
+
+    .appt-header-left{
+      display:flex;
+      align-items:flex-start;
+      gap:6px;
+    }
+
+    .appt-avatar{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      object-fit:cover;
+      flex-shrink:0;
+    }
+
+    .appt-mainline{
+      font-size:11px;
+      color:#e5e7eb;
+    }
+
+    .appt-time{
+      font-weight:600;
+      color:#bbf7d0;
+      font-size:11px;
+    }
+
+    .appt-name{
+      font-weight:500;
+    }
+
+    .appt-phone{
+      font-size:10px;
+      color:#94a3b8;
+      margin-top:1px;
+    }
+
+    .appt-caption{
+      font-size:10px;
+      color:#fca5a5;
+      margin-top:2px;
+    }
+
+    .badge-status{
+      font-size:10px;
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      color:#e5e7eb;
+      white-space:nowrap;
+    }
+
+    .badge-status.pending{
+      border-color:#facc15;
+      color:#facc15;
+    }
+    .badge-status.approved{
+      border-color:#22c55e;
+      color:#4ade80;
+    }
+
+    .badge-status.cancelled{
+      border-color:#9ca3af;
+      color:#9ca3af;
+    }
+
+    .modal label{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      display:block;
+    }
+
+    .modal input,
+    .modal select{
+      width:100%;
+      padding:8px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#020617;
+      color:var(--text);
+      margin-top:3px;
+      font-size:13px;
+    }
+
+    .btn{
+      width:100%;
+      padding:9px;
+      border-radius:10px;
+      border:0;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:8px;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+      color:#022c22;
+      box-shadow:0 12px 30px rgba(34,197,94,0.4);
+    }
+
+    .btn-secondary{
+      background:#020617;
+      color:var(--muted);
+      border:1px solid var(--border);
+    }
+
+    .btn-danger{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .error-text{
+      font-size:11px;
+      color:#fecaca;
+      margin-top:4px;
+      display:none;
+    }
+
+    /* MOBİL ADAPTASYON */
+    @media (max-width:768px){
+      body{
+        padding:12px;
+      }
+
+      .agenda-card{
+        padding:10px;
+      }
+
+      .day-cell{
+        min-height:72px;
+        padding:5px 4px;
+      }
+
+      .slot-mini{
+        font-size:9px;
+      }
+
+      .top-bar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+
+      .modal{
+        max-width:100%;
+        width:100%;
+        border-radius:18px 18px 0 0;
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+      }
+    }
   </style>
 </head>
 
@@ -290,6 +514,7 @@
   </div>
 
 </div>
+
 <!-- MODAL -->
 <div id="modalBg">
   <div class="modal">
@@ -315,15 +540,34 @@
   import {
     getAuth, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
   import {
-    getFirestore, collection, query, where, getDocs
+    getFirestore
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const app  = initializeApp(firebaseConfig);
   const db   = getFirestore(app);
   const auth = getAuth(app);
 
-  /* ---------- SABİT GENEL ÇALIŞMA SAATLERİ (AJANDA İÇİN) ---------- */
+  /* ---- SİLÜET AVATAR (MÜŞTERİ FOTOĞRAF YOKSA) ---- */
+  const DEFAULT_AVATAR =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#020617"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="32" fill="url(#bg)"/>
+        <circle cx="32" cy="24" r="11" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+        <circle cx="32" cy="23" r="8" fill="#e5e7eb"/>
+        <path d="M16 47c3.5-8 9.5-12 16-12s12.5 4 16 12" fill="#e5e7eb"/>
+      </svg>
+    `);
+
+  /* ---------- SABİT ÇALIŞMA SAATLERİ (AJANDA İÇİN) ---------- */
   const DEFAULT_HOURS = [
     "09:00","09:30","10:00","10:30",
     "11:00","11:30","13:00","13:30",
@@ -349,6 +593,20 @@
   let currentMonth = new Date();
   currentMonth.setDate(1);
 
+  /* ---------- YARDIMCI: createdAt formatla ---------- */
+  function formatCreatedAt(v){
+    if(!v) return "-";
+    try{
+      if(typeof v === "number"){
+        return new Date(v).toLocaleString("tr-TR");
+      }
+      if(v.toDate){
+        return v.toDate().toLocaleString("tr-TR");
+      }
+    }catch(e){}
+    return "-";
+  }
+
   /* ---------- MODAL KAPATMA ---------- */
   function closeModal(){
     modalBg.style.display = "none";
@@ -370,12 +628,11 @@
     loadingEl.style.display = "none";
     agendaWrap.style.display = "block";
   });
+
   /* ---------- TAKVİM ÇİZ ---------- */
   function renderCalendar(){
     daysGrid.innerHTML = "";
 
-    const year  = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
     monthLabel.textContent = currentMonth.toLocaleDateString("tr-TR", {
       year: "numeric",
       month: "long"
@@ -420,7 +677,8 @@
           const mini = document.createElement("div");
           mini.className = "slot-mini";
           const cust = a.customerName || "Müşteri";
-          mini.textContent = `${a.time} · ${cust}`;
+          const t    = a.time || a.saat || "";
+          mini.textContent = `${t} · ${cust}`;
           cell.appendChild(mini);
         });
 
@@ -437,8 +695,7 @@
     });
   }
 
-
-  /* ---------- GÜN MODALI (FULL UZATILMIŞ FINAL) ---------- */
+  /* ---------- GÜN MODALI ---------- */
   async function openDayModal(dateStr){
     modalTitle.textContent = "Gün detayları";
     modalDateEl.textContent = AgendaUtils.formatDateHuman(dateStr);
@@ -448,7 +705,7 @@
 
     modalInner.innerHTML = "";
 
-    /* ----------------- RANDEVU LİSTESİ ----------------- */
+    /* --- RANDEVU LİSTESİ --- */
     const sec1 = document.createElement("div");
     sec1.innerHTML = `<div class="section-title">Bu gündeki randevular</div>`;
     const listBox = document.createElement("div");
@@ -459,66 +716,91 @@
       empty.className = "appt-empty";
       empty.textContent = "Bu güne kayıtlı randevu yok.";
       listBox.appendChild(empty);
-    } 
-    else {
+    } else {
       appts.forEach(ap=>{
         const item = document.createElement("div");
         item.className = "appt-item";
 
-        /* PROFİL FOTOĞRAFI */
-        const avatar = ap.customerPhoto || "";
-        const avatarHTML = avatar 
-          ? `<img src="${avatar}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">`
-          : `<div style="width:26px;height:26px;border-radius:50%;background:#1e293b;color:#22c55e;display:flex;align-items:center;justify-content:center;font-size:12px;margin-right:6px;">C</div>`;
+        const customerName   = ap.customerName  || "Müşteri";
+        const customerPhone  = ap.customerPhone || "-";
+        const customerPhoto  = ap.customerPhoto || "";
+        const serviceName    = ap.serviceName   || "Hizmet";
+        const employeeName   = ap.employeeName  || "";
+        const status         = ap.status        || "pending";
+        const time           = ap.time          || "";
+        const createdHuman   = formatCreatedAt(ap.createdAt);
 
         const header = document.createElement("div");
         header.className = "appt-item-header";
 
-        const left = document.createElement("div");
-        left.innerHTML = `
-          ${avatarHTML}
-          <span class="appt-time">${ap.time}</span> · 
-          ${ap.customerName || "Müşteri"}
-          <div style="font-size:9px;color:#94a3b8;margin-left:32px;">
-            Tel: ${ap.customerPhone || "-"}  
-          </div>
-        `;
+        const leftWrap = document.createElement("div");
+        leftWrap.className = "appt-header-left";
+
+        const avatarEl = document.createElement("img");
+        avatarEl.className = "appt-avatar";
+        avatarEl.src = customerPhoto || DEFAULT_AVATAR;
+        avatarEl.alt = customerName;
+
+        const textBlock = document.createElement("div");
+        const mainLine = document.createElement("div");
+        mainLine.className = "appt-mainline";
+        mainLine.innerHTML = `<span class="appt-time">${time}</span> · <span class="appt-name">${customerName}</span>`;
+
+        const phoneLine = document.createElement("div");
+        phoneLine.className = "appt-phone";
+        phoneLine.textContent = `Tel: ${customerPhone}`;
+
+        textBlock.appendChild(mainLine);
+        textBlock.appendChild(phoneLine);
+
+        leftWrap.appendChild(avatarEl);
+        leftWrap.appendChild(textBlock);
 
         const right = document.createElement("div");
         const statusSpan = document.createElement("span");
-        statusSpan.className = "badge-status " + (ap.status || "pending");
-        statusSpan.textContent = ap.status === "approved" ? "Onaylı" : "Beklemede";
+        statusSpan.className = "badge-status " + status;
+        statusSpan.textContent =
+          status === "approved" ? "Onaylı" :
+          status === "cancelled" ? "İptal" :
+          "Beklemede";
         right.appendChild(statusSpan);
 
-        header.appendChild(left);
+        header.appendChild(leftWrap);
         header.appendChild(right);
 
         const line2 = document.createElement("div");
         line2.style.fontSize = "10px";
         line2.style.color   = "#e5e7eb";
-        line2.textContent   = `${ap.serviceName || "Hizmet"}${ap.employeeName ? " · " + ap.employeeName : ""}`;
+        line2.textContent   = `${serviceName}${employeeName ? " · " + employeeName : ""}`;
 
         const line3 = document.createElement("div");
         line3.style.fontSize = "10px";
         line3.style.color   = "#9ca3af";
-        line3.textContent = `Oluşturulma: ${new Date(ap.createdAt).toLocaleString("tr-TR")}`;
+        line3.textContent   = `Randevu: ${AgendaUtils.formatDateHuman(dateStr)} · ${time}`;
 
         const line4 = document.createElement("div");
-        line4.className = "appt-caption";
-        line4.textContent = "Silmek için tıklayın";
+        line4.style.fontSize = "10px";
+        line4.style.color   = "#9ca3af";
+        line4.textContent   = `Oluşturulma: ${createdHuman}`;
+
+        const line5 = document.createElement("div");
+        line5.className = "appt-caption";
+        line5.textContent = "Silmek için tıklayın";
 
         item.appendChild(header);
         item.appendChild(line2);
         item.appendChild(line3);
         item.appendChild(line4);
+        item.appendChild(line5);
 
         item.addEventListener("click", async ()=>{
           if (!confirm("Bu randevuyu silmek istiyor musunuz?")) return;
           try{
             await AgendaUtils.deleteAppointment(db, ap.id, dateStr);
             alert("Randevu silindi.");
+            await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
             openDayModal(dateStr);
-            refreshDayCell(dateStr);
+            renderCalendar();
           }catch(e){
             alert("Randevu silinirken hata oluştu.");
           }
@@ -531,8 +813,7 @@
     sec1.appendChild(listBox);
     modalInner.appendChild(sec1);
 
-
-    /* ----------------- ELLE RANDEVU EKLEME ----------------- */
+    /* --- ELLE RANDEVU EKLEME --- */
     const sec2 = document.createElement("div");
     sec2.innerHTML = `<div class="section-title">Elle yeni randevu ekle</div>`;
 
@@ -547,50 +828,48 @@
       opt.textContent = h;
       selTime.appendChild(opt);
     });
-
     lblTime.appendChild(selTime);
     sec2.appendChild(lblTime);
-
 
     const lblCust = document.createElement("label");
     lblCust.textContent = "Müşteri Adı";
     const inpCust = document.createElement("input");
     inpCust.id = "newCust";
     inpCust.placeholder = "Ad soyad";
-    lblCust.appendChild(inpCust);
     sec2.appendChild(lblCust);
+    lblCust.appendChild(inpCust);
 
     const lblPhone = document.createElement("label");
     lblPhone.textContent = "Telefon Numarası";
     const inpPhone = document.createElement("input");
     inpPhone.id = "newPhone";
     inpPhone.placeholder = "05xx xxx xx xx";
-    lblPhone.appendChild(inpPhone);
     sec2.appendChild(lblPhone);
+    lblPhone.appendChild(inpPhone);
 
     const lblPhoto = document.createElement("label");
-    lblPhoto.textContent = "Profil Fotoğrafı (URL)";
+    lblPhoto.textContent = "Profil Fotoğrafı (URL - opsiyonel)";
     const inpPhoto = document.createElement("input");
     inpPhoto.id = "newPhoto";
-    inpPhoto.placeholder = "İsteğe bağlı";
-    lblPhoto.appendChild(inpPhoto);
+    inpPhoto.placeholder = "Boş bırakabilirsiniz";
     sec2.appendChild(lblPhoto);
+    lblPhoto.appendChild(inpPhoto);
 
     const lblServ = document.createElement("label");
     lblServ.textContent = "Hizmet";
     const inpServ = document.createElement("input");
     inpServ.id = "newServ";
-    inpServ.placeholder = "Örn: Saç kesim";
-    lblServ.appendChild(inpServ);
+    inpServ.placeholder = "Örn: Saç kesimi";
     sec2.appendChild(lblServ);
+    lblServ.appendChild(inpServ);
 
     const lblEmp = document.createElement("label");
     lblEmp.textContent = "Çalışan";
     const inpEmp = document.createElement("input");
     inpEmp.id = "newEmp";
     inpEmp.placeholder = "Çalışan adı";
-    lblEmp.appendChild(inpEmp);
     sec2.appendChild(lblEmp);
+    lblEmp.appendChild(inpEmp);
 
     const errorText = document.createElement("div");
     errorText.className = "error-text";
@@ -604,13 +883,14 @@
 
     btnAdd.addEventListener("click", async ()=>{
       errorText.style.display = "none";
+      errorText.textContent   = "";
 
-      const time = selTime.value;
-      const customerName = inpCust.value.trim();
-      const serviceName  = inpServ.value.trim();
-      const employeeName = inpEmp.value.trim();
-      const customerPhone= inpPhone.value.trim();
-      const customerPhoto= inpPhoto.value.trim();
+      const time          = selTime.value;
+      const customerName  = inpCust.value.trim();
+      const customerPhone = inpPhone.value.trim();
+      const customerPhoto = inpPhoto.value.trim();
+      const serviceName   = inpServ.value.trim();
+      const employeeName  = inpEmp.value.trim();
 
       if (!time || !customerName || !serviceName){
         errorText.textContent = "Saat, müşteri adı ve hizmet zorunludur.";
@@ -619,15 +899,15 @@
       }
 
       if (AgendaUtils.isHourBusy(dateStr, time)){
-        errorText.textContent = "Bu saat dolu.";
+        errorText.textContent = "Bu saat için zaten randevu var.";
         errorText.style.display = "block";
         return;
       }
 
       try{
         await AgendaUtils.addAppointment(db, {
-          businessID: BUSINESS_ID,
-          date: dateStr,
+          businessID:  BUSINESS_ID,
+          date:        dateStr,
           time,
           customerName,
           customerPhone,
@@ -639,11 +919,12 @@
         });
 
         alert("Randevu eklendi.");
+        await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
         openDayModal(dateStr);
-        refreshDayCell(dateStr);
-
-      }catch{
-        errorText.textContent = "Randevu eklenirken hata.";
+        renderCalendar();
+      }catch(e){
+        console.error(e);
+        errorText.textContent = "Randevu eklenirken hata oluştu.";
         errorText.style.display = "block";
       }
     });
@@ -653,7 +934,6 @@
 
     modalBg.style.display = "flex";
   }
-
 
   /* ---------- AY GEÇİŞ BUTONLARI ---------- */
   document.getElementById("prevMonth").addEventListener("click", async ()=>{
@@ -667,7 +947,6 @@
     await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
     renderCalendar();
   });
-
 </script>
 
 </body>
