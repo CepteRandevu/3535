@@ -246,7 +246,7 @@ async function loadEmployees(serviceId){
   employeeSelect.addEventListener("change", fillTimes);
 }
 
-/* ------------------ SLOT GENERATOR (Hizmet süresi ile) ------------------ */
+/* ------------------ SLOT GENERATOR ------------------ */
 function generateSlots(start,end,duration){
   let slots=[];
   let cur = new Date("2000-01-01 "+start);
@@ -261,7 +261,7 @@ function generateSlots(start,end,duration){
       slots.push(`${h}:${m}`);
     }
 
-    cur = new Date(cur.getTime() + 30*60000); // 30 dk adım
+    cur = new Date(cur.getTime() + 30*60000);
   }
   return slots;
 }
@@ -270,9 +270,7 @@ function generateSlots(start,end,duration){
 async function fillTimes(){
   timeSelect.innerHTML="";
 
-  if(!dateInput.value || !employeeSelect.value || !serviceSelect.value){
-    return;
-  }
+  if(!dateInput.value || !employeeSelect.value || !serviceSelect.value) return;
 
   const day = new Date(dateInput.value).getDay();
   const key = dayKeyMap[day];
@@ -293,7 +291,6 @@ async function fillTimes(){
     return;
   }
 
-  /* --- DOLU SAATLERİ SİLMEK --- */
   const qRef = query(
     collection(db,"appointments"),
     where("businessID","==",businessId),
@@ -320,6 +317,7 @@ async function fillTimes(){
 
 /* ------------------ CREATE APPOINTMENT ------------------ */
 createBtn.addEventListener("click", async()=>{
+
   errorBox.style.display="none";
 
   if(!serviceSelect.value || !employeeSelect.value || !dateInput.value || !timeSelect.value){
@@ -345,6 +343,10 @@ createBtn.addEventListener("click", async()=>{
     });
 
     alert("Randevu başarıyla oluşturuldu.");
+
+    /* ------------------ YÖNLENDİRME EKLENDİ ------------------ */
+    window.location.href = "/al/customer-panel.html";
+
   }
   catch(err){
     console.error(err);
