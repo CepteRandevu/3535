@@ -544,6 +544,11 @@
                 gap: 8px;
             }
         }
+
+        .slots-chip {
+    display: none !important;
+}
+
     </style>
 
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
@@ -1092,7 +1097,9 @@
                 const bottom = document.createElement("div");
                 bottom.className = "business-meta-bottom";
 
-
+                const slots = document.createElement("span");
+                slots.className = "slots-chip";
+                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
 
                 const btn = document.createElement("button");
                 btn.className = "btn-mini";
@@ -1103,7 +1110,8 @@
                     handleBusinessClick(b);
                 };
 
-
+                bottom.appendChild(slots);
+                bottom.appendChild(btn);
 
                 meta.appendChild(ratingEl);
                 meta.appendChild(bottom);
