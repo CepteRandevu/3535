@@ -30,35 +30,6 @@
     flex-direction:column;
   }
 
-  /* ----------- LOGO DÜZENLEMESİ (TEK DEĞİŞİKLİK) ----------- */
-  .logo-box2{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-bottom:14px;
-  }
-
-  .logo-preview{
-    width:120px;
-    height:120px;
-    border-radius:16px;
-    object-fit:cover;
-    background:#020617;
-    border:1px solid var(--border);
-  }
-
-  .upload-btn{
-    padding:9px 14px;
-    background:var(--accent);
-    color:#022c22;
-    border:none;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    font-size:14px;
-  }
-  /* --------------------------------------------------------- */
-
   .drawer-overlay{
     position:fixed;top:0;left:0;width:100%;height:100%;
     background:rgba(0,0,0,0.55);
@@ -74,9 +45,7 @@
     z-index:999;
     padding:20px;
     border-right:1px solid rgba(255,255,255,0.08);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+    display:flex;flex-direction:column;gap:10px;
   }
 
   .drawer-open{transform:translateX(0);}
@@ -106,6 +75,7 @@
   }
   .logo-title{font-size:16px;font-weight:600;}
   .top-menu-row{padding-left:16px;}
+
   .menu-btn{
     background:var(--accent);border:0;color:#022c22;
     padding:7px 14px;border-radius:10px;font-weight:600;
@@ -144,47 +114,28 @@
     margin-bottom:18px;box-shadow:var(--shadow-soft);
   }
 
-  .card h3{font-size:16px;margin-bottom:10px;}
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
-
   input, select, textarea{
     width:100%;padding:9px 11px;border-radius:12px;background:#020617;
     border:1px solid var(--border);color:var(--text);margin-bottom:10px;
-    font-size:13px;outline:none;
+    font-size:13px;
   }
 
-  input:focus, select:focus, textarea:focus{
-    border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);
+  .logo-box2{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .logo-preview{
+    width:120px;height:120px;border-radius:16px;
+    background:#020617;border:1px solid var(--border);
+    object-fit:cover;
+  }
+  .upload-btn{
+    padding:9px 14px;background:var(--accent);color:#022c22;
+    border:none;border-radius:12px;font-weight:600;cursor:pointer;font-size:14px;
   }
 
-  .schedule-info{
-    font-size:12px;color:var(--muted);margin-bottom:8px;
-  }
-
-  .schedule-grid{
-    display:flex;flex-direction:column;gap:6px;margin-bottom:8px;
-  }
-
-  .schedule-row{
-    display:flex;align-items:center;gap:10px;padding:6px 8px;
-    border-radius:10px;background:#020617;border:1px solid rgba(148,163,184,0.25);
-  }
-
-  .schedule-day{width:90px;font-size:13px;font-weight:500;}
-
-  .schedule-times{
-    display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap;
-  }
-
-  .schedule-times input[type="time"]{
-    width:110px;margin-bottom:0;padding:6px 8px;border-radius:8px;
-  }
-
-  .closed-label{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
+  .row-two{display:flex;gap:14px;}
 
   .btn-primary{
-    width:100%;
-    background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+    width:100%;background:linear-gradient(135deg,var(--accent),var(--accent-strong));
     border:0;padding:11px 12px;border-radius:12px;
     font-weight:700;font-size:14px;color:#022c22;
     cursor:pointer;margin-top:4px;
@@ -224,7 +175,7 @@
 <header class="top-header">
   <div class="top-center">
     <div class="logo-mark">C</div>
-    <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
+    <span class="logo-title" id="bizNameMobile">Ayarlar</span>
   </div>
   <div class="top-menu-row">
     <button id="menuBtn" class="menu-btn">Menü</button>
@@ -236,6 +187,7 @@
     <div class="logo-mark">C</div>
     <div class="biz-name-small" id="bizNameSmall">İşletme</div>
   </div>
+
   <div class="menu">
     <button onclick="location.href='business-panel.html'">Panel</button>
     <button onclick="location.href='business-services.html'">Hizmetler</button>
@@ -264,11 +216,11 @@
     <input id="bizNameInput">
 
     <div class="row-two">
-      <div>
+      <div style="flex:1;">
         <label>İl</label>
         <select id="citySelect"><option value="">İl seçiniz</option></select>
       </div>
-      <div>
+      <div style="flex:1;">
         <label>İlçe</label>
         <select id="districtSelect"><option value="">Önce il seçiniz</option></select>
       </div>
@@ -287,19 +239,7 @@
   </section>
 
 
-  <!-- ÇALIŞMA SAATLERİ -->
-  <section class="card">
-    <h3>Çalışma Saatleri</h3>
-    <p class="schedule-info">
-      Haftanın her günü için açılış ve kapanış saatini belirleyin.
-    </p>
-
-    <div id="scheduleRows" class="schedule-grid"></div>
-
-    <button id="saveScheduleBtn" class="btn-primary">Çalışma Saatlerini Kaydet</button>
-  </section>
-
-
+  <!-- ŞİFRE -->
   <section class="card">
     <h3>Şifre Değiştir</h3>
     <label>Yeni Şifre</label>
@@ -310,6 +250,8 @@
   <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
 
 </main>
+
+
 
 <script>
   const drawer = document.getElementById("drawerMenu");
@@ -322,6 +264,7 @@
   if(menuBtn){ menuBtn.addEventListener("click", openDrawer); }
   if(overlay){ overlay.addEventListener("click", closeDrawer); }
 </script>
+
 
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
@@ -339,7 +282,6 @@
     'data:image/svg+xml;utf8,' +
     '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">' +
     '<rect width="256" height="256" fill="%23020a1b"/>' +
-    '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
     '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-size="40" fill="%2322c55e">Logo</text>' +
     '</svg>';
 
@@ -347,6 +289,7 @@
   let citiesData = [];
   let cityFromDB = "";
   let districtFromDB = "";
+
 
   const bizNameSmall   = document.getElementById("bizNameSmall");
   const bizNameMobile  = document.getElementById("bizNameMobile");
@@ -359,62 +302,22 @@
   const citySelect     = document.getElementById("citySelect");
   const districtSelect = document.getElementById("districtSelect");
   const saveBizBtn     = document.getElementById("saveBizBtn");
-  const saveScheduleBtn= document.getElementById("saveScheduleBtn");
-  const scheduleRowsEl = document.getElementById("scheduleRows");
 
-  const DAYS = [
-    { key:"monday",    label:"Pazartesi" },
-    { key:"tuesday",   label:"Salı" },
-    { key:"wednesday", label:"Çarşamba" },
-    { key:"thursday",  label:"Perşembe" },
-    { key:"friday",    label:"Cuma" },
-    { key:"saturday",  label:"Cumartesi" },
-    { key:"sunday",    label:"Pazar" }
-  ];
 
-  logoPreview.src = DEFAULT_LOGO;
 
-  function fileToBase64(file){
-    return new Promise((resolve,reject)=>{
-      const reader = new FileReader();
-      reader.onload = ()=>resolve(reader.result);
-      reader.onerror= reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  logoInput.addEventListener("change", async()=>{
-    const f = logoInput.files[0];
-    if(!f || !BUSINESS_ID) return;
-    saveBizBtn.disabled = true;
-
-    try{
-      const base64 = await fileToBase64(f);
-      logoPreview.src = base64;
-
-      await setDoc(doc(db,"businesses",BUSINESS_ID),{
-        logoBase64:base64
-      },{merge:true});
-
-      alert("Logo güncellendi.");
-    }catch(e){
-      console.error(e);
-      logoPreview.src = DEFAULT_LOGO;
-      alert("Logo yüklenemedi.");
-    }finally{
-      saveBizBtn.disabled = false;
-    }
-  });
-
+  /* -------------------------------------------------------------------------------------
+      ŞEHİR LİSTESİ — MOBİLDE ÇALIŞSIN DİYE YOL DÜZELTİLDİ  ✔✔✔
+  -------------------------------------------------------------------------------------- */
   async function loadCities(){
     try{
-      const r = await fetch("/al/js/turkey-cities.json");
+      const r = await fetch("https://cepterandevu.github.io/al/js/turkey-cities.json");
       citiesData = await r.json();
       fillCities();
     }catch(e){
       console.error("Şehir listesi yüklenemedi",e);
     }
   }
+
 
   function fillCities(){
     citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
@@ -430,6 +333,7 @@
       fillDistricts(cityFromDB, districtFromDB);
     }
   }
+
 
   function fillDistricts(cityName,selected=""){
     districtSelect.innerHTML = "";
@@ -455,65 +359,63 @@
     if(selected) districtSelect.value = selected;
   }
 
+
   citySelect.addEventListener("change",()=>{
     fillDistricts(citySelect.value);
   });
 
-  function buildScheduleRows(){
-    scheduleRowsEl.innerHTML="";
-    DAYS.forEach(d=>{
-      const row=document.createElement("div");
-      row.className="schedule-row";
-      row.innerHTML=`
-        <div class="schedule-day">${d.label}</div>
-        <div class="schedule-times">
-          <input type="time" id="start_${d.key}">
-          <span>–</span>
-          <input type="time" id="end_${d.key}">
-          <label class="closed-label">
-            <input type="checkbox" id="closed_${d.key}">
-            Kapalı
-          </label>
-        </div>`;
-      scheduleRowsEl.appendChild(row);
+
+
+
+  /* -------------------------------------------------------------------------------------
+        LOGO YÜKLEME — MOBİLDE TAKILMASIN DİYE FİX EKLENDİ  ✔✔✔
+  -------------------------------------------------------------------------------------- */
+
+  logoPreview.src = DEFAULT_LOGO;
+
+  function fileToBase64(file){
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=>resolve(reader.result);
+      reader.onerror= reject;
+      reader.readAsDataURL(file);
     });
   }
 
-  buildScheduleRows();
 
-  function fillScheduleFromDB(sch){
-    sch = sch || {};
-    DAYS.forEach(d=>{
-      const cfg = sch[d.key] || {};
-      document.getElementById(`start_${d.key}`).value = cfg.start || "";
-      document.getElementById(`end_${d.key}`).value   = cfg.end   || "";
-      document.getElementById(`closed_${d.key}`).checked = !!cfg.closed;
-    });
-  }
+  logoInput.addEventListener("change", async()=>{
+    const f = logoInput.files[0];
+    if(!f || !BUSINESS_ID) return;
 
-  function collectScheduleFromUI(){
-    const out={};
-    DAYS.forEach(d=>{
-      const start = document.getElementById(`start_${d.key}`).value;
-      const end   = document.getElementById(`end_${d.key}`).value;
-      const closed= document.getElementById(`closed_${d.key}`).checked;
+    saveBizBtn.disabled = true;
 
-      if(!start || !end) out[d.key] = { start:"", end:"", closed:true };
-      else out[d.key] = { start, end, closed };
-    });
-    return out;
-  }
+    // **mobil fail-safe** — 3 saniyede otomatik açılır
+    setTimeout(()=> saveBizBtn.disabled = false, 3000);
 
-  onAuthStateChanged(auth, async user=>{
-    if(!user){
-      location.href="business-login.html";
-      return;
+    try{
+      const base64 = await fileToBase64(f);
+      logoPreview.src = base64;
+
+      await setDoc(doc(db,"businesses",BUSINESS_ID),{
+        logoBase64:base64
+      },{merge:true});
+
+      alert("Logo güncellendi.");
+    }catch(e){
+      console.error(e);
+      logoPreview.src = DEFAULT_LOGO;
+      alert("Logo yüklenemedi.");
+    }finally{
+      saveBizBtn.disabled = false;
     }
-    BUSINESS_ID = user.uid;
-    await loadCities();
-    await loadBusiness();
   });
 
+
+
+
+  /* -------------------------------------------------------------------------------------
+        İŞLETME BİLGİLERİ YÜKLEME
+  -------------------------------------------------------------------------------------- */
   async function loadBusiness(){
     const ref = doc(db,"businesses",BUSINESS_ID);
     const snap = await getDoc(ref);
@@ -522,7 +424,7 @@
     const d = snap.data();
 
     bizNameSmall.textContent  = d.name || "İşletme";
-    bizNameMobile.textContent = d.name || "İşletme";
+    bizNameMobile.textContent = d.name || "Ayarlar";
 
     bizNameInput.value    = d.name    || "";
     bizPhoneInput.value   = d.phone   || "";
@@ -538,9 +440,13 @@
       citySelect.value=cityFromDB;
       fillDistricts(cityFromDB,districtFromDB);
     }
-
-    fillScheduleFromDB(d.schedule);
   }
+
+
+
+  /* -------------------------------------------------------------------------------------
+        KAYDET TUŞU
+  -------------------------------------------------------------------------------------- */
 
   saveBizBtn.addEventListener("click", async()=>{
     saveBizBtn.disabled=true;
@@ -564,34 +470,11 @@
     }
   });
 
-  saveScheduleBtn.addEventListener("click", async()=>{
-    const schedule = collectScheduleFromUI();
 
-    for(const d of DAYS){
-      const s = schedule[d.key];
-      if(!s.closed && s.start && s.end){
-        if(s.start >= s.end){
-          alert(`${d.label} günü: Açılış saati kapanıştan büyük olamaz.`);
-          return;
-        }
-      }
-    }
 
-    saveScheduleBtn.disabled=true;
-
-    try{
-      await setDoc(doc(db,"businesses",BUSINESS_ID),{
-        schedule
-      },{merge:true});
-
-      alert("Çalışma saatleri kaydedildi.");
-    }catch(e){
-      console.error(e);
-      alert("Hata oluştu.");
-    }finally{
-      saveScheduleBtn.disabled=false;
-    }
-  });
+  /* -------------------------------------------------------------------------------------
+        ŞİFRE DEĞİŞTİR
+  -------------------------------------------------------------------------------------- */
 
   document.getElementById("savePassBtn").addEventListener("click",async()=>{
     const p = document.getElementById("newPassInput").value;
@@ -606,9 +489,31 @@
     }
   });
 
+
+  /* -------------------------------------------------------------------------------------
+        ÇIKIŞ
+  -------------------------------------------------------------------------------------- */
+
   document.getElementById("logoutBtn").addEventListener("click",async()=>{
     await signOut(auth);
     location.href="business-login.html";
+  });
+
+
+
+  /* -------------------------------------------------------------------------------------
+        AUTH
+  -------------------------------------------------------------------------------------- */
+
+  onAuthStateChanged(auth, async user=>{
+    if(!user){
+      location.href="business-login.html";
+      return;
+    }
+    BUSINESS_ID = user.uid;
+
+    await loadCities();
+    await loadBusiness();
   });
 
 </script>
