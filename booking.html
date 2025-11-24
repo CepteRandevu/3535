@@ -6,7 +6,6 @@
 <title>Randevu Oluştur | Cepterandevu</title>
 
 <style>
-/* --- TASARIM AYNI, KOD TEMİZLENDİ --- */
 :root{
   --bg:#050816; --card:#0f172a; --accent:#22c55e;
   --text:#f1f5f9; --muted:#94a3b8; --border:rgba(148,163,184,0.18);
@@ -91,7 +90,6 @@ select,input{
     </div>
   </div>
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -100,7 +98,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* ------------------ DEFAULT LOGO ------------------ */
 const DEFAULT_BIZ_LOGO =
 'data:image/svg+xml;utf8,' +
 '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
@@ -110,7 +107,6 @@ const DEFAULT_BIZ_LOGO =
 ' font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
 '</svg>';
 
-/* ------------------ FIREBASE ------------------ */
 const firebaseConfig = {
   apiKey:"AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
   authDomain:"cepterandevu-35fe4.firebaseapp.com",
@@ -119,11 +115,11 @@ const firebaseConfig = {
   messagingSenderId:"86298180836",
   appId:"1:86298180836:web:124c2004605d68b32700f1",
 };
+
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth= getAuth(app);
 
-/* ------------------ DOM ------------------ */
 const businessId = new URLSearchParams(location.search).get("businessId");
 
 const bizLogoEl = document.getElementById("bizLogo");
@@ -141,7 +137,6 @@ const timeSelect     = document.getElementById("timeSelect");
 const errorBox       = document.getElementById("errorBox");
 const createBtn      = document.getElementById("createBtn");
 
-/* ------------------ DAY KEY MAP ------------------ */
 const dayKeyMap = {
   1:"monday", 2:"tuesday", 3:"wednesday",
   4:"thursday", 5:"friday", 6:"saturday", 0:"sunday"
@@ -150,7 +145,7 @@ const dayKeyMap = {
 let businessData = null;
 let serviceDuration = 0;
 
-/* ------------------ AUTH ------------------ */
+/* AUTH */
 onAuthStateChanged(auth, async user=>{
   if(!user){
     location.href="/al/customer-login.html?redirect="+location.href;
@@ -159,11 +154,9 @@ onAuthStateChanged(auth, async user=>{
   await loadBusiness();
 });
 
-/* ------------------ BUSINESS LOAD ------------------ */
+/* BUSINESS */
 async function loadBusiness(){
-  const ref = doc(db,"businesses",businessId);
-  const snap= await getDoc(ref);
-
+  const snap = await getDoc(doc(db,"businesses",businessId));
   if(!snap.exists()){
     loadingEl.textContent="İşletme bulunamadı.";
     return;
@@ -172,8 +165,8 @@ async function loadBusiness(){
   businessData = snap.data();
 
   bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
-  bizNameEl.textContent = businessData.name || "";
-  bizLocationEl.textContent = `${businessData.city||""} ${businessData.district||""}`;
+  bizNameEl.textContent = businessData.name;
+  bizLocationEl.textContent = `${businessData.city || ""} ${businessData.district || ""}`;
   bizMetaEl.textContent = businessData.phone || "";
 
   loadingEl.style.display="none";
@@ -183,18 +176,18 @@ async function loadBusiness(){
   loadServices();
 }
 
-/* ------------------ DATE LIMIT ------------------ */
 function setDateMin(){
   const t=new Date();
-  dateInput.min = t.toISOString().substring(0,10);
+  dateInput.min=t.toISOString().substring(0,10);
 }
 
-/* ------------------ SERVICES ------------------ */
+/* SERVICES */
 async function loadServices(){
   const qRef = query(
     collection(db,"services"),
     where("businessID","==",businessId)
   );
+
   const snap = await getDocs(qRef);
 
   serviceSelect.innerHTML="<option value=''>Hizmet seçin</option>";
@@ -204,27 +197,23 @@ async function loadServices(){
     const opt=document.createElement("option");
     opt.value=s.id;
     opt.textContent=`${d.name} (${d.duration} dk)`;
+    opt.dataset.name = d.name;
     opt.dataset.duration=d.duration;
     serviceSelect.appendChild(opt);
   });
 
-  serviceSelect.addEventListener("change", ()=>{
+  serviceSelect.onchange = ()=>{
     employeeSelect.innerHTML="<option>Yükleniyor...</option>";
-    serviceDuration = parseInt(serviceSelect.selectedOptions[0].dataset.duration || 0);
+    serviceDuration = parseInt(serviceSelect.selectedOptions[0].dataset.duration);
     loadEmployees(serviceSelect.value);
     timeSelect.innerHTML="";
-  });
+  };
 
-  dateInput.addEventListener("change", fillTimes);
+  dateInput.onchange = fillTimes;
 }
 
-/* ------------------ EMPLOYEES ------------------ */
+/* EMPLOYEES */
 async function loadEmployees(serviceId){
-  if(!serviceId){
-    employeeSelect.innerHTML="<option>Önce hizmet seçin</option>";
-    return;
-  }
-
   const qRef = query(
     collection(db,"employees"),
     where("businessID","==",businessId)
@@ -239,43 +228,44 @@ async function loadEmployees(serviceId){
       const opt=document.createElement("option");
       opt.value=e.id;
       opt.textContent=d.name;
+      opt.dataset.name = d.name;
       employeeSelect.appendChild(opt);
     }
   });
 
-  employeeSelect.addEventListener("change", fillTimes);
+  employeeSelect.onchange = fillTimes;
 }
 
-/* ------------------ SLOT GENERATOR ------------------ */
+/* SLOT */
 function generateSlots(start,end,duration){
   let slots=[];
-  let cur = new Date("2000-01-01 "+start);
-  let close= new Date("2000-01-01 "+end);
+  let cur=new Date("2000-01-01 "+start);
+  let close=new Date("2000-01-01 "+end);
 
-  while(cur <= close){
-    let endTime = new Date(cur.getTime() + duration*60000);
+  while(cur<=close){
+    let endTime=new Date(cur.getTime()+duration*60000);
 
-    if(endTime <= close){
-      const h = String(cur.getHours()).padStart(2,"0");
-      const m = String(cur.getMinutes()).padStart(2,"0");
-      slots.push(`${h}:${m}`);
+    if(endTime<=close){
+      const H=String(cur.getHours()).padStart(2,"0");
+      const M=String(cur.getMinutes()).padStart(2,"0");
+      slots.push(`${H}:${M}`);
     }
 
-    cur = new Date(cur.getTime() + 30*60000);
+    cur=new Date(cur.getTime()+30*60000);
   }
   return slots;
 }
 
-/* ------------------ FILL TIMES ------------------ */
+/* TIMES */
 async function fillTimes(){
   timeSelect.innerHTML="";
 
   if(!dateInput.value || !employeeSelect.value || !serviceSelect.value) return;
 
-  const day = new Date(dateInput.value).getDay();
-  const key = dayKeyMap[day];
+  const day=new Date(dateInput.value).getDay();
+  const key=dayKeyMap[day];
 
-  const schedule = businessData.schedule || {};
+  const schedule=businessData.schedule || {};
   if(!schedule[key] || schedule[key].closed){
     timeSelect.innerHTML="<option>Bu gün kapalı</option>";
     return;
@@ -286,27 +276,22 @@ async function fillTimes(){
 
   const possibleSlots = generateSlots(start,end,serviceDuration);
 
-  if(possibleSlots.length===0){
-    timeSelect.innerHTML="<option>Saat bulunamadı</option>";
-    return;
-  }
-
-  const qRef = query(
+  const qRef=query(
     collection(db,"appointments"),
     where("businessID","==",businessId),
     where("date","==",dateInput.value),
     where("employeeID","==",employeeSelect.value)
   );
-  const snap = await getDocs(qRef);
 
-  const booked = snap.docs.map(x=> x.data().time);
+  const snap = await getDocs(qRef);
+  const booked = snap.docs.map(x=>x.data().time);
 
   possibleSlots.forEach(s=>{
     if(!booked.includes(s)){
-      const opt=document.createElement("option");
-      opt.value=s;
-      opt.textContent=s;
-      timeSelect.appendChild(opt);
+      const o=document.createElement("option");
+      o.value=s;
+      o.textContent=s;
+      timeSelect.appendChild(o);
     }
   });
 
@@ -315,14 +300,15 @@ async function fillTimes(){
   }
 }
 
-/* ------------------ CREATE APPOINTMENT ------------------ */
-createBtn.addEventListener("click", async()=>{
+/* CREATE APPOINTMENT */
+createBtn.onclick = async()=>{
 
-  errorBox.style.display="none";
+  const serviceName   = serviceSelect.selectedOptions[0]?.dataset.name || "";
+  const employeeName  = employeeSelect.selectedOptions[0]?.dataset.name || "";
 
   if(!serviceSelect.value || !employeeSelect.value || !dateInput.value || !timeSelect.value){
-    errorBox.textContent="Tüm alanları doldurun.";
     errorBox.style.display="block";
+    errorBox.textContent="Tüm alanları doldurun.";
     return;
   }
 
@@ -331,33 +317,37 @@ createBtn.addEventListener("click", async()=>{
 
   try{
     await addDoc(collection(db,"appointments"),{
-      businessID:businessId,
-      serviceID:serviceSelect.value,
-      employeeID:employeeSelect.value,
-      customerUID:auth.currentUser.uid,
-      date:dateInput.value,
-      time:timeSelect.value,
-      duration:serviceDuration,
-      status:"pending",
-      createdAt:Date.now()
+      businessID: businessId,
+      businessName: businessData.name,
+      businessLogo: businessData.logoBase64 || DEFAULT_BIZ_LOGO,
+
+      serviceID: serviceSelect.value,
+      serviceName: serviceName,
+
+      employeeID: employeeSelect.value,
+      employeeName: employeeName,
+
+      customerUID: auth.currentUser.uid,
+      date: dateInput.value,
+      time: timeSelect.value,
+      duration: serviceDuration,
+
+      status: "pending",
+      createdAt: Date.now()
     });
 
-    alert("Randevu başarıyla oluşturuldu.");
+    alert("Randevu oluşturuldu!");
 
-    /* ------------------ YÖNLENDİRME EKLENDİ ------------------ */
     window.location.href = "/al/customer-panel.html";
 
-  }
-  catch(err){
-    console.error(err);
-    errorBox.textContent="Randevu oluşturulamadı.";
+  } catch(err){
     errorBox.style.display="block";
+    errorBox.textContent="Randevu oluşturulamadı.";
   }
-  finally{
-    createBtn.disabled=false;
-    createBtn.textContent="Randevuyu Oluştur";
-  }
-});
+
+  createBtn.disabled=false;
+  createBtn.textContent="Randevuyu Oluştur";
+};
 </script>
 
 </body>
