@@ -90,12 +90,16 @@ select,input{
     </div>
   </div>
 </div>
+
 <script type="module">
+
+/* ------------------- FIREBASE ------------------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, doc, getDoc, collection,
   query, where, getDocs, addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const DEFAULT_BIZ_LOGO =
@@ -120,15 +124,17 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth= getAuth(app);
 
+/* ------------------- ELEMENTLER ------------------- */
+
 const businessId = new URLSearchParams(location.search).get("businessId");
 
-const bizLogoEl = document.getElementById("bizLogo");
-const bizNameEl = document.getElementById("bizName");
+const bizLogoEl     = document.getElementById("bizLogo");
+const bizNameEl     = document.getElementById("bizName");
 const bizLocationEl = document.getElementById("bizLocation");
-const bizMetaEl = document.getElementById("bizMeta");
+const bizMetaEl     = document.getElementById("bizMeta");
 
-const loadingEl = document.getElementById("loading");
-const wrapEl = document.getElementById("bookingWrap");
+const loadingEl     = document.getElementById("loading");
+const wrapEl        = document.getElementById("bookingWrap");
 
 const serviceSelect  = document.getElementById("serviceSelect");
 const employeeSelect = document.getElementById("employeeSelect");
@@ -139,13 +145,13 @@ const createBtn      = document.getElementById("createBtn");
 
 const dayKeyMap = {
   1:"monday", 2:"tuesday", 3:"wednesday",
-  4:"thursday", 5:"friday", 6:"saturday", 0:"sunday"
+  4:"thursday", 5:"friday", 6:"saturday", 0:"Sunday"
 };
 
 let businessData = null;
 let serviceDuration = 0;
 
-/* AUTH */
+/* ------------------- AUTH ------------------- */
 onAuthStateChanged(auth, async user=>{
   if(!user){
     location.href="/al/customer-login.html?redirect="+location.href;
@@ -154,7 +160,7 @@ onAuthStateChanged(auth, async user=>{
   await loadBusiness();
 });
 
-/* BUSINESS */
+/* ------------------- BUSINESS ------------------- */
 async function loadBusiness(){
   const snap = await getDoc(doc(db,"businesses",businessId));
   if(!snap.exists()){
@@ -181,7 +187,7 @@ function setDateMin(){
   dateInput.min=t.toISOString().substring(0,10);
 }
 
-/* SERVICES */
+/* ------------------- SERVICES ------------------- */
 async function loadServices(){
   const qRef = query(
     collection(db,"services"),
@@ -212,12 +218,13 @@ async function loadServices(){
   dateInput.onchange = fillTimes;
 }
 
-/* EMPLOYEES */
+/* ------------------- EMPLOYEES ------------------- */
 async function loadEmployees(serviceId){
   const qRef = query(
     collection(db,"employees"),
     where("businessID","==",businessId)
   );
+
   const snap = await getDocs(qRef);
 
   employeeSelect.innerHTML="<option value=''>Çalışan seçin</option>";
@@ -236,7 +243,7 @@ async function loadEmployees(serviceId){
   employeeSelect.onchange = fillTimes;
 }
 
-/* SLOT */
+/* ------------------- SLOT ------------------- */
 function generateSlots(start,end,duration){
   let slots=[];
   let cur=new Date("2000-01-01 "+start);
@@ -256,11 +263,13 @@ function generateSlots(start,end,duration){
   return slots;
 }
 
-/* TIMES */
+/* ------------------- TIMES ------------------- */
 async function fillTimes(){
+
   timeSelect.innerHTML="";
 
-  if(!dateInput.value || !employeeSelect.value || !serviceSelect.value) return;
+  if(!dateInput.value || !employeeSelect.value || !serviceSelect.value)
+    return;
 
   const day=new Date(dateInput.value).getDay();
   const key=dayKeyMap[day];
@@ -300,7 +309,7 @@ async function fillTimes(){
   }
 }
 
-/* CREATE APPOINTMENT */
+/* ------------------- RANDEVU OLUŞTURMA ------------------- */
 createBtn.onclick = async()=>{
 
   const serviceName   = serviceSelect.selectedOptions[0]?.dataset.name || "";
@@ -316,28 +325,36 @@ createBtn.onclick = async()=>{
   createBtn.textContent="Oluşturuluyor...";
 
   try{
+
     await addDoc(collection(db,"appointments"),{
+
+      /* --- İşletme --- */
       businessID: businessId,
       businessName: businessData.name,
       businessLogo: businessData.logoBase64 || DEFAULT_BIZ_LOGO,
 
+      /* --- Hizmet --- */
       serviceID: serviceSelect.value,
       serviceName: serviceName,
 
+      /* --- Çalışan --- */
       employeeID: employeeSelect.value,
       employeeName: employeeName,
 
+      /* --- Müşteri --- */
       customerUID: auth.currentUser.uid,
+
+      /* --- Zaman --- */
       date: dateInput.value,
       time: timeSelect.value,
       duration: serviceDuration,
 
+      /* --- Sistem --- */
       status: "pending",
       createdAt: Date.now()
     });
 
     alert("Randevu oluşturuldu!");
-
     window.location.href = "/al/customer-panel.html";
 
   } catch(err){
@@ -348,6 +365,7 @@ createBtn.onclick = async()=>{
   createBtn.disabled=false;
   createBtn.textContent="Randevuyu Oluştur";
 };
+
 </script>
 
 </body>
