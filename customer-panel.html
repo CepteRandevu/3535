@@ -82,20 +82,22 @@
       margin-bottom:16px;
     }
 
+    /* --- PROFIL FOTO YENİ SİSTEM (işletmedeki kaliteyle aynı) --- */
     .pfp-wrap{
       display:flex;flex-direction:column;align-items:center;gap:8px;
     }
     .pfp{
-      width:84px;height:84px;border-radius:999px;
+      width:120px;height:120px;border-radius:999px;
       object-fit:cover;object-position:center;
       background:#020617;border:2px solid var(--accent);
     }
     .pfp-btn{
-      padding:6px 14px;border-radius:999px;border:0;
-      cursor:pointer;font-size:11px;font-weight:600;
+      padding:7px 14px;border-radius:12px;border:0;
+      cursor:pointer;font-size:12px;font-weight:600;
       background:linear-gradient(135deg,var(--accent),var(--accent-strong));
       color:#022c22;box-shadow:0 8px 18px rgba(34,197,94,0.35);
     }
+    /* ---------------------------------------------------------- */
 
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px;}
     input{
@@ -178,7 +180,6 @@
           </div>
         </div>
       </div>
-
       <!-- Hatırlatıcı -->
       <div class="card">
         <h2>Hatırlatıcı</h2>
@@ -240,17 +241,18 @@
   const reminderBtn = document.getElementById("reminderBtn");
   const reminderInfo = document.getElementById("reminderInfo");
 
+
   /* ---------------- LOGO → ANASAYFA ---------------- */
   document.getElementById("homeLogo").addEventListener("click", ()=>{
     window.location.href = "https://cepterandevu.github.io/al/";
   });
 
 
-  /* ---------------- BASE64 DÖNÜŞTÜR ---------------- */
+  /* ---------------- BASE64 DÖNÜŞTÜR (GÜÇLENDİRİLMİŞ) ---------------- */
   function fileToBase64(file){
     return new Promise((resolve,reject)=>{
       const reader = new FileReader();
-      reader.onload = ()=>resolve(reader.result);
+      reader.onload = ()=> resolve(reader.result);
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
@@ -293,7 +295,7 @@
 
     if(d.photoBase64){
       pfpEl.src = d.photoBase64;
-    }else{
+    } else {
       pfpEl.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
     }
 
@@ -301,7 +303,7 @@
   }
 
 
-  /* ---------------- FOTOĞRAF SEÇ → BASE64 ---------------- */
+  /* ---------------- FOTOĞRAF SEÇ → BASE64 → FIRESTORE (İŞLETME PANELİ STİLİ) ---------------- */
   choosePhotoBtn.addEventListener("click", ()=> photoInput.click());
 
   photoInput.addEventListener("change", async()=>{
@@ -314,15 +316,17 @@
     try{
       const base64 = await fileToBase64(file);
 
+      // Firestore’a kaydet
       await updateDoc(doc(db,"customers",currentUID),{
         photoBase64: base64
       });
 
+      // Ön izleme hemen değişir
       pfpEl.src = base64;
 
       choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
     }catch(e){
-      alert("Fotoğraf yüklenirken hata oldu.");
+      alert("Fotoğraf yükleme hatası oluştu.");
       choosePhotoBtn.textContent = "Tekrar Dene";
     }finally{
       choosePhotoBtn.disabled = false;
