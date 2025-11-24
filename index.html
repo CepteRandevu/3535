@@ -45,6 +45,7 @@
             padding: 16px 16px 32px;
         }
 
+        /* HEADER */
         header {
             display: flex;
             justify-content: space-between;
@@ -127,12 +128,14 @@
             transform: translateY(-1px);
         }
 
+        /* GRID */
         .grid {
             display: grid;
             grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
             gap: 18px;
         }
 
+        /* HERO */
         .card-hero {
             border-radius: var(--radius-xl);
             background: radial-gradient(circle at top left, #1e293b, #020617 55%);
@@ -227,6 +230,7 @@
             font-size: 13px;
         }
 
+        /* SEARCH PANEL */
         .search-panel {
             margin-top: 18px;
             padding: 12px;
@@ -289,8 +293,15 @@
             padding: 8px 10px;
             border-radius: 8px;
             font-size: 13px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
             appearance: none;
             cursor: pointer;
+        }
+
+        .search-panel select:focus {
+            outline: none;
+            border-color: var(--accent-strong);
         }
 
         .search-actions {
@@ -309,6 +320,8 @@
             font-weight: 500;
         }
 
+
+        /* LISTE TASARIMI */
         .card-list {
             border-radius: var(--radius-xl);
             background: rgba(15, 23, 42, 0.96);
@@ -361,6 +374,7 @@
             padding: 24px;
             border-radius: var(--radius-lg);
             background: rgba(15, 23, 42, 0.85);
+            border: 1 dashed rgba(148, 163, 184, 0.3);
             margin: 10px 0;
             line-height: 1.6;
         }
@@ -369,7 +383,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 12px; /* logo + içerik için */
             padding: 10px 12px;
             border-radius: 12px;
             margin-bottom: 8px;
@@ -494,14 +508,22 @@
             margin-left: 6px;
         }
 
-        .pager button:disabled {
-            opacity: 0.5;
+        .pager button:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--text);
         }
 
+        .pager button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 900px) {
             .grid {
                 grid-template-columns: 1fr;
             }
+
             .card-hero {
                 padding: 16px 16px 18px;
             }
@@ -511,9 +533,11 @@
             .search-grid {
                 grid-template-columns: 1fr;
             }
+
             .search-grid div:nth-child(3) {
                 grid-row: 3;
             }
+
             .search-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -528,6 +552,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
 
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
 </head>
 <body>
     <div class="app-shell">
@@ -662,560 +687,658 @@
 
         </main>
     </div>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-        getAuth,
-        onAuthStateChanged,
-        signOut
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-        getFirestore,
-        collection,
-        getDocs,
-        doc,
-        getDoc,
-        query,
-        where,
-        orderBy,
-        limit,
-        setDoc,
-        serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            getDoc,
+            query,
+            where,
+            orderBy,
+            limit,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /* ---- DEFAULT BUSINESS LOGO ---- */
-    const DEFAULT_BIZ_LOGO =
-        'data:image/svg+xml;utf8,' +
-        '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
-        '<rect width="256" height="256" fill="%23020a1b"/>' +
-        '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
-        '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
-        'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
-        '</svg>';
+        /* ---- DEFAULT BUSINESS LOGO ---- */
+        const DEFAULT_BIZ_LOGO =
+          'data:image/svg+xml;utf8,' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
+          '<rect width="256" height="256" fill="%23020a1b"/>' +
+          '<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
+          '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" ' +
+          'font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
+          '</svg>';
 
-    /* FIREBASE CONFIG */
-    const firebaseConfig = {
-        apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
-        authDomain: "cepterandevu-35fe4.firebaseapp.com",
-        projectId: "cepterandevu-35fe4",
-        storageBucket: "cepterandevu-35fe4.firebasestorage.app",
-        messagingSenderId: "86298180836",
-        appId: "1:86298180836:web:124c2004605d68b32700f1",
-    };
+        /* 🔧 FIREBASE CONFIG */
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
+            authDomain: "cepterandevu-35fe4.firebaseapp.com",
+            projectId: "cepterandevu-35fe4",
+            storageBucket: "cepterandevu-35fe4.firebasestorage.app",
+            messagingSenderId: "86298180836",
+            appId: "1:86298180836:web:124c2004605d68b32700f1",
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    /* DOM */
-    const headerActions = document.getElementById("headerActions");
-    const citySelect = document.getElementById("citySelect");
-    const districtSelect = document.getElementById("districtSelect");
-    const searchBtn = document.getElementById("searchBtn");
-    const businessList = document.getElementById("businessList");
-    const businessCountPill = document.getElementById("businessCountPill");
-    const listSubtitle = document.getElementById("listSubtitle");
-    const pageInfo = document.getElementById("pageInfo");
-    const prevPageBtn = document.getElementById("prevPageBtn");
-    const nextPageBtn = document.getElementById("nextPageBtn");
-    const lastAppointmentCard = document.getElementById("lastAppointmentCard");
-    const popularBusinessesBox = document.getElementById("popularBusinesses");
+        /* ---------- DOM ELEMANLARI ---------- */
+        const headerActions = document.getElementById("headerActions");
 
-    /* GLOBAL */
-    let currentUser = null;
-    let currentProfile = null;
-    let ALL_BUSINESSES = [];
-    let ALL_CITIES = [];
-    let filteredBusinesses = [];
-    const PAGE_SIZE = 5;
-    let currentPage = 1;
+        const citySelect = document.getElementById("citySelect");
+        const districtSelect = document.getElementById("districtSelect");
+        const searchBtn = document.getElementById("searchBtn");
 
-    /* HEADER */
-    function renderLoggedOutHeader() {
-        headerActions.innerHTML = "";
+        const listSubtitle = document.getElementById("listSubtitle");
+        const businessCountPill = document.getElementById("businessCountPill");
+        const businessList = document.getElementById("businessList");
+        const pageInfo = document.getElementById("pageInfo");
+        const prevPageBtn = document.getElementById("prevPageBtn");
+        const nextPageBtn = document.getElementById("nextPageBtn");
 
-        const btnBiz = document.createElement("button");
-        btnBiz.className = "btn btn-outline";
-        btnBiz.textContent = "İşletme Girişi";
-        btnBiz.onclick = () => (window.location.href = "business/business-login.html");
+        const lastAppointmentCard = document.getElementById("lastAppointmentCard");
+        const popularBusinessesBox = document.getElementById("popularBusinesses");
 
-        const btnCust = document.createElement("button");
-        btnCust.className = "btn btn-primary";
-        btnCust.textContent = "Müşteri Girişi";
-        btnCust.onclick = () => (window.location.href = "customer-login.html");
+        /* ---------- GLOBAL DURUMLAR ---------- */
+        let currentUser = null;
+        let currentProfile = null;
 
-        headerActions.appendChild(btnBiz);
-        headerActions.appendChild(btnCust);
-    }
+        let ALL_BUSINESSES = [];
+        let ALL_CITIES = [];
 
-    function renderLoggedInHeader() {
-        headerActions.innerHTML = "";
+        let filteredBusinesses = [];
+        const PAGE_SIZE = 5;
+        let currentPage = 1;
 
-        const name =
-            currentProfile?.name ||
-            currentProfile?.displayName ||
-            currentUser?.email?.split("@")[0] ||
-            "Müşteri";
+        /* ---------- HEADER UI (LOGIN / AVATAR) ---------- */
 
-        const avatarInitial = (name[0] || "M").toUpperCase();
-        const avatarUrl = currentProfile?.photoURL || null;
+        function renderLoggedOutHeader() {
+            headerActions.innerHTML = "";
 
-        const nameSpan = document.createElement("span");
-        nameSpan.style.fontSize = "12px";
-        nameSpan.style.color = "#e5e7eb";
-        nameSpan.textContent = `Hoş geldin, ${name}`;
+            const btnBiz = document.createElement("button");
+            btnBiz.className = "btn btn-outline";
+            btnBiz.textContent = "İşletme Girişi";
+            btnBiz.onclick = () => (window.location.href = "business/business-login.html");
 
-        const profileBtn = document.createElement("button");
-        profileBtn.className = "btn btn-outline";
-        profileBtn.textContent = "Profilim";
-        profileBtn.onclick = () => (window.location.href = "customer-panel.html");
+            const btnCust = document.createElement("button");
+            btnCust.className = "btn btn-primary";
+            btnCust.textContent = "Müşteri Girişi";
+            btnCust.onclick = () => (window.location.href = "customer-login.html");
 
-        const logoutBtn = document.createElement("button");
-        logoutBtn.className = "btn btn-outline";
-        logoutBtn.textContent = "Çıkış";
-        logoutBtn.onclick = () => signOut(auth);
-
-        const avatar = document.createElement("div");
-        avatar.style.width = "32px";
-        avatar.style.height = "32px";
-        avatar.style.borderRadius = "999px";
-        avatar.style.display = "flex";
-        avatar.style.alignItems = "center";
-        avatar.style.justifyContent = "center";
-        avatar.style.fontSize = "14px";
-        avatar.style.fontWeight = "600";
-        avatar.style.cursor = "pointer";
-        avatar.style.color = "#ecfdf5";
-        avatar.style.background =
-            "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
-        avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
-        avatar.onclick = () => (window.location.href = "customer-panel.html");
-
-        if (avatarUrl) {
-            avatar.style.backgroundImage = `url(${avatarUrl})`;
-            avatar.style.backgroundSize = "cover";
-            avatar.style.backgroundPosition = "center";
-            avatar.textContent = "";
-        } else {
-            avatar.textContent = avatarInitial;
+            headerActions.appendChild(btnBiz);
+            headerActions.appendChild(btnCust);
         }
 
-        headerActions.appendChild(nameSpan);
-        headerActions.appendChild(profileBtn);
-        headerActions.appendChild(logoutBtn);
-        headerActions.appendChild(avatar);
-    }
+        function renderLoggedInHeader() {
+            headerActions.innerHTML = "";
 
-    async function loadCurrentProfile() {
-        if (!currentUser) return null;
-        const collections = ["customers", "users"];
-        for (const col of collections) {
-            try {
-                const ref = doc(db, col, currentUser.uid);
-                const snap = await getDoc(ref);
-                if (snap.exists()) return snap.data();
-            } catch { }
-        }
-        return null;
-    }
+            const name =
+                currentProfile?.name ||
+                currentProfile?.displayName ||
+                currentUser?.email?.split("@")[0] ||
+                "Müşteri";
 
-    /* ONESIGNAL */
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-            await OneSignal.init({ appId: "784cba74-0683-49ed-a3c6-e86741fc6aee" });
-        } catch { }
-    });
+            const avatarInitial = (name[0] || "M").toUpperCase();
+            const avatarUrl = currentProfile?.photoURL || null;
 
-    async function setupOneSignalForUser() {
-        if (!currentUser) return;
-        try {
-            window.OneSignalDeferred.push(async function (OneSignal) {
+            const nameSpan = document.createElement("span");
+            nameSpan.style.fontSize = "12px";
+            nameSpan.style.color = "#e5e7eb";
+            nameSpan.textContent = `Hoş geldin, ${name}`;
+
+            const profileBtn = document.createElement("button");
+            profileBtn.className = "btn btn-outline";
+            profileBtn.textContent = "Profilim";
+            profileBtn.onclick = () => (window.location.href = "customer-panel.html");
+
+            const logoutBtn = document.createElement("button");
+            logoutBtn.className = "btn btn-outline";
+            logoutBtn.textContent = "Çıkış";
+            logoutBtn.onclick = async () => {
                 try {
-                    await OneSignal.Notifications.requestPermission();
-                    const token = OneSignal.User.PushSubscription?.token;
-                    if (!token) return;
-
-                    await setDoc(
-                        doc(db, "userPushTokens", currentUser.uid),
-                        {
-                            uid: currentUser.uid,
-                            email: currentUser.email || null,
-                            token,
-                            updatedAt: serverTimestamp()
-                        },
-                        { merge: true }
-                    );
-                } catch { }
-            });
-        } catch { }
-    }
-
-    /* BUSINESS LOAD */
-    async function loadBusinesses() {
-        try {
-            const snap = await getDocs(collection(db, "businesses"));
-            ALL_BUSINESSES = [];
-            ALL_CITIES = [];
-
-            snap.forEach((docSnap) => {
-                const d = docSnap.data();
-                const city = d.city || d.cityName || "";
-                const district = d.district || d.districtName || "";
-
-                ALL_BUSINESSES.push({
-                    id: docSnap.id,
-                    name: d.name || "İsimsiz İşletme",
-                    cityId: city,
-                    cityName: city,
-                    districtId: district,
-                    districtName: district,
-                    tags: Array.isArray(d.tags) ? d.tags : [],
-                    rating: d.rating || 0,
-                    reviewCount: d.reviewCount || 0,
-                    logoBase64: d.logoBase64 || null,
-
-                    openingHour: d.openingHour || "09:00",
-                    closingHour: d.closingHour || "19:00",
-                    slotDurationMinutes: d.slotDurationMinutes || 30,
-                });
-
-                if (city && !ALL_CITIES.includes(city)) ALL_CITIES.push(city);
-            });
-
-            ALL_CITIES.sort();
-            populateCities();
-            renderPopularBusinesses();
-        } catch { }
-    }
-
-    function populateCities() {
-        citySelect.innerHTML = `<option value="">İl seç</option>`;
-        ALL_CITIES.forEach((c) => {
-            const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            citySelect.appendChild(opt);
-        });
-
-        districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
-        districtSelect.disabled = true;
-    }
-
-    function populateDistricts(city) {
-        districtSelect.innerHTML = "";
-        if (!city) {
-            districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
-            districtSelect.disabled = true;
-            return;
-        }
-
-        const districts = [
-            ...new Set(
-                ALL_BUSINESSES.filter((b) => b.cityId === city).map((b) => b.districtName)
-            ),
-        ].filter(Boolean).sort();
-
-        districtSelect.disabled = false;
-        districtSelect.innerHTML = `<option value="">Tüm ilçeler</option>`;
-
-        districts.forEach((d) => {
-            const opt = document.createElement("option");
-            opt.value = d;
-            opt.textContent = d;
-            districtSelect.appendChild(opt);
-        });
-    }
-
-    /* UTILS */
-    function parseTimeToMinutes(t) {
-        const [h, m] = t.split(":").map(Number);
-        return h * 60 + m;
-    }
-
-    function minutesToTime(mins) {
-        const h = String(Math.floor(mins / 60)).padStart(2, "0");
-        const m = String(mins % 60).padStart(2, "0");
-        return `${h}:${m}`;
-    }
-
-    /* RANDEVU VERİ ÇEKME */
-    async function fetchTodayAppointmentsForBusiness(businessId) {
-        const today = new Date();
-        const y = today.getFullYear();
-        const m = String(today.getMonth() + 1).padStart(2, "0");
-        const d = String(today.getDate()).padStart(2, "0");
-        const todayStr = `${y}-${m}-${d}`;
-
-        const taken = new Set();
-
-        try {
-            const qRef = query(
-                collection(db, "appointments"),
-                where("businessID", "==", businessId),
-                where("date", "==", todayStr)
-            );
-            const snap = await getDocs(qRef);
-            snap.forEach((x) => {
-                if (x.data()?.time) taken.add(x.data().time);
-            });
-        } catch { }
-
-        return taken;
-    }
-
-    /* SLOT HESABI */
-    async function computeNextAvailableSlot(biz) {
-        const now = new Date();
-        const nowMins = now.getHours() * 60 + now.getMinutes();
-
-        let start = parseTimeToMinutes(biz.openingHour);
-        const end = parseTimeToMinutes(biz.closingHour);
-        const dur = biz.slotDurationMinutes;
-
-        if (nowMins > start) {
-            const diff = nowMins - start;
-            const steps = Math.ceil(diff / dur);
-            start = start + steps * dur;
-        }
-
-        const taken = await fetchTodayAppointmentsForBusiness(biz.id);
-
-        for (let m = start; m + dur <= end; m += dur) {
-            const t = minutesToTime(m);
-            if (!taken.has(t)) return t;
-        }
-        return null;
-    }
-
-    async function updateBusinessSlotDisplay(biz, el) {
-        el.textContent = "Hesaplanıyor...";
-        const next = await computeNextAvailableSlot(biz);
-        if (next) el.textContent = "İlk uygun saat: " + next;
-        else el.textContent = "Bugün uygun saat yok";
-    }
-
-    /* FİLTRE */
-    function filterBusinesses() {
-        const city = citySelect.value;
-        const district = districtSelect.value;
-
-        if (!city) {
-            filteredBusinesses = [];
-            businessList.innerHTML = "";
-            listSubtitle.textContent = "İl seçmeden listeleme yapılamaz.";
-            businessCountPill.textContent = "0 işletme";
-            return;
-        }
-
-        filteredBusinesses = ALL_BUSINESSES.filter((b) => {
-            if (b.cityId !== city) return false;
-            if (district && b.districtId !== district) return false;
-            return true;
-        });
-
-        currentPage = 1;
-        businessCountPill.textContent = `${filteredBusinesses.length} işletme`;
-
-        const displayDistrict = district || "Tüm ilçeler";
-        listSubtitle.textContent =
-            `${city} / ${displayDistrict} bölgesinde ${filteredBusinesses.length} işletme bulundu.`;
-
-        renderBusinessList();
-    }
-
-    /* LİSTE */
-    function renderBusinessList() {
-        businessList.innerHTML = "";
-
-        if (!filteredBusinesses.length) {
-            const li = document.createElement("li");
-            li.className = "business-empty";
-            li.innerHTML =
-                "Bu kriterlere ait kayıtlı işletme bulunamadı.<br/>İl / ilçe seçerek tekrar deneyin.";
-            businessList.appendChild(li);
-            return;
-        }
-
-        const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        const start = (currentPage - 1) * PAGE_SIZE;
-        const items = filteredBusinesses.slice(start, start + PAGE_SIZE);
-
-        items.forEach((b) => {
-            const li = document.createElement("li");
-            li.className = "business-card";
-            li.onclick = () => handleBusinessClick(b);
-
-            const img = document.createElement("img");
-            img.src = b.logoBase64 || DEFAULT_BIZ_LOGO;
-            img.style.width = "54px";
-            img.style.height = "54px";
-            img.style.objectFit = "contain";
-            img.style.borderRadius = "12px";
-            img.style.background = "#020617";
-            img.style.border = "1px solid rgba(148,163,184,0.35)";
-
-            const main = document.createElement("div");
-            main.className = "business-main";
-
-            const nm = document.createElement("div");
-            nm.className = "business-name";
-            nm.textContent = b.name;
-
-            const lc = document.createElement("div");
-            lc.className = "business-location";
-            lc.textContent = `${b.cityName} · ${b.districtName}`;
-
-            const tags = document.createElement("div");
-            tags.className = "business-tags";
-            (b.tags || []).forEach((t) => {
-                const s = document.createElement("span");
-                s.className = "business-tag";
-                s.textContent = t;
-                tags.appendChild(s);
-            });
-
-            main.appendChild(nm);
-            main.appendChild(lc);
-            main.appendChild(tags);
-
-            const meta = document.createElement("div");
-            meta.className = "business-meta";
-
-            const rating = document.createElement("div");
-            rating.className = "rating-pill";
-            rating.innerHTML = `★ ${b.rating.toFixed(1)} <span>(${b.reviewCount}+)</span>`;
-
-            const bottom = document.createElement("div");
-            bottom.className = "business-meta-bottom";
-
-            const sl = document.createElement("span");
-            sl.className = "slots-chip";
-            sl.textContent = "Hesaplanıyor...";
-            updateBusinessSlotDisplay(b, sl);
-
-            const btn = document.createElement("button");
-            btn.className = "btn-mini";
-            btn.textContent = "Randevu al";
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                handleBusinessClick(b);
+                    await signOut(auth);
+                } catch (e) {
+                    console.error("Çıkış hatası:", e);
+                }
             };
 
-            bottom.appendChild(sl);
-            bottom.appendChild(btn);
+            const avatar = document.createElement("div");
+            avatar.style.width = "32px";
+            avatar.style.height = "32px";
+            avatar.style.borderRadius = "999px";
+            avatar.style.display = "flex";
+            avatar.style.alignItems = "center";
+            avatar.style.justifyContent = "center";
+            avatar.style.fontSize = "14px";
+            avatar.style.fontWeight = "600";
+            avatar.style.cursor = "pointer";
+            avatar.style.color = "#ecfdf5";
+            avatar.style.background =
+                "radial-gradient(circle at 30% 10%, #4ade80, #16a34a 42%, #0f766e)";
+            avatar.style.boxShadow = "0 10px 30px rgba(34, 197, 94, 0.6)";
+            avatar.onclick = () => (window.location.href = "customer-panel.html");
 
-            meta.appendChild(rating);
-            meta.appendChild(bottom);
+            if (avatarUrl) {
+                avatar.style.backgroundImage = `url(${avatarUrl})`;
+                avatar.style.backgroundSize = "cover";
+                avatar.style.backgroundPosition = "center";
+                avatar.textContent = "";
+            } else {
+                avatar.textContent = avatarInitial;
+            }
 
-            li.appendChild(img);
-            li.appendChild(main);
-            li.appendChild(meta);
+            headerActions.appendChild(nameSpan);
+            headerActions.appendChild(profileBtn);
+            headerActions.appendChild(logoutBtn);
+            headerActions.appendChild(avatar);
+        }
 
-            businessList.appendChild(li);
+        async function loadCurrentProfile() {
+            if (!currentUser) return null;
+
+            const tryCollections = ["customers", "users"];
+
+            for (const col of tryCollections) {
+                try {
+                    const ref = doc(db, col, currentUser.uid);
+                    const snap = await getDoc(ref);
+                    if (snap.exists()) {
+                        return snap.data();
+                    }
+                } catch (e) {
+                    console.warn(col, "koleksiyonundan profil alınamadı:", e);
+                }
+            }
+            return null;
+        }
+
+        /* ---------- ONESIGNAL ENTEGRASYONU ---------- */
+
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            try {
+                await OneSignal.init({
+                    appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
+                });
+            } catch (e) {
+                console.warn("OneSignal init hatası:", e);
+            }
         });
 
-        pageInfo.textContent = `Sayfa ${currentPage} / ${Math.max(1, totalPages)}`;
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
-    }
+        async function setupOneSignalForUser() {
+            if (!currentUser) return;
+            try {
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                window.OneSignalDeferred.push(async function (OneSignal) {
+                    try {
+                        await OneSignal.Notifications.requestPermission();
+                        const sub = OneSignal.User.PushSubscription;
+                        const token = sub?.token;
+                        if (!token) return;
 
-    prevPageBtn.onclick = () => {
-        if (currentPage > 1) {
-            currentPage--;
+                        await setDoc(
+                            doc(db, "userPushTokens", currentUser.uid),
+                            {
+                                uid: currentUser.uid,
+                                email: currentUser.email || null,
+                                token,
+                                updatedAt: serverTimestamp()
+                            },
+                            { merge: true }
+                        );
+                    } catch (e) {
+                        console.warn("OneSignal kullanıcı bağlama hatası:", e);
+                    }
+                });
+            } catch (e) {
+                console.warn("OneSignal global hatası:", e);
+            }
+        }
+
+        /* ---------- BUSINESS / ŞEHİR YÜKLEME ---------- */
+
+        async function loadBusinesses() {
+            try {
+                const snap = await getDocs(collection(db, "businesses"));
+                ALL_BUSINESSES = [];
+                ALL_CITIES = [];
+
+                snap.forEach((docSnap) => {
+                    const d = docSnap.data();
+                    const city = d.city || d.cityName || "";
+                    const district = d.district || d.districtName || "";
+
+                    ALL_BUSINESSES.push({
+                        id: docSnap.id,
+                        name: d.name || "İsimsiz İşletme",
+                        cityId: city,
+                        cityName: city,
+                        districtId: district,
+                        districtName: district,
+                        tags: Array.isArray(d.tags) ? d.tags : [],
+                        rating: typeof d.rating === "number" ? d.rating : 0,
+                        reviewCount:
+                            typeof d.reviewCount === "number" ? d.reviewCount : 0,
+                        freeSlotsToday:
+                            typeof d.freeSlotsToday === "number" ? d.freeSlotsToday : 0,
+                        logoBase64: d.logoBase64 || null
+                    });
+
+                    if (city && !ALL_CITIES.includes(city)) {
+                        ALL_CITIES.push(city);
+                    }
+                });
+
+                ALL_CITIES.sort();
+                populateCities();
+                renderPopularBusinesses();
+            } catch (e) {
+                console.error("İşletme listesi alınamadı:", e);
+            }
+        }
+
+        function populateCities() {
+            citySelect.innerHTML = `<option value="">İl seç</option>`;
+            ALL_CITIES.forEach((c) => {
+                const opt = document.createElement("option");
+                opt.value = c;
+                opt.textContent = c;
+                citySelect.appendChild(opt);
+            });
+
+            districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+            districtSelect.disabled = true;
+        }
+
+        function populateDistricts(city) {
+            districtSelect.innerHTML = "";
+            if (!city) {
+                districtSelect.innerHTML = `<option value="">Önce il seç</option>`;
+                districtSelect.disabled = true;
+                return;
+            }
+
+            const districts = [
+                ...new Set(
+                    ALL_BUSINESSES
+                        .filter((b) => b.cityId === city)
+                        .map((b) => b.districtName)
+                )
+            ].filter(Boolean).sort();
+
+            districtSelect.disabled = false;
+            districtSelect.innerHTML = `<option value="">Tüm ilçeler</option>`;
+
+            districts.forEach((d) => {
+                const opt = document.createElement("option");
+                opt.value = d;
+                opt.textContent = d;
+                districtSelect.appendChild(opt);
+            });
+        }
+
+        /* ---------- FİLTRE / LİSTE ---------- */
+
+        function filterBusinesses() {
+            const city = citySelect.value;
+            const district = districtSelect.value;
+
+            if (!city) {
+                filteredBusinesses = [];
+                renderBusinessList();
+                listSubtitle.textContent = "İl seçmeden listeleme yapılamaz.";
+                businessCountPill.textContent = "0 işletme";
+                return;
+            }
+
+            filteredBusinesses = ALL_BUSINESSES.filter((b) => {
+                if (b.cityId !== city) return false;
+                if (district && b.districtId !== district) return false;
+                return true;
+            });
+
+            currentPage = 1;
+
+            const displayDistrict = district || "Tüm ilçeler";
+            if (filteredBusinesses.length === 0) {
+                listSubtitle.textContent = `${city} / ${displayDistrict} için kayıtlı işletme bulunamadı.`;
+            } else {
+                listSubtitle.textContent = `${city} / ${displayDistrict} bölgesinde ${filteredBusinesses.length} işletme bulundu.`;
+            }
+
+            businessCountPill.textContent = `${filteredBusinesses.length} işletme`;
             renderBusinessList();
         }
-    };
 
-    nextPageBtn.onclick = () => {
-        const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderBusinessList();
-        }
-    };
+        function renderBusinessList() {
+            businessList.innerHTML = "";
 
-    /* CLICK */
-    function handleBusinessClick(b) {
-        const url = `booking.html?businessId=${encodeURIComponent(b.id)}`;
-        if (!currentUser) {
-            window.location.href = `customer-login.html?redirect=${encodeURIComponent(url)}`;
-            return;
-        }
-        window.location.href = url;
-    }
+            if (!filteredBusinesses || filteredBusinesses.length === 0) {
+                const li = document.createElement("li");
+                li.className = "business-empty";
+                li.innerHTML =
+                    'Bu kriterlere ait kayıtlı işletme bulunamadı.<br/>İl / ilçe seçiminizi değiştirip tekrar deneyebilirsiniz.';
+                businessList.appendChild(li);
+                updatePager();
+                return;
+            }
 
-    /* LAST APPOINTMENT */
-    async function loadLastAppointment() {
-        if (!currentUser) return;
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
 
-        try {
-            const qRef = query(
-                collection(db, "appointments"),
-                where("customerUID", "==", currentUser.uid),
-                orderBy("createdAt", "desc"),
-                limit(1)
+            const startIndex = (currentPage - 1) * PAGE_SIZE;
+            const pageItems = filteredBusinesses.slice(
+                startIndex,
+                startIndex + PAGE_SIZE
             );
-            const snap = await getDocs(qRef);
 
-            if (snap.empty) return;
+            pageItems.forEach((b) => {
+                const li = document.createElement("li");
+                li.className = "business-card";
+                li.onclick = () => handleBusinessClick(b);
 
-            const a = snap.docs[0].data();
-            const box = document.createElement("div");
-            box.style.margin = "6px 0 12px";
-            box.style.padding = "8px 10px";
-            box.style.fontSize = "12px";
-            box.style.border = "1px solid rgba(148,163,184,0.5)";
-            box.style.borderRadius = "14px";
-            box.style.background = "rgba(15,23,42,0.9)";
+                const logo = document.createElement("img");
+                logo.src = b.logoBase64 || DEFAULT_BIZ_LOGO;
+                logo.style.width = "54px";
+                logo.style.height = "54px";
+                logo.style.borderRadius = "12px";
+                logo.style.objectFit = "contain";
+                logo.style.background = "#020617";
+                logo.style.border = "1px solid rgba(148,163,184,0.35)";
+                logo.style.marginRight = "12px";
+                logo.style.flexShrink = "0";
 
-            box.innerHTML = `
+                const main = document.createElement("div");
+                main.className = "business-main";
+
+                const nameEl = document.createElement("div");
+                nameEl.className = "business-name";
+                nameEl.textContent = b.name;
+
+                const locEl = document.createElement("div");
+                locEl.className = "business-location";
+                locEl.textContent = `${b.cityName} · ${b.districtName}`;
+
+                const tagsEl = document.createElement("div");
+                tagsEl.className = "business-tags";
+                (b.tags || []).forEach((tag) => {
+                    const t = document.createElement("span");
+                    t.className = "business-tag";
+                    t.textContent = tag;
+                    tagsEl.appendChild(t);
+                });
+
+                main.appendChild(nameEl);
+                main.appendChild(locEl);
+                main.appendChild(tagsEl);
+
+                const meta = document.createElement("div");
+                meta.className = "business-meta";
+
+                const ratingEl = document.createElement("div");
+                ratingEl.className = "rating-pill";
+                ratingEl.innerHTML = `★ ${b.rating.toFixed(1)} <span>(${b.reviewCount}+)</span>`;
+
+                const bottom = document.createElement("div");
+                bottom.className = "business-meta-bottom";
+
+                const slots = document.createElement("span");
+                slots.className = "slots-chip";
+                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
+
+                const btn = document.createElement("button");
+                btn.className = "btn-mini";
+                btn.type = "button";
+                btn.textContent = "Randevu al";
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    handleBusinessClick(b);
+                };
+
+                bottom.appendChild(slots);
+                bottom.appendChild(btn);
+
+                meta.appendChild(ratingEl);
+                meta.appendChild(bottom);
+
+                li.appendChild(logo);
+                li.appendChild(main);
+                li.appendChild(meta);
+
+                businessList.appendChild(li);
+            });
+
+            updatePager();
+        }
+
+        function updatePager() {
+            const total = filteredBusinesses.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            pageInfo.textContent = `Sayfa ${currentPage} / ${totalPages}`;
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages || total === 0;
+        }
+
+        prevPageBtn.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderBusinessList();
+            }
+        });
+
+        nextPageBtn.addEventListener("click", () => {
+            const totalPages = Math.ceil(filteredBusinesses.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderBusinessList();
+            }
+        });
+
+        function handleBusinessClick(business) {
+            const bookingUrl = `booking.html?businessId=${encodeURIComponent(
+                business.id
+            )}`;
+
+            if (!currentUser) {
+                const redirect = encodeURIComponent(bookingUrl);
+                window.location.href = `customer-login.html?redirect=${redirect}`;
+                return;
+            }
+
+            window.location.href = bookingUrl;
+        }
+
+        /* ---------- POPÜLER İŞLETMELER ---------- */
+
+        function renderPopularBusinesses() {
+            popularBusinessesBox.innerHTML = "";
+
+            if (!ALL_BUSINESSES.length) return;
+
+            const sorted = [...ALL_BUSINESSES].sort((a, b) => {
+                const rA = a.rating || 0;
+                const rB = b.rating || 0;
+                if (rB !== rA) return rB - rA;
+                const cA = a.reviewCount || 0;
+                const cB = b.reviewCount || 0;
+                return cB - cA;
+            });
+
+            const top = sorted.slice(0, 3);
+            if (!top.length) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.style.marginBottom = "14px";
+
+            const title = document.createElement("div");
+            title.style.fontSize = "12px";
+            title.style.color = "#9ca3af";
+            title.style.marginBottom = "6px";
+            title.textContent = "Popüler işletmeler";
+
+            wrapper.appendChild(title);
+
+            top.forEach((b) => {
+                const card = document.createElement("div");
+                card.style.borderRadius = "12px";
+                card.style.border = "1px solid rgba(148,163,184,0.45)";
+                card.style.background = "rgba(15,23,42,0.9)";
+                card.style.padding = "8px 10px";
+                card.style.display = "flex";
+                card.style.justifyContent = "space-between";
+                card.style.alignItems = "center";
+                card.style.fontSize = "12px";
+                card.style.marginBottom = "6px";
+                card.style.cursor = "pointer";
+
+                card.onclick = () => handleBusinessClick(b);
+
+                const left = document.createElement("div");
+                left.textContent = b.name;
+
+                const right = document.createElement("div");
+                right.style.fontSize = "11px";
+                right.style.color = "#bbf7d0";
+                right.textContent = `★ ${b.rating.toFixed(1)}`;
+
+                card.appendChild(left);
+                card.appendChild(right);
+                wrapper.appendChild(card);
+            });
+
+            popularBusinessesBox.appendChild(wrapper);
+        }
+
+        /* ---------- SON RANDEVU KARTI ---------- */
+
+        async function loadLastAppointment() {
+            if (!currentUser) {
+                lastAppointmentCard.innerHTML = "";
+                return;
+            }
+
+            try {
+                let qRef;
+                try {
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid),
+                        orderBy("createdAt", "desc"),
+                        limit(1)
+                    );
+                } catch {
+                    qRef = query(
+                        collection(db, "appointments"),
+                        where("customerUID", "==", currentUser.uid)
+                    );
+                }
+
+                const snap = await getDocs(qRef);
+                if (snap.empty) {
+                    lastAppointmentCard.innerHTML = "";
+                    return;
+                }
+
+                let last = null;
+                snap.forEach((d) => {
+                    const data = d.data();
+                    last = { id: d.id, ...data };
+                });
+
+                if (!last) return;
+
+                const bizName = last.businessName || last.businessID || "İşletme";
+                const service = last.serviceName || last.serviceID || "Hizmet";
+                const dateStr = last.date || "-";
+                const timeStr = last.time || "";
+                const status = last.status || "Bilinmiyor";
+
+                const box = document.createElement("div");
+                box.style.marginBottom = "12px";
+                box.style.marginTop = "4px";
+                box.style.borderRadius = "14px";
+                box.style.border = "1px solid rgba(148,163,184,0.5)";
+                box.style.background = "rgba(15,23,42,0.9)";
+                box.style.padding = "8px 10px";
+                box.style.fontSize = "12px";
+
+                box.innerHTML = `
                 <div style="font-size:11px;color:#9ca3af;margin-bottom:4px;">Son randevun</div>
-                <div style="font-weight:600;margin-bottom:2px;">${a.businessName}</div>
-                <div style="color:#9ca3af;margin-bottom:2px;">${a.serviceName} · ${a.date} · ${a.time}</div>
+                <div style="font-weight:600;margin-bottom:2px;">${bizName}</div>
+                <div style="color:#9ca3af;margin-bottom:2px;">
+                    ${service} · ${dateStr} ${timeStr ? "· " + timeStr : ""}
+                </div>
                 <div style="font-size:11px;color:#e5e7eb;margin-bottom:6px;">
-                    Durum: <span style="color:#bbf7d0;">${a.status}</span>
+                    Durum: <span style="color:#bbf7d0;">${status}</span>
                 </div>
             `;
 
-            const btn = document.createElement("button");
-            btn.className = "btn btn-primary";
-            btn.style.fontSize = "11px";
-            btn.textContent = "Tekrar randevu al";
-            btn.onclick = () => handleBusinessClick({ id: a.businessID });
+                const btn = document.createElement("button");
+                btn.className = "btn btn-primary";
+                btn.style.padding = "5px 10px";
+                btn.style.fontSize = "11px";
+                btn.textContent = "Tekrar randevu al";
+                btn.onclick = () => {
+                    if (last.businessID) {
+                        handleBusinessClick({ id: last.businessID });
+                    }
+                };
 
-            box.appendChild(btn);
-            lastAppointmentCard.innerHTML = "";
-            lastAppointmentCard.appendChild(box);
-        } catch { }
-    }
+                box.appendChild(btn);
 
-    /* EVENTS */
-    citySelect.onchange = () => populateDistricts(citySelect.value);
-    searchBtn.onclick = filterBusinesses;
-
-    window.scrollToSearch = () => {
-        const el = document.getElementById("search-panel");
-        if (el) el.scrollIntoView({ behavior: "smooth" });
-    };
-
-    /* AUTH */
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if (!user) {
-            currentProfile = null;
-            renderLoggedOutHeader();
-            lastAppointmentCard.innerHTML = "";
-        } else {
-            currentProfile = await loadCurrentProfile();
-            renderLoggedInHeader();
-            loadLastAppointment();
-            setupOneSignalForUser();
+                lastAppointmentCard.innerHTML = "";
+                lastAppointmentCard.appendChild(box);
+            } catch (e) {
+                console.warn("Son randevu getirilemedi:", e);
+            }
         }
-    });
 
-    /* INIT */
-    loadBusinesses();
-</script>
+        /* ---------- EVENTLER ---------- */
+
+        citySelect.addEventListener("change", () => {
+            populateDistricts(citySelect.value);
+        });
+
+        searchBtn.addEventListener("click", filterBusinesses);
+
+        window.scrollToSearch = function () {
+            const el = document.getElementById("search-panel");
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        };
+
+        /* ---------- AUTH DURUMU ---------- */
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user || null;
+
+            if (!currentUser) {
+                currentProfile = null;
+                renderLoggedOutHeader();
+                lastAppointmentCard.innerHTML = "";
+            } else {
+                currentProfile = await loadCurrentProfile();
+                renderLoggedInHeader();
+                loadLastAppointment();
+                setupOneSignalForUser();
+            }
+        });
+
+        /* ---------- BAŞLANGIÇ ---------- */
+
+        loadBusinesses();
+    </script>
+</body>
+
+</html>
