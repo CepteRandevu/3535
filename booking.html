@@ -74,6 +74,7 @@ select,input{
 }
 </style>
 </head>
+
 <body>
 <div class="container">
 
@@ -93,18 +94,14 @@ select,input{
       </div>
 
       <div id="bizName" style="font-size:18px;font-weight:600;"></div>
-<div id="bizLocation" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
-<div id="bizMeta" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizLocation" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizMeta" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
 
-<!-- YENİ EKLENENLER -->
-<div id="bizAddress"
-     style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizAddress" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizDesc" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+    </div>
 
-<div id="bizDesc"
-     style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
-
-
-    <!-- RANDEVU OLUŞTURMA FORMU -->
+    <!-- RANDEVU FORMU -->
     <div class="card">
       <h2>Randevu Oluştur</h2>
 
@@ -131,8 +128,8 @@ select,input{
 
   </div>
 </div>
-<script type="module">
 
+<script type="module">
 /* ------------------- FIREBASE ------------------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -143,13 +140,7 @@ import {
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const DEFAULT_BIZ_LOGO =
-'data:image/svg+xml;utf8,' +
-'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256">' +
-'<rect width="256" height="256" fill="%23020a1b"/>' +
-'<rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/>' +
-'<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"' +
-' font-family="system-ui" font-size="38" fill="%2322c55e">C</text>' +
-'</svg>';
+'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 256 256"><rect width="256" height="256" fill="%23020a1b"/><rect x="28" y="28" width="200" height="200" rx="36" fill="none" stroke="%2322c55e" stroke-width="4"/><text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-family="system-ui" font-size="38" fill="%2322c55e">C</text></svg>';
 
 const firebaseConfig = {
   apiKey:"AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
@@ -172,6 +163,8 @@ const bizLogoEl     = document.getElementById("bizLogo");
 const bizNameEl     = document.getElementById("bizName");
 const bizLocationEl = document.getElementById("bizLocation");
 const bizMetaEl     = document.getElementById("bizMeta");
+const bizAddressEl  = document.getElementById("bizAddress");
+const bizDescEl     = document.getElementById("bizDesc");
 
 const loadingEl     = document.getElementById("loading");
 const wrapEl        = document.getElementById("bookingWrap");
@@ -185,7 +178,7 @@ const createBtn      = document.getElementById("createBtn");
 
 const dayKeyMap = {
   1:"monday", 2:"tuesday", 3:"wednesday",
-  4:"thursday", 5:"friday", 6:"saturday", 0:"Sunday"
+  4:"thursday", 5:"friday", 6:"saturday", 0:"sunday"
 };
 
 let businessData = null;
@@ -210,16 +203,16 @@ async function loadBusiness(){
 
   businessData = snap.data();
 
-  bizLogoEl.src = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
-  bizNameEl.textContent = businessData.name;
+  bizLogoEl.src      = businessData.logoBase64 || DEFAULT_BIZ_LOGO;
+  bizNameEl.textContent     = businessData.name;
   bizLocationEl.textContent = `${businessData.city || ""} ${businessData.district || ""}`;
-  bizMetaEl.textContent = businessData.phone || "";
-  document.getElementById("bizAddress").textContent =
-  businessData.address ? `Adres: ${businessData.address}` : "";
+  bizMetaEl.textContent     = businessData.phone || "";
 
-document.getElementById("bizDesc").textContent =
-  businessData.description ? `Açıklama: ${businessData.description}` : "";
-  
+  bizAddressEl.textContent =
+    businessData.address ? `Adres: ${businessData.address}` : "";
+
+  bizDescEl.textContent =
+    businessData.description ? `Açıklama: ${businessData.description}` : "";
 
   loadingEl.style.display="none";
   wrapEl.style.display="block";
@@ -235,11 +228,7 @@ function setDateMin(){
 
 /* ------------------- SERVICES ------------------- */
 async function loadServices(){
-  const qRef = query(
-    collection(db,"services"),
-    where("businessID","==",businessId)
-  );
-
+  const qRef = query(collection(db,"services"), where("businessID","==",businessId));
   const snap = await getDocs(qRef);
 
   serviceSelect.innerHTML="<option value=''>Hizmet seçin</option>";
@@ -266,11 +255,7 @@ async function loadServices(){
 
 /* ------------------- EMPLOYEES ------------------- */
 async function loadEmployees(serviceId){
-  const qRef = query(
-    collection(db,"employees"),
-    where("businessID","==",businessId)
-  );
-
+  const qRef = query(collection(db,"employees"), where("businessID","==",businessId));
   const snap = await getDocs(qRef);
 
   employeeSelect.innerHTML="<option value=''>Çalışan seçin</option>";
@@ -354,6 +339,7 @@ async function fillTimes(){
     timeSelect.innerHTML="<option>Tüm saatler dolu</option>";
   }
 }
+
 /* ------------------- RANDEVU OLUŞTURMA ------------------- */
 createBtn.onclick = async()=>{
 
@@ -371,7 +357,6 @@ createBtn.onclick = async()=>{
 
   try{
 
-    /* -------- MÜŞTERİ PROFİLİ ALINIYOR -------- */
     const customerSnap = await getDoc(doc(db,"customers", auth.currentUser.uid));
     const customerData = customerSnap.exists() ? customerSnap.data() : {
       name: "",
@@ -379,40 +364,29 @@ createBtn.onclick = async()=>{
       photo: ""
     };
 
-    const customerName  = customerData.name  || "";
-    const customerPhone = customerData.phone || "";
-    const customerPhoto = customerData.photo || "";
-
-    /* -------- RANDEVU KAYDI -------- */
     await addDoc(collection(db,"appointments"),{
 
-      /* --- İşletme --- */
       businessID: businessId,
       businessName: businessData.name,
       businessLogo: businessData.logoBase64 || DEFAULT_BIZ_LOGO,
 
-      /* --- Hizmet --- */
       serviceID: serviceSelect.value,
       serviceName: serviceName,
 
-      /* --- Çalışan --- */
       employeeID: employeeSelect.value,
       employeeName: employeeName,
 
-      /* --- Müşteri --- */
       customerUID: auth.currentUser.uid,
-      customerName: customerName,
-      customerPhone: customerPhone,
-      customerPhoto: customerPhoto,
+      customerName: customerData.name || "",
+      customerPhone: customerData.phone || "",
+      customerPhoto: customerData.photo || "",
 
-      /* --- Zaman --- */
       date: dateInput.value,
       time: timeSelect.value,
       duration: serviceDuration,
 
-      /* --- Sistem --- */
-      status: "pending",     // Ajanda’da "Beklemede" olarak gösteriliyor
-      statusLabel: "Beklemede",
+      status: "pending",
+      statusLabel:"Beklemede",
       createdAt: Date.now()
     });
 
@@ -430,6 +404,5 @@ createBtn.onclick = async()=>{
 };
 
 </script>
-
 </body>
 </html>
