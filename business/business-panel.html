@@ -16,122 +16,92 @@
   --muted:#9ca3af;
   --border:rgba(148,163,184,0.35);
   --radius-xl:20px;
-  --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
   background:radial-gradient(circle at top,#111827,#020617 55%);
   color:var(--text);
-  font-family:system-ui,sans-serif;
+  font-family:system-ui;
+  display:flex;
   min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow-x:hidden;
 }
 
-/* ---------- DRAWER OVERLAY ---------- */
-.drawer-overlay{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.55);
-  backdrop-filter:blur(2px);
-  display:none;z-index:998;
-}
-
-/* ---------- DRAWER MENU ---------- */
-.drawer-menu{
-  position:fixed;top:0;left:0;width:250px;height:100%;
-  background:#0b1120;
-  transform:translateX(-100%);
-  transition:.28s ease;
-  z-index:999;
-  padding:20px;
-  border-right:1px solid rgba(255,255,255,0.08);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.drawer-open{transform:translateX(0);}
-.drawer-title{font-size:20px;font-weight:700;margin-bottom:10px;color:var(--accent);}
-.drawer-links a{
-  display:block;text-decoration:none;color:#e2e8f0;
-  padding:10px 12px;border-radius:10px;font-size:14px;
-}
-.drawer-links a:hover,
-.drawer-links a.active{
-  background:var(--accent);color:#022c22;font-weight:600;
-}
-
-/* ---------- TOP HEADER (MOBİL) ---------- */
+/* Mobil üst menü */
 .top-header{
   background:#0b1120;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:900;
   border-bottom:1px solid var(--border);
-  padding:10px 0 10px;
-  position:sticky;top:0;z-index:900;
-  display:flex;flex-direction:column;gap:6px;
-}
-.top-center{
-  display:flex;justify-content:center;align-items:center;gap:10px;
 }
 .logo-mark{
-  width:34px;height:34px;border-radius:14px;
   background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+  width:34px;height:34px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
   font-weight:800;color:#ecfdf5;
 }
-.logo-title{font-size:16px;font-weight:600;}
-.top-menu-row{padding-left:16px;}
-.menu-btn{
-  background:var(--accent);border:0;color:#022c22;
-  padding:7px 14px;border-radius:10px;font-weight:600;
-  cursor:pointer;font-size:14px;
+.logo-title{
+  font-size:16px;font-weight:600;margin-left:8px;
 }
 
-/* ---------- SIDEBAR (DESKTOP) ---------- */
+/* Sidebar */
 .sidebar{
-  width:240px;background:var(--sidebar);padding:24px 18px;
-  border-right:1px solid var(--border);position:fixed;top:0;bottom:0;
-  display:none;flex-direction:column;gap:14px;z-index:800;
+  width:240px;
+  background:var(--sidebar);
+  border-right:1px solid var(--border);
+  padding:20px;
+  flex-shrink:0;
+  display:none;
 }
-.logo-box{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-.biz-name-small{font-size:15px;font-weight:600;}
+.sidebar .menu-btn{
+  display:block;
+  background:transparent;
+  border:0;
+  padding:12px;
+  width:100%;
+  text-align:left;
+  border-radius:12px;
+  color:var(--muted);
+  cursor:pointer;
+}
+.sidebar .menu-btn:hover{
+  background:rgba(34,197,94,0.12);
+  color:var(--text);
+}
+.sidebar .menu-btn.active{
+  background:var(--accent);
+  color:#022c22;
+  font-weight:600;
+}
 
-.menu button{
-  width:100%;padding:10px 12px;background:transparent;border:0;
-  text-align:left;color:var(--muted);cursor:pointer;border-radius:12px;
-  font-size:14px;
-}
-.menu button:hover{background:rgba(34,197,94,0.12);color:var(--text);}
-.menu button.active{
-  background:var(--accent);color:#022c22;font-weight:600;
-}
-
-/* ---------- CONTENT ---------- */
-.main-area{
-  padding:26px 18px 28px;
-}
 @media(min-width:900px){
-  body{flex-direction:row;}
-  .sidebar{display:flex;}
+  .sidebar{display:block;}
   .top-header{display:none;}
-  .main-area{margin-left:240px;}
 }
 
+/* MAIN */
+.main{
+  flex:1;
+  padding:20px;
+}
 .page-title{
   font-size:22px;
   font-weight:700;
   margin-bottom:18px;
 }
 
-/* ---------- RANDEVU KARTI ---------- */
+/* Randevu Kartı */
 .appt-card{
   background:var(--card);
   padding:16px;
   border-radius:var(--radius-xl);
   border:1px solid var(--border);
   margin-bottom:12px;
-  box-shadow:var(--shadow-soft);
   display:flex;
   flex-direction:column;
   gap:6px;
@@ -142,67 +112,59 @@ body{
   font-size:15px;
   font-weight:600;
 }
-.appt-sub{font-size:13px;color:var(--muted);}
-.appt-status{
-  padding:4px 8px;border-radius:8px;font-size:12px;font-weight:600;
+.appt-sub{
+  font-size:13px;color:var(--muted);
 }
-.status-pending{background:rgba(234,179,8,0.2);color:#facc15;}
-.status-approved{background:rgba(34,197,94,0.2);color:#4ade80;}
-.status-rejected{background:rgba(248,113,113,0.2);color:#f87171;}
+.appt-status{
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:600;
+}
+.status-pending{
+  background:rgba(234,179,8,0.2);
+  color:#facc15;
+}
+.status-approved{
+  background:rgba(34,197,94,0.2);
+  color:#4ade80;
+}
+.status-rejected{
+  background:rgba(248,113,113,0.2);
+  color:#f87171;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- -------- DRAWER -------- -->
-<div id="drawerOverlay" class="drawer-overlay"></div>
-
-<div id="drawerMenu" class="drawer-menu">
-  <div class="drawer-title">Cepterandevu</div>
-  <div class="drawer-links">
-    <a href="business-panel.html" class="active">Panel</a>
-    <a href="business-services.html">Hizmetler</a>
-    <a href="business-employees.html">Çalışanlar</a>
-    <a href="business-appointments.html">Randevular</a>
-    <a href="business-agenda.html">Ajanda</a>
-    <a href="business-settings.html">Ayarlar</a>
-  </div>
-</div>
-
-<!-- -------- TOP HEADER (MOBİL) -------- -->
+<!-- Mobil üst menü -->
 <header class="top-header">
-  <div class="top-center">
+  <div style="display:flex;align-items:center;">
     <div class="logo-mark">C</div>
-    <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
-  </div>
-  <div class="top-menu-row">
-    <button id="menuBtn" class="menu-btn">Menü</button>
+    <span class="logo-title" id="bizNameMobile">Panel</span>
   </div>
 </header>
 
-<!-- -------- SIDEBAR (DESKTOP) -------- -->
+<!-- Sidebar -->
 <aside class="sidebar">
-  <div class="logo-box">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
     <div class="logo-mark">C</div>
-    <div id="bizNameSmall" class="biz-name-small">İşletme</div>
+    <div id="bizNameSmall" style="font-size:15px;font-weight:600;">İşletme</div>
   </div>
-
-  <div class="menu">
-    <button class="active">Panel</button>
-    <button onclick="location.href='business-services.html'">Hizmetler</button>
-    <button onclick="location.href='business-employees.html'">Çalışanlar</button>
-    <button onclick="location.href='business-appointments.html'">Randevular</button>
-    <button onclick="location.href='business-agenda.html'">Ajanda</button>
-    <button onclick="location.href='business-settings.html'">Ayarlar</button>
-  </div>
+  <button class="menu-btn active">Panel</button>
+  <button class="menu-btn" onclick="location.href='business-services.html'">Hizmetler</button>
+  <button class="menu-btn" onclick="location.href='business-employees.html'">Çalışanlar</button>
+  <button class="menu-btn" onclick="location.href='business-appointments.html'">Randevular</button>
+  <button class="menu-btn" onclick="location.href='business-agenda.html'">Ajanda</button>
+ <button class="menu-btn" onclick="location.href='business-settings.html'">Ayarlar</button>
 </aside>
 
-<!-- -------- MAIN CONTENT -------- -->
-<main class="main-area">
-
+<main class="main">
   <h1 class="page-title">En Son Randevular</h1>
-  <div id="appointments"></div>
 
+  <div id="appointments"></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -213,50 +175,51 @@ import {
   getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* FIREBASE */
+/* ---------------- FIREBASE ---------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
   authDomain: "cepterandevu-35fe4.firebaseapp.com",
   projectId: "cepterandevu-35fe4",
   storageBucket: "cepterandevu-35fe4.firebasestorage.app",
   messagingSenderId: "86298180836",
-  appId: "1:86298180836:web:124c2004605d68b32700f1"
+  appId: "1:86298180836:web:124c2004605d68b32700f1",
 };
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db  = getFirestore(app);
 const auth = getAuth(app);
 
-/* DOM */
-const bizNameSmall = document.getElementById("bizNameSmall");
+/* ---------------- DOM ---------------- */
+const bizNameSmall  = document.getElementById("bizNameSmall");
 const bizNameMobile = document.getElementById("bizNameMobile");
 const appointmentsEl = document.getElementById("appointments");
 
 let BUSINESS_ID = null;
 
-/* AUTH */
+/* ---------------- AUTH ---------------- */
 onAuthStateChanged(auth, async user=>{
   if(!user){
-    location.href="business-login.html";
+    location.href = "business-login.html";
     return;
   }
+
   BUSINESS_ID = user.uid;
 
   await loadBusinessInfo();
   await loadAppointments();
 });
 
-/* BUSINESS INFO */
+/* ---------------- BUSINESS INFO ---------------- */
 async function loadBusinessInfo(){
   const ref = doc(db,"businesses",BUSINESS_ID);
   const snap = await getDoc(ref);
-  if(!snap.exists()) return;
 
-  const d = snap.data();
-  bizNameSmall.textContent  = d.name || "İşletme";
-  bizNameMobile.textContent = d.name || "İşletme Paneli";
+  if(snap.exists()){
+    const d = snap.data();
+    bizNameSmall.textContent  = d.name || "İşletme";
+    bizNameMobile.textContent = d.name || "Panel";
+  }
 }
-
-/* APPOINTMENTS */
+/* ---------------- LOAD APPOINTMENTS ---------------- */
 async function loadAppointments(){
   appointmentsEl.innerHTML = "Yükleniyor...";
 
@@ -268,6 +231,7 @@ async function loadAppointments(){
   const snap = await getDocs(qRef);
 
   let list = [];
+
   snap.forEach(s=>{
     const d = s.data();
     list.push({
@@ -282,79 +246,79 @@ async function loadAppointments(){
     });
   });
 
-  list.sort((a,b)=>b.createdAt - a.createdAt);
+  /* --- En yeni randevu en üstte --- */
+  list.sort((a,b)=> b.createdAt - a.createdAt);
 
-  if(list.length===0){
+  if(list.length === 0){
     appointmentsEl.innerHTML = "<div style='color:#94a3b8;font-size:14px;'>Henüz randevu yok.</div>";
     return;
   }
 
   appointmentsEl.innerHTML = "";
 
-  for(const appt of list){
+  for (const appt of list){
     const customer = await loadCustomer(appt.customerUID);
     const service  = await loadService(appt.serviceID);
     const employee = await loadEmployee(appt.employeeID);
 
     const statusClass = {
-      pending:"status-pending",
-      approved:"status-approved",
-      rejected:"status-rejected"
+      pending: "status-pending",
+      approved: "status-approved",
+      rejected: "status-rejected"
     }[appt.status] || "status-pending";
 
     const card = document.createElement("div");
-    card.className="appt-card";
+    card.className = "appt-card";
+
     card.innerHTML = `
       <div class="appt-header">
         <div>${customer?.name || "Müşteri"}</div>
         <div class="appt-status ${statusClass}">
-          ${appt.status==="pending"?"Beklemede":
-            appt.status==="approved"?"Onaylandı":"Reddedildi"}
+          ${appt.status === "pending" ? "Beklemede" :
+            appt.status === "approved" ? "Onaylandı" : "Reddedildi"}
         </div>
       </div>
+
       <div class="appt-sub">
         ${service?.name || "Hizmet"} · ${employee?.name || "Çalışan"}
       </div>
+
       <div class="appt-sub">
         ${formatDate(appt.date)} ${appt.time}
       </div>
     `;
+
     appointmentsEl.appendChild(card);
   }
 }
 
-/* HELPERS */
+/* ---------------- HELPERS ---------------- */
 async function loadCustomer(uid){
   if(!uid) return null;
-  const snap = await getDoc(doc(db,"users",uid));
+  const ref = doc(db,"users",uid);
+  const snap= await getDoc(ref);
   return snap.exists() ? snap.data() : null;
-}
-async function loadService(id){
-  if(!id) return null;
-  const snap = await getDoc(doc(db,"services",id));
-  return snap.exists() ? snap.data() : null;
-}
-async function loadEmployee(id){
-  if(!id) return null;
-  const snap = await getDoc(doc(db,"employees",id));
-  return snap.exists() ? snap.data() : null;
-}
-function formatDate(d){
-  const p=d.split("-");
-  return `${p[2]}.${p[1]}.${p[0]}`;
 }
 
-/* DRAWER JS */
-const drawer = document.getElementById("drawerMenu");
-const overlay = document.getElementById("drawerOverlay");
-document.getElementById("menuBtn").onclick = ()=>{
-  drawer.classList.add("drawer-open");
-  overlay.style.display="block";
-};
-overlay.onclick = ()=>{
-  drawer.classList.remove("drawer-open");
-  overlay.style.display="none";
-};
+async function loadService(id){
+  if(!id) return null;
+  const ref = doc(db,"services",id);
+  const snap= await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+
+async function loadEmployee(id){
+  if(!id) return null;
+  const ref = doc(db,"employees",id);
+  const snap= await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+
+function formatDate(d){
+  const parts = d.split("-");
+  return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
 </script>
 
 </main>
