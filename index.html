@@ -1093,8 +1093,18 @@
                 bottom.className = "business-meta-bottom";
 
                 const slots = document.createElement("span");
-                slots.className = "slots-chip";
-                slots.textContent = `Bugün ${b.freeSlotsToday} uygun saat`;
+                let slotText = "";
+
+if (!b.freeSlotsToday || b.freeSlotsToday === 0) {
+    slotText = "Bugün uygun saat yok";
+} else if (b.nextAvailableSlot) {
+    slotText = `İlk uygun saat: ${b.nextAvailableSlot}`;
+} else {
+    slotText = `Bugün ${b.freeSlotsToday} uygun saat`;
+}
+
+slots.textContent = slotText;
+
 
                 const btn = document.createElement("button");
                 btn.className = "btn-mini";
