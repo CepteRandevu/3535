@@ -19,6 +19,7 @@
       --border: rgba(148,163,184,0.35);
       --radius-xl: 18px;
       --shadow-soft: 0 10px 30px rgba(10, 10, 20, 0.75);
+
       --modal-blue: #1d4ed8;
       --modal-red: #dc2626;
     }
@@ -29,11 +30,12 @@
       display: flex;
       flex-direction: column;
       background: radial-gradient(circle at top, #111827, #020617 55%);
-      font-family: 'Inter', system-ui;
+      font-family: 'Inter', system-ui, sans-serif;
       color: var(--text);
       min-height: 100vh;
     }
 
+    /* ------- ÜST HEADER ------- */
     .top-header {
       width: 100%;
       padding-top: 14px;
@@ -49,177 +51,227 @@
       gap: 8px;
     }
 
-    .top-center {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    .top-menu-row {
-      width: 100%;
-      padding-left:20px;
-      padding-bottom:14px;
-      display:flex;
-    }
+    .top-center { display: flex; align-items: center; gap: 10px; justify-content: center; width: 100%; }
+    .top-menu-row { width: 100%; display: flex; justify-content: flex-start; padding-left: 20px; padding-bottom: 14px; }
 
     .logo-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 14px;
+      width: 36px; height: 36px; border-radius: 14px;
       background: radial-gradient(circle at 30% 10%, #4ade80,#16a34a 42%,#0f766e);
-      display:flex;align-items:center;justify-content:center;
-      font-weight:800;font-size:18px;color:#ecfdf5;
+      display: flex; justify-content: center; align-items: center;
+      font-weight: 800; font-size: 18px; color: #ecfdf5;
+      box-shadow: 0 6px 20px rgba(34,197,94,0.4);
     }
 
     .menu-btn {
-      background: var(--accent);
-      border:0;
-      color:#022c22;
-      padding:9px 15px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:600;
-      display:flex;
-      gap:8px;
-      align-items:center;
+      background: var(--accent); color: #022c22;
+      border: 0; padding: 9px 15px;
+      border-radius: 12px; font-size: 15px;
+      font-weight: 600; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(34,197,94,0.35);
+      display: flex; align-items: center; gap: 8px;
     }
 
+    /* ------- SIDEBAR ------- */
     .sidebar {
-      width:240px;background:var(--sidebar);
-      padding:24px 18px;
-      border-right:1px solid var(--border);
-      position:fixed;top:0;bottom:0;
-      display:none;flex-direction:column;
+      width: 240px;
+      background: var(--sidebar);
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 1000;
     }
 
-    .logo-box { display:flex;gap:12px;align-items:center;margin-bottom:20px; }
+    .logo-box { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .biz-name-small { font-size: 16px; font-weight: 700; }
 
+    .menu button {
+      width: 100%; padding: 12px 14px;
+      background: transparent; border: 0;
+      text-align: left; color: var(--muted);
+      cursor: pointer; border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .menu button.active {
+      background: var(--accent); color: #022c22;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    /* ------- ANA İÇERİK ------- */
     .main-area {
-      padding:20px;
-      padding-top:110px;
+      flex: 1;
+      padding: 20px;
+      width: 100%;
+      min-height: 100vh;
+      padding-top: 110px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: none;
+      color: var(--text);
     }
 
     .card {
-      background:var(--card);
-      padding:20px;
-      border-radius:var(--radius-xl);
-      border:1px solid var(--border);
-      margin-bottom:20px;
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      display: block;
     }
 
     input {
-      width:100%;padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#020617;color:var(--text);
-      margin-bottom:10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: var(--text);
+      margin-bottom: 10px;
+      outline: none;
+      font-size: 13px;
     }
 
     .btn-primary {
-      width:100%;
-      border:0;
-      padding:12px;
-      border-radius:12px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-      color:#022c22;
-      font-weight:600;
-      cursor:pointer;
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border: 0;
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #022c22;
+      margin-top: 6px;
+      box-shadow: 0 12px 30px rgba(34,197,94,0.45);
     }
 
+    /* ------- ÇALIŞAN LİSTESİ ------- */
     .emp-row {
-      border-bottom:1px solid rgba(255,255,255,0.1);
-      padding:12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
+
+    .emp-info { display: flex; flex-direction: column; gap: 2px; }
+    .emp-name { font-size: 15px; font-weight: 600; }
+    .emp-meta { font-size: 12px; color: var(--muted); }
 
     .delete-btn {
-      background:#ef4444;color:white;
-      border:0;border-radius:8px;
-      padding:6px 10px;font-size:12px;
+      background: #ef4444;
+      border: 0;
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
     }
 
-    /* ---------------- MODAL ---------------- */
+    /* ------------ MODAL (YENİ EKLEDİĞİM KISIM) ------------ */
     #modalOverlay {
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      backdrop-filter:blur(2px);
-      z-index:99999;
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(2px);
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
     }
 
     #modalBox {
-      background:var(--card);
-      padding:22px;
-      border-radius:18px;
-      width:90%;
-      max-width:420px;
-      border:1px solid var(--border);
-      box-shadow:var(--shadow-soft);
-      animation:fadeIn .2s ease;
+      width: 90%;
+      max-width: 420px;
+      background: var(--card);
+      padding: 22px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      animation: fadeIn .2s ease;
     }
 
     #serviceGrid {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-bottom:16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
     .service-block {
-      padding:12px;
-      border-radius:12px;
-      text-align:center;
-      font-size:14px;
-      cursor:pointer;
-      background:var(--modal-blue);
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--modal-blue);
+      font-size: 14px;
     }
 
     .service-block.selected {
-      background:var(--modal-red);
+      background: var(--modal-red);
+    }
+
+    #modalSaveBtn, #modalCancelBtn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
     #modalSaveBtn {
-      width:100%;padding:12px;
-      border:0;border-radius:12px;
-      background:var(--accent);
-      font-weight:700;
-      cursor:pointer;
-      color:#022c22;
-      margin-top:8px;
+      background: var(--accent);
+      color: #022c22;
     }
 
     #modalCancelBtn {
-      width:100%;padding:10px;
-      background:#ef4444;
-      border:0;color:#fff;
-      border-radius:12px;
-      margin-top:8px;
-      cursor:pointer;
+      background: #ef4444;
+      color: #fff;
     }
 
     @keyframes fadeIn {
-      from {opacity:0;transform:scale(.95);}
-      to {opacity:1;transform:scale(1);}
+      from { opacity: 0; transform: scale(.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    @media(min-width:768px){
-      body{flex-direction:row;}
-      .sidebar{display:flex;}
-      .top-header{display:none;}
-      .main-area{margin-left:240px;padding-top:32px;}
+    @media (min-width: 768px) {
+      body { flex-direction: row; }
+      .sidebar { display: flex; }
+      .top-header { display: none; }
+      .main-area {
+        margin-left: 240px;
+        padding: 32px;
+        padding-top: 32px;
+      }
+      .title { display: block; }
     }
   </style>
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
 
+</head>
 <body>
 
 <!-- MODAL -->
@@ -233,7 +285,6 @@
     <button id="modalCancelBtn">Kapat</button>
   </div>
 </div>
-
 <!-- Drawer -->
 <div id="drawerOverlay" class="drawer-overlay"></div>
 <div id="drawerMenu" class="drawer-menu">
@@ -247,21 +298,27 @@
   </div>
 </div>
 
+<!-- Üst Header -->
 <header class="top-header">
   <div class="top-center">
     <div class="logo-mark">C</div>
     <span class="logo-title" id="bizNameMobile">Çalışanlar</span>
   </div>
+
   <div class="top-menu-row">
-    <button id="menuBtn" class="menu-btn"><i class="fas fa-bars"></i> Menü</button>
+    <button id="menuBtn" class="menu-btn">
+      <i class="fas fa-bars"></i> Menü
+    </button>
   </div>
 </header>
 
+<!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo-box">
     <div class="logo-mark">C</div>
-    <div id="bizNameSmallSidebar" class="biz-name-small">İşletme</div>
+    <div class="biz-name-small" id="bizNameSmallSidebar">İşletme</div>
   </div>
+
   <div class="menu">
     <button onclick="location.href='business-panel.html'"><i class="fas fa-tachometer-alt"></i> Panel</button>
     <button onclick="location.href='business-services.html'"><i class="fas fa-wrench"></i> Hizmetler</button>
@@ -271,6 +328,7 @@
   </div>
 </aside>
 
+<!-- MAIN -->
 <main class="main-area">
   <h1 class="title" id="bizTitle">Çalışan Yönetimi</h1>
 
@@ -278,11 +336,14 @@
     <h2 style="margin-bottom:10px;">Yeni Çalışan Ekle</h2>
 
     <label>Çalışan Adı</label>
-    <input id="empNameInput" placeholder="Örn: Mehmet Usta">
+    <input type="text" id="empNameInput" placeholder="Örn: Mehmet Usta">
 
+    <!-- HİZMET SEÇME BUTONU -->
     <button class="btn-primary" id="openServiceModalBtn">Hizmetleri Seç</button>
 
-    <div id="selectedServiceText" style="color:var(--muted);font-size:13px;margin-top:8px;">
+    <!-- SEÇİLEN HİZMETLER YAZISI -->
+    <div id="selectedServiceText"
+         style="color:var(--muted);font-size:13px;margin-top:8px;">
       Hizmet seçilmedi.
     </div>
 
@@ -296,11 +357,32 @@
 </main>
 
 
+<script>
+  /* Drawer */
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
+
+  function openDrawer() {
+    drawer.classList.add("drawer-open");
+    overlay.style.display = "block";
+  }
+  function closeDrawer() {
+    drawer.classList.remove("drawer-open");
+    overlay.style.display = "none";
+  }
+
+  menuBtn.addEventListener("click", openDrawer);
+  overlay.addEventListener("click", closeDrawer);
+</script>
+
 <script type="module">
   import { firebaseConfig } from "../js/firebase-config.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged }
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
     getFirestore,
     collection,
@@ -325,59 +407,79 @@
   const bizNameSmallSidebar = document.getElementById("bizNameSmallSidebar");
   const bizTitle = document.getElementById("bizTitle");
 
-  const openServiceModalBtn = document.getElementById("openServiceModalBtn");
   const modalOverlay = document.getElementById("modalOverlay");
   const serviceGrid = document.getElementById("serviceGrid");
+  const openServiceModalBtn = document.getElementById("openServiceModalBtn");
   const selectedServiceText = document.getElementById("selectedServiceText");
 
-  onAuthStateChanged(auth, async user=>{
-      if(!user){ location.href="business-login.html"; return; }
-      businessID = user.uid;
-      await loadBusinessName();
-      await loadServices();
-      await loadEmployees();
-  });
-
-  async function loadBusinessName(){
-    const ref = doc(db,"businesses",businessID);
-    const snap = await getDoc(ref);
-    if(snap.exists()){
-      const name = snap.data().name || "İşletme";
-      bizNameMobile.textContent = "Çalışanlar · " + name;
-      bizNameSmallSidebar.textContent = name;
-      bizTitle.textContent = name + " · Çalışanlar";
-    }
-  }
-
-  async function loadServices(){
-    const qRef = query(collection(db,"services"),where("businessID","==",businessID));
-    const snap = await getDocs(qRef);
-
-    SERVICES = {};
-    serviceGrid.innerHTML = "";
-
-    if(snap.empty){
-      serviceGrid.innerHTML = `<div class="empty">Hizmet yok.</div>`;
+  /* ----------- AUTH ------------ */
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "business-login.html";
       return;
     }
 
-    snap.forEach(docSnap=>{
-      const d = docSnap.data();
-      SERVICES[docSnap.id] = d;
+    businessID = user.uid;
+    await loadBusinessName();
+    await loadServices();
+    await loadEmployees();
+  });
 
-      const box = document.createElement("div");
-      box.className = "service-block";
-      box.dataset.id = docSnap.id;
-      box.textContent = `${d.name} (${d.duration} dk)`;
+  async function loadBusinessName() {
+    try {
+      const ref = doc(db, "businesses", businessID);
+      const snap = await getDoc(ref);
 
-      box.onclick = ()=>{
-        box.classList.toggle("selected");
-      };
-
-      serviceGrid.appendChild(box);
-    });
+      if (snap.exists()) {
+        const name = snap.data().name || "İşletme";
+        bizNameSmallSidebar.textContent = name;
+        bizNameMobile.textContent = "Çalışanlar · " + name;
+        bizTitle.textContent = name + " · Çalışanlar";
+      }
+    } catch (e) {
+      console.error("İşletme adı okunamadı:", e);
+    }
   }
 
+  /* ----------- HİZMETLER ----------- */
+  async function loadServices() {
+    try {
+      const qRef = query(
+        collection(db, "services"),
+        where("businessID", "==", businessID)
+      );
+
+      const snap = await getDocs(qRef);
+      SERVICES = {};
+      serviceGrid.innerHTML = "";
+
+      if (snap.empty) {
+        serviceGrid.innerHTML = `<div class="empty">Önce hizmet ekleyin.</div>`;
+        return;
+      }
+
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        SERVICES[docSnap.id] = data;
+
+        const div = document.createElement("div");
+        div.className = "service-block";
+        div.dataset.id = docSnap.id;
+        div.textContent = `${data.name} (${data.duration} dk)`;
+
+        div.onclick = () => {
+          div.classList.toggle("selected");
+        };
+
+        serviceGrid.appendChild(div);
+      });
+    } catch (e) {
+      console.error("Hizmetler çekilemedi:", e);
+      serviceGrid.innerHTML = `<div class="empty">Hizmet çekilemedi.</div>`;
+    }
+  }
+
+  /* ----------- MODAL BUTONLARI ----------- */
   openServiceModalBtn.onclick = () => {
     modalOverlay.style.display = "flex";
   };
@@ -387,82 +489,107 @@
   };
 
   document.getElementById("modalSaveBtn").onclick = () => {
+    SELECTED = Array.from(document.querySelectorAll(".service-block.selected"))
+      .map((el) => el.dataset.id);
 
-    SELECTED = Array.from(
-      document.querySelectorAll(".service-block.selected")
-    ).map(div=>div.dataset.id);
-
-    selectedServiceText.textContent = SELECTED.length
-      ? SELECTED.map(id => SERVICES[id].name).join(", ")
-      : "Hizmet seçilmedi.";
+    selectedServiceText.textContent =
+      SELECTED.length > 0
+        ? SELECTED.map((id) => SERVICES[id].name).join(", ")
+        : "Hizmet seçilmedi.";
 
     modalOverlay.style.display = "none";
   };
 
+  /* ----------- YENİ ÇALIŞAN EKLE ----------- */
   document.getElementById("addEmpBtn").onclick = async () => {
-
     const name = document.getElementById("empNameInput").value.trim();
 
-    if(!name){ alert("Çalışan adı gerekli."); return; }
-    if(SELECTED.length === 0){ alert("En az bir hizmet seçmelisiniz."); return; }
-
-    await addDoc(collection(db,"employees"),{
-      businessID,
-      name,
-      services: SELECTED
-    });
-
-    document.getElementById("empNameInput").value = "";
-    SELECTED = [];
-    selectedServiceText.textContent = "Hizmet seçilmedi.";
-
-    await loadEmployees();
-  };
-
-  async function loadEmployees(){
-    const empList = document.getElementById("empList");
-    empList.textContent = "Yükleniyor...";
-
-    const qRef = query(collection(db,"employees"),where("businessID","==",businessID));
-    const snap = await getDocs(qRef);
-
-    empList.innerHTML = "";
-
-    if(snap.empty){
-      empList.innerHTML = `<div class="empty">Henüz çalışan yok.</div>`;
+    if (!name) {
+      alert("Çalışan adı gerekli.");
       return;
     }
 
-    snap.forEach(docSnap=>{
-      const d = docSnap.data();
+    if (SELECTED.length === 0) {
+      alert("En az bir hizmet seçmelisiniz.");
+      return;
+    }
 
-      const row = document.createElement("div");
-      row.className = "emp-row";
+    try {
+      await addDoc(collection(db, "employees"), {
+        businessID,
+        name,
+        services: SELECTED
+      });
 
-      let serviceNames = (d.services||[])
-        .map(id => SERVICES[id]?.name || id)
-        .join(", ");
+      document.getElementById("empNameInput").value = "";
+      SELECTED = [];
+      selectedServiceText.textContent = "Hizmet seçilmedi.";
 
-      row.innerHTML = `
-        <div class="emp-info">
-          <div class="emp-name">${d.name}</div>
-          <div class="emp-meta">${serviceNames}</div>
-        </div>
-        <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
-      `;
+      await loadEmployees();
+    } catch (e) {
+      console.error("Çalışan eklenemedi:", e);
+      alert("Çalışan eklenemedi.");
+    }
+  };
 
-      empList.appendChild(row);
-    });
+  /* ----------- ÇALIŞANLAR ----------- */
+  async function loadEmployees() {
+    const empListEl = document.getElementById("empList");
+    empListEl.textContent = "Yükleniyor...";
 
-    document.querySelectorAll(".delete-btn").forEach(btn=>{
-      btn.onclick = async ()=>{
-        if(!confirm("Çalışanı silmek istiyor musunuz?")) return;
-        await deleteDoc(doc(db,"employees",btn.dataset.id));
-        await loadEmployees();
-      };
-    });
+    try {
+      const qRef = query(
+        collection(db, "employees"),
+        where("businessID", "==", businessID)
+      );
+
+      const snap = await getDocs(qRef);
+      empListEl.innerHTML = "";
+
+      if (snap.empty) {
+        empListEl.innerHTML = `<div class="empty">Henüz çalışan yok.</div>`;
+        return;
+      }
+
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+
+        const row = document.createElement("div");
+        row.className = "emp-row";
+
+        let serviceNames = (data.services || [])
+          .map((id) => SERVICES[id]?.name || id)
+          .join(", ");
+
+        row.innerHTML = `
+          <div class="emp-info">
+            <div class="emp-name">${data.name}</div>
+            <div class="emp-meta">${serviceNames}</div>
+          </div>
+          <button class="delete-btn" data-id="${docSnap.id}">Sil</button>
+        `;
+
+        empListEl.appendChild(row);
+      });
+
+      document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.onclick = async () => {
+          if (!confirm("Çalışanı silmek istiyor musunuz?")) return;
+
+          try {
+            await deleteDoc(doc(db, "employees", btn.dataset.id));
+            await loadEmployees();
+          } catch (e) {
+            console.error("Silme hatası:", e);
+            alert("Silinemedi.");
+          }
+        };
+      });
+    } catch (e) {
+      console.error("Çalışanlar okunamadı:", e);
+      empListEl.innerHTML = `<div class="empty">Hata oluştu.</div>`;
+    }
   }
-
 </script>
 
 </body>
