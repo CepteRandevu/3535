@@ -7,19 +7,30 @@
 
 <style>
 :root{
-  --bg:#050816; --card:#0f172a; --accent:#22c55e;
-  --text:#f1f5f9; --muted:#94a3b8; --border:rgba(148,163,184,0.18);
+  --bg:#050816;
+  --card:#0f172a;
+  --accent:#22c55e;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --border:rgba(148,163,184,0.18);
   --radius:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
   background:radial-gradient(circle at top,#111827,#020617 55%);
-  font-family:system-ui; color:var(--text);
-  padding:16px; display:flex; justify-content:center;
+  font-family:system-ui;
+  color:var(--text);
+  padding:16px;
+  display:flex;
+  justify-content:center;
   min-height:100vh;
 }
-.container{width:100%;max-width:960px;}
+
+.container{
+  width:100%;
+  max-width:960px;
+}
 
 .card{
   background:var(--card);
@@ -31,25 +42,38 @@ body{
 }
 
 select,input{
-  width:100%; padding:10px; margin-bottom:10px;
-  background:#020617; border-radius:var(--radius);
-  border:1px solid var(--border); color:var(--text);
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  background:#020617;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  color:var(--text);
 }
+
 .btn-primary{
-  width:100%; padding:12px;
+  width:100%;
+  padding:12px;
   background:linear-gradient(135deg,var(--accent),#16a34a);
-  border:0; border-radius:var(--radius);
-  font-size:15px; font-weight:600; color:#022c22;
+  border:0;
+  border-radius:var(--radius);
+  font-size:15px;
+  font-weight:600;
+  color:#022c22;
 }
+
 .error-box{
-  display:none; background:rgba(239,68,68,0.15);
-  padding:10px; border-radius:14px;
+  display:none;
+  background:rgba(239,68,68,0.15);
+  padding:10px;
+  border-radius:14px;
   border:1px solid rgba(239,68,68,0.4);
-  color:#fecaca; font-size:13px; margin-bottom:8px;
+  color:#fecaca;
+  font-size:13px;
+  margin-bottom:8px;
 }
 </style>
 </head>
-
 <body>
 <div class="container">
 
@@ -57,28 +81,39 @@ select,input{
 
   <div id="bookingWrap" style="display:none;">
 
+    <!-- İŞLETME BİLGİ KARTI -->
     <div class="card">
       <h2>İşletme Bilgisi</h2>
-      <div class="biz-logo-box" style="width:90px;height:90px;border-radius:14px;
-      border:1px solid var(--border); background:#020617; overflow:hidden;margin-bottom:10px;">
+
+      <div class="biz-logo-box"
+        style="width:90px;height:90px;border-radius:14px;
+        border:1px solid var(--border);
+        background:#020617; overflow:hidden;margin-bottom:10px;">
         <img id="bizLogo" style="width:100%;height:100%;object-fit:contain;">
       </div>
 
       <div id="bizName" style="font-size:18px;font-weight:600;"></div>
-      <div id="bizLocation" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
-      <div id="bizMeta" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizLocation"
+        style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+      <div id="bizMeta"
+        style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
     </div>
 
+    <!-- RANDEVU OLUŞTURMA FORMU -->
     <div class="card">
       <h2>Randevu Oluştur</h2>
 
       <div id="errorBox" class="error-box"></div>
 
       <label>Hizmet</label>
-      <select id="serviceSelect"><option>Yükleniyor...</option></select>
+      <select id="serviceSelect">
+        <option>Yükleniyor...</option>
+      </select>
 
       <label>Çalışan</label>
-      <select id="employeeSelect"><option>Önce hizmet seçin</option></select>
+      <select id="employeeSelect">
+        <option>Önce hizmet seçin</option>
+      </select>
 
       <label>Tarih</label>
       <input type="date" id="dateInput">
@@ -88,9 +123,9 @@ select,input{
 
       <button id="createBtn" class="btn-primary">Randevuyu Oluştur</button>
     </div>
+
   </div>
 </div>
-
 <script type="module">
 
 /* ------------------- FIREBASE ------------------- */
@@ -308,7 +343,6 @@ async function fillTimes(){
     timeSelect.innerHTML="<option>Tüm saatler dolu</option>";
   }
 }
-
 /* ------------------- RANDEVU OLUŞTURMA ------------------- */
 createBtn.onclick = async()=>{
 
@@ -326,6 +360,19 @@ createBtn.onclick = async()=>{
 
   try{
 
+    /* -------- MÜŞTERİ PROFİLİ ALINIYOR -------- */
+    const customerSnap = await getDoc(doc(db,"customers", auth.currentUser.uid));
+    const customerData = customerSnap.exists() ? customerSnap.data() : {
+      name: "",
+      phone: "",
+      photo: ""
+    };
+
+    const customerName  = customerData.name  || "";
+    const customerPhone = customerData.phone || "";
+    const customerPhoto = customerData.photo || "";
+
+    /* -------- RANDEVU KAYDI -------- */
     await addDoc(collection(db,"appointments"),{
 
       /* --- İşletme --- */
@@ -343,6 +390,9 @@ createBtn.onclick = async()=>{
 
       /* --- Müşteri --- */
       customerUID: auth.currentUser.uid,
+      customerName: customerName,
+      customerPhone: customerPhone,
+      customerPhoto: customerPhoto,
 
       /* --- Zaman --- */
       date: dateInput.value,
@@ -350,7 +400,8 @@ createBtn.onclick = async()=>{
       duration: serviceDuration,
 
       /* --- Sistem --- */
-      status: "pending",
+      status: "pending",     // Ajanda’da "Beklemede" olarak gösteriliyor
+      statusLabel: "Beklemede",
       createdAt: Date.now()
     });
 
@@ -360,6 +411,7 @@ createBtn.onclick = async()=>{
   } catch(err){
     errorBox.style.display="block";
     errorBox.textContent="Randevu oluşturulamadı.";
+    console.error(err);
   }
 
   createBtn.disabled=false;
