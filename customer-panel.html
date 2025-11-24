@@ -32,7 +32,10 @@
       padding:20px 12px 32px;
     }
 
-    .app{ width:100%; max-width:900px; }
+    .app{
+      width:100%;
+      max-width:900px;
+    }
 
     header{
       display:flex;
@@ -58,8 +61,8 @@
     .logo-text-sub{font-size:11px;color:var(--muted);}
 
     .logout-btn{
-      border:0;border-radius:999px;padding:7px 14px;
-      font-size:12px;cursor:pointer;
+      border:0;border-radius:999px;
+      padding:7px 14px;font-size:12px;cursor:pointer;
       background:var(--danger);color:#fff;font-weight:600;
     }
 
@@ -68,31 +71,25 @@
       grid-template-columns:minmax(0,1.1fr) minmax(0,1.2fr);
       gap:16px;
     }
-    @media(max-width:780px){ .grid{grid-template-columns:1fr;} }
+    @media(max-width:780px){ .grid{grid-template-columns:minmax(0,1fr);} }
 
     .card{
       background:rgba(15,23,42,0.96);
       border-radius:var(--radius-lg);
       border:1px solid var(--border);
       box-shadow:var(--shadow-soft);
-      padding:16px 16px 18px;
+      padding:16px;
       margin-bottom:16px;
     }
 
-    h2{font-size:18px;margin-bottom:10px;}
-    .sub{font-size:12px;color:var(--muted);margin-bottom:10px;}
-
-    .profile-layout{display:flex;gap:14px;}
-    @media(max-width:560px){ .profile-layout{flex-direction:column;} }
-
-    .pfp-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
-
+    .pfp-wrap{
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+    }
     .pfp{
       width:84px;height:84px;border-radius:999px;
-      object-fit:cover; border:2px solid var(--accent);
-      background:#020617;
+      object-fit:cover;object-position:center;
+      background:#020617;border:2px solid var(--accent);
     }
-
     .pfp-btn{
       padding:6px 14px;border-radius:999px;border:0;
       cursor:pointer;font-size:11px;font-weight:600;
@@ -100,23 +97,14 @@
       color:#022c22;box-shadow:0 8px 18px rgba(34,197,94,0.35);
     }
 
-    .profile-info-row{font-size:13px;margin-bottom:4px;}
-    .profile-info-row span.label{color:var(--muted);}
-
-    label{
-      font-size:12px;color:var(--muted);
-      display:block;margin-bottom:3px;
-    }
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px;}
     input{
       width:100%;padding:9px 11px;border-radius:12px;
       border:1px solid rgba(148,163,184,0.35);
-      background:#020617;color:var(--text);
-      font-size:13px;margin-bottom:10px;outline:none;
+      background:#020617;color:var(--text);font-size:13px;margin-bottom:10px;
+      outline:none;
     }
-    input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px var(--accent);
-    }
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
 
     .btn-primary{
       width:100%;padding:10px 12px;border-radius:12px;border:0;
@@ -125,51 +113,24 @@
       box-shadow:0 12px 28px rgba(34,197,94,0.4);margin-top:4px;
     }
 
-    .btn-secondary{
-      width:100%;padding:9px 12px;border-radius:12px;
-      border:1px solid rgba(148,163,184,0.45);
-      cursor:pointer;background:#020617;color:var(--text);
-      font-weight:500;font-size:13px;margin-top:4px;
-    }
-
-    .appt-list-empty{font-size:12px;color:var(--muted);}
     .appt{
       background:var(--card-soft);border-radius:14px;
       border:1px solid rgba(148,163,184,0.35);
-      padding:11px 11px 9px;margin-bottom:8px;font-size:12px;
+      padding:11px;margin-bottom:8px;font-size:12px;
     }
-    .appt-title{font-weight:600;margin-bottom:4px;}
-    .appt-line{margin-bottom:2px;color:var(--muted);}
-
-    .status{
-      display:inline-block;padding:3px 8px;border-radius:999px;
-      font-size:11px;margin-top:5px;
-    }
+    .status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;margin-top:5px;}
     .status.pending{background:rgba(234,179,8,0.2);color:#facc15;}
     .status.approved{background:rgba(34,197,94,0.2);color:#4ade80;}
     .status.rejected{background:rgba(239,68,68,0.2);color:#ef4444;}
     .status.cancelled{background:rgba(148,163,184,0.2);color:#e5e7eb;}
-
     .small-btn{
-      padding:5px 10px;border-radius:10px;border:0;
-      font-size:11px;cursor:pointer;
+      padding:5px 10px;border-radius:10px;border:0;font-size:11px;cursor:pointer;
       background:var(--danger);color:#fff;margin-top:6px;
     }
 
-    .hint{font-size:11px;color:var(--muted);margin-top:4px;}
-    .info-line{font-size:11px;color:var(--muted);margin-top:4px;}
-
   </style>
 
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal){
-      await OneSignal.init({ appId: "784cba74-0683-49ed-a3c6-e86741fc6aee" });
-    });
-  </script>
 </head>
-
 <body>
 
 <div class="app">
@@ -187,13 +148,13 @@
 
   <main class="grid">
 
+    <!-- PROFİL -->
     <section>
       <div class="card">
         <h2>Profilim</h2>
-        <p class="sub">Bilgilerini güncel tut, profil fotoğrafını ekle.</p>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Bilgilerini güncel tut.</div>
 
-        <div class="profile-layout">
-
+        <div class="profile-layout" style="display:flex;gap:14px;align-items:flex-start;">
           <div class="pfp-wrap">
             <img id="pfp" class="pfp" src="">
             <button id="choosePhotoBtn" class="pfp-btn">Fotoğraf Seç</button>
@@ -201,69 +162,55 @@
           </div>
 
           <div style="flex:1;">
-
-            <div class="profile-info-row">
-              <span class="label">Ad Soyad:</span> <span id="pName">-</span>
-            </div>
-
-            <div class="profile-info-row">
-              <span class="label">Telefon:</span> <span id="pPhone">-</span>
-            </div>
-
-            <div class="profile-info-row">
-              <span class="label">Üyelik Tarihi:</span> <span id="pJoin">-</span>
-            </div>
+            <div class="profile-info-row"><span style="color:var(--muted)">Ad Soyad:</span> <span id="pName">-</span></div>
+            <div class="profile-info-row"><span style="color:var(--muted)">Telefon:</span> <span id="pPhone">-</span></div>
+            <div class="profile-info-row"><span style="color:var(--muted)">Üyelik Tarihi:</span> <span id="pJoin">-</span></div>
 
             <div style="margin-top:10px;">
+              <label>Ad Soyad</label>
+              <input id="editName" type="text">
 
-              <label for="editName">Ad Soyad</label>
-              <input id="editName" type="text" placeholder="Ad Soyad">
-
-              <label for="editPassword">Yeni Şifre (opsiyonel)</label>
+              <label>Yeni Şifre (opsiyonel)</label>
               <input id="editPassword" type="password" placeholder="Boş bırakırsan değişmez">
 
               <button id="saveProfileBtn" class="btn-primary">Profili Kaydet</button>
-              <div class="hint">Şifre değiştirirken yeniden giriş istenebilir.</div>
-
             </div>
-
           </div>
-
         </div>
       </div>
 
+      <!-- Hatırlatıcı -->
       <div class="card">
         <h2>Hatırlatıcı</h2>
-        <p class="sub">İstersen 15 gün sonra tekrar hatırlatma al.</p>
-        <button id="reminderBtn" class="btn-secondary">15 gün sonra hatırlat</button>
-        <div id="reminderInfo" class="info-line"></div>
+        <button id="reminderBtn" class="btn-primary" style="background:#020617;border:1px solid var(--border);color:var(--text);">15 gün sonra hatırlat</button>
+        <div id="reminderInfo" style="font-size:12px;color:var(--muted);margin-top:6px;"></div>
       </div>
-
     </section>
 
+    <!-- RANDEVULAR -->
     <section>
-
       <div class="card">
         <h2>Yaklaşan Randevularım</h2>
-        <div id="upcomingList" class="appt-list-empty">Yükleniyor...</div>
+        <div id="upcomingList">Yükleniyor...</div>
       </div>
 
       <div class="card">
         <h2>Geçmiş Randevularım</h2>
-        <div id="historyList" class="appt-list-empty">Yükleniyor...</div>
+        <div id="historyList">Yükleniyor...</div>
       </div>
-
     </section>
 
   </main>
-
 </div>
+
+
 <script type="module">
   import { firebaseConfig } from "./js/firebase-config.js";
 
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
-    getFirestore, doc, getDoc, updateDoc, collection, query, where, onSnapshot
+    getFirestore, doc, getDoc, updateDoc, collection, query,
+    where, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   import {
     getAuth, onAuthStateChanged, signOut, updatePassword
@@ -275,9 +222,6 @@
 
   let currentUID = null;
 
-  /* ------------------------------------------------------ */
-  /* ELEMENTLER                                             */
-  /* ------------------------------------------------------ */
   const pfpEl = document.getElementById("pfp");
   const choosePhotoBtn = document.getElementById("choosePhotoBtn");
   const photoInput = document.getElementById("photoInput");
@@ -296,241 +240,180 @@
   const reminderBtn = document.getElementById("reminderBtn");
   const reminderInfo = document.getElementById("reminderInfo");
 
-  /* ------------------------------------------------------ */
-  /* LOGO → ANASAYFA                                        */
-  /* ------------------------------------------------------ */
-  const homeLogo = document.getElementById("homeLogo");
-  homeLogo.style.cursor = "pointer";
-  homeLogo.addEventListener("click", () => {
-    window.location.href = "customer-panel.html";
+  /* ---------------- LOGO → ANASAYFA ---------------- */
+  document.getElementById("homeLogo").addEventListener("click", ()=>{
+    window.location.href = "https://cepterandevu.github.io/al/";
   });
 
-  /* ------------------------------------------------------ */
-  /* FILE → BASE64 DÖNÜŞTÜRÜCÜ                              */
-  /* ------------------------------------------------------ */
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
+
+  /* ---------------- BASE64 DÖNÜŞTÜR ---------------- */
+  function fileToBase64(file){
+    return new Promise((resolve,reject)=>{
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
+      reader.onload = ()=>resolve(reader.result);
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  /* ------------------------------------------------------ */
-  /* AUTH CHECK                                             */
-  /* ------------------------------------------------------ */
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "customer-login.html";
+
+  /* ---------------- AUTH KONTROL ---------------- */
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){
+      location.href = "customer-login.html";
       return;
     }
-
     currentUID = user.uid;
-
     await loadProfile();
     listenAppointmentsRealtime();
   });
 
-  /* ------------------------------------------------------ */
-  /* PROFİL YÜKLE                                           */
-  /* ------------------------------------------------------ */
-  async function loadProfile() {
-    const refCust = doc(db, "customers", currentUID);
-    const snap = await getDoc(refCust);
 
-    if (!snap.exists()) {
-      pNameEl.textContent = "-";
-      pPhoneEl.textContent = "-";
-      pJoinEl.textContent = "-";
-      pfpEl.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+  /* ---------------- PROFİL YÜKLE ---------------- */
+  async function loadProfile(){
+    const ref = doc(db,"customers",currentUID);
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()){
+      pNameEl.textContent="-";
+      pPhoneEl.textContent="-";
+      pJoinEl.textContent="-";
+      pfpEl.src="https://cdn-icons-png.flaticon.com/512/149/149071.png";
       return;
     }
 
-    const c = snap.data();
+    const d = snap.data();
 
-    pNameEl.textContent = c.name || "-";
-    pPhoneEl.textContent = c.phone || "-";
+    pNameEl.textContent = d.name || "-";
+    pPhoneEl.textContent = d.phone || "-";
 
-    if (c.createdAt?.toDate) {
-      pJoinEl.textContent = c.createdAt.toDate().toLocaleDateString("tr-TR");
-    } else {
-      pJoinEl.textContent = "-";
+    if(d.createdAt?.toDate){
+      pJoinEl.textContent = d.createdAt.toDate().toLocaleDateString("tr-TR");
     }
 
-    if (c.photoBase64) {
-      pfpEl.src = c.photoBase64;
-    } else {
+    if(d.photoBase64){
+      pfpEl.src = d.photoBase64;
+    }else{
       pfpEl.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
     }
 
-    editNameInput.value = c.name || "";
+    editNameInput.value = d.name || "";
   }
 
-  /* ------------------------------------------------------ */
-  /* FOTOĞRAF SEÇ → BASE64 KAYDET                           */
-  /* ------------------------------------------------------ */
-  choosePhotoBtn.addEventListener("click", () => {
-    photoInput.click();
-  });
 
-  photoInput.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  /* ---------------- FOTOĞRAF SEÇ → BASE64 ---------------- */
+  choosePhotoBtn.addEventListener("click", ()=> photoInput.click());
+
+  photoInput.addEventListener("change", async()=>{
+    const file = photoInput.files[0];
+    if(!file) return;
 
     choosePhotoBtn.textContent = "Yükleniyor...";
     choosePhotoBtn.disabled = true;
 
-    try {
-      // BASE64'e çevir
+    try{
       const base64 = await fileToBase64(file);
 
-      // Firestore'a kaydet
-      await updateDoc(doc(db, "customers", currentUID), {
+      await updateDoc(doc(db,"customers",currentUID),{
         photoBase64: base64
       });
 
-      // Ön izleme
       pfpEl.src = base64;
 
       choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
-
-      alert("Profil fotoğrafı güncellendi!");
-    } catch (err) {
-      console.error(err);
-      alert("Fotoğraf yüklenirken hata oluştu.");
+    }catch(e){
+      alert("Fotoğraf yüklenirken hata oldu.");
       choosePhotoBtn.textContent = "Tekrar Dene";
-    } finally {
+    }finally{
       choosePhotoBtn.disabled = false;
     }
   });
 
-  /* ------------------------------------------------------ */
-  /* PROFİL KAYDET                                          */
-  /* ------------------------------------------------------ */
-  saveProfileBtn.addEventListener("click", async () => {
+
+  /* ---------------- PROFİL KAYDET ---------------- */
+  saveProfileBtn.addEventListener("click", async()=>{
     const newName = editNameInput.value.trim();
     const newPass = editPasswordInput.value;
 
     saveProfileBtn.disabled = true;
 
-    try {
-      if (newName) {
-        await updateDoc(doc(db, "customers", currentUID), { name: newName });
+    try{
+      if(newName){
+        await updateDoc(doc(db,"customers",currentUID),{ name:newName });
       }
 
-      if (newPass && newPass.length >= 6) {
-        await updatePassword(auth.currentUser, newPass);
-      } else if (newPass && newPass.length < 6) {
-        alert("Şifre en az 6 karakter olmalı.");
-        saveProfileBtn.disabled = false;
-        return;
+      if(newPass){
+        if(newPass.length < 6){
+          alert("Şifre en az 6 karakter olmalı.");
+          saveProfileBtn.disabled = false;
+          return;
+        }
+        await updatePassword(auth.currentUser,newPass);
       }
 
       alert("Profil güncellendi.");
       await loadProfile();
-      editPasswordInput.value = "";
-
-    } catch (err) {
-      console.error(err);
-      if (err.code === "auth/requires-recent-login") {
-        alert("Şifreyi değiştirmek için tekrar giriş yapmalısın.");
-      } else {
-        alert("Profil güncellenemedi: " + err.message);
-      }
-    } finally {
+    }catch(e){
+      alert("Profil güncellenemedi.");
+    }finally{
       saveProfileBtn.disabled = false;
     }
   });
 
-  /* ------------------------------------------------------ */
-  /* RANDEVULAR – REALTIME                                  */
-  /* ------------------------------------------------------ */
-  function listenAppointmentsRealtime() {
-    upcomingList.innerHTML = "Yükleniyor...";
-    historyList.innerHTML = "Yükleniyor...";
 
-    const qAppt = query(
-      collection(db, "appointments"),
-      where("customerUID", "==", currentUID)
-    );
+  /* ---------------- RANDEVULAR ---------------- */
+  function listenAppointmentsRealtime(){
+    const q = query(collection(db,"appointments"), where("customerUID","==",currentUID));
 
-    onSnapshot(qAppt, async (snap) => {
-      const appts = [];
-
-      snap.forEach((d) => appts.push({ id: d.id, ...d.data() }));
-
-      // İsimleri doldur
-      for (const ap of appts) {
-        ap.businessName = ap.businessID;
-        ap.serviceName = ap.serviceID;
-        ap.employeeName = ap.employeeID;
-
-        try {
-          if (ap.businessID) {
-            const bSnap = await getDoc(doc(db, "businesses", ap.businessID));
-            if (bSnap.exists()) ap.businessName = bSnap.data().name || ap.businessID;
-          }
-          if (ap.serviceID) {
-            const sSnap = await getDoc(doc(db, "services", ap.serviceID));
-            if (sSnap.exists()) ap.serviceName = sSnap.data().name || ap.serviceID;
-          }
-          if (ap.employeeID) {
-            const eSnap = await getDoc(doc(db, "employees", ap.employeeID));
-            if (eSnap.exists()) ap.employeeName = eSnap.data().name || ap.employeeID;
-          }
-        } catch (e) {}
-      }
+    onSnapshot(q, async(snap)=>{
+      const list = [];
+      snap.forEach(d=> list.push({ id:d.id, ...d.data() }));
 
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setHours(0,0,0,0);
 
-      const upcoming = [];
-      const history = [];
+      const upcoming=[];
+      const history=[];
 
-      appts.forEach((ap) => {
-        const d = new Date(ap.date + "T00:00:00");
+      for(const ap of list){
+        const dt = new Date(ap.date+"T00:00:00");
 
-        if (d >= today && ap.status !== "cancelled" && ap.status !== "rejected") {
+        if(dt >= today && ap.status !== "cancelled" && ap.status !== "rejected"){
           upcoming.push(ap);
-        } else {
+        }else{
           history.push(ap);
         }
-      });
+      }
 
       renderUpcoming(upcoming);
       renderHistory(history);
     });
   }
 
-  function renderUpcoming(list) {
-    if (list.length === 0) {
-      upcomingList.className = "appt-list-empty";
+  function renderUpcoming(arr){
+    if(arr.length===0){
       upcomingList.textContent = "Yaklaşan randevu yok.";
       return;
     }
 
     upcomingList.innerHTML = "";
-    upcomingList.className = "";
+    arr.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
 
-    list.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-
-    list.forEach((ap) => {
+    arr.forEach(ap=>{
       const div = document.createElement("div");
-      div.className = "appt";
-
+      div.className="appt";
       div.innerHTML = `
-        <div class="appt-title">${ap.businessName}</div>
-        <div class="appt-line">${ap.serviceName} · ${ap.employeeName}</div>
+        <div class="appt-title">${ap.businessName || ap.businessID}</div>
+        <div class="appt-line">${ap.serviceName || ap.serviceID} · ${ap.employeeName || ap.employeeID}</div>
         <div class="appt-line">${ap.date} · ${ap.time}</div>
-        <span class="status ${ap.status}">${statusText(ap.status)}</span>
+        <span class="status ${ap.status}">${ap.status}</span>
       `;
 
-      if (ap.status !== "cancelled") {
-        const btn = document.createElement("button");
-        btn.className = "small-btn";
-        btn.textContent = "Randevuyu İptal Et";
-        btn.onclick = () => cancelAppointment(ap.id);
+      if(ap.status!=="cancelled"){
+        const btn=document.createElement("button");
+        btn.className="small-btn";
+        btn.textContent="Randevuyu İptal Et";
+        btn.onclick= ()=> cancelAppointment(ap.id);
         div.appendChild(btn);
       }
 
@@ -538,102 +421,41 @@
     });
   }
 
-  function renderHistory(list) {
-    if (list.length === 0) {
-      historyList.className = "appt-list-empty";
+  function renderHistory(arr){
+    if(arr.length===0){
       historyList.textContent = "Geçmiş randevu yok.";
       return;
     }
 
     historyList.innerHTML = "";
-    historyList.className = "";
+    arr.sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
 
-    list.sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
-
-    list.forEach((ap) => {
+    arr.forEach(ap=>{
       const div = document.createElement("div");
-      div.className = "appt";
-
+      div.className="appt";
       div.innerHTML = `
-        <div class="appt-title">${ap.businessName}</div>
-        <div class="appt-line">${ap.serviceName} · ${ap.employeeName}</div>
+        <div class="appt-title">${ap.businessName || ap.businessID}</div>
+        <div class="appt-line">${ap.serviceName || ap.serviceID} · ${ap.employeeName || ap.employeeID}</div>
         <div class="appt-line">${ap.date} · ${ap.time}</div>
-        <span class="status ${ap.status}">${statusText(ap.status)}</span>
+        <span class="status ${ap.status}">${ap.status}</span>
       `;
-
       historyList.appendChild(div);
     });
   }
 
-  function statusText(s) {
-    switch (s) {
-      case "pending": return "Onay Bekliyor";
-      case "approved": return "Onaylandı";
-      case "rejected": return "Reddedildi";
-      case "cancelled": return "İptal Edildi";
-      default: return s;
-    }
-  }
-
-  async function cancelAppointment(id) {
-    if (!confirm("Bu randevuyu iptal etmek istediğine emin misin?")) return;
-    await updateDoc(doc(db, "appointments", id), { status: "cancelled" });
+  async function cancelAppointment(id){
+    if(!confirm("Bu randevuyu iptal etmek istediğine emin misin?")) return;
+    await updateDoc(doc(db,"appointments",id),{ status:"cancelled" });
     alert("Randevu iptal edildi.");
   }
 
-  /* ------------------------------------------------------ */
-  /* ÇIKIŞ                                                  */
-  /* ------------------------------------------------------ */
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
+  /* ---------------- ÇIKIŞ ---------------- */
+  document.getElementById("logoutBtn").addEventListener("click", async()=>{
     await signOut(auth);
-    window.location.href = "customer-login.html";
-  });
-
-  /* ------------------------------------------------------ */
-  /* HATIRLATICI                                            */
-  /* ------------------------------------------------------ */
-  reminderBtn.addEventListener("click", async () => {
-    try {
-      const refCustomer = doc(db, "customers", currentUID);
-      const snap = await getDoc(refCustomer);
-
-      if (!snap.exists()) {
-        alert("Profil bulunamadı.");
-        return;
-      }
-
-      const c = snap.data();
-      if (!c.playerID) {
-        alert("Tarayıcı bildirim izni gerekli.");
-        return;
-      }
-
-      const in15 = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
-      const sendAfter = in15.toISOString();
-
-      await fetch("https://onesignal.com/api/v1/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "os_v2_app_pbglu5agqne63i6g5btud7dk5ykwltjp5bsurlevniaotnezguucqagszcnwvmprawyc6pl7egsftoxdww3dspjn2bmutgby2gdbmli"
-        },
-        body: JSON.stringify({
-          app_id: "784cba74-0683-49ed-a3c6-e86741fc6aee",
-          include_player_ids: [c.playerID],
-          send_after: sendAfter,
-          headings: { tr: "Tekrar randevu zamanı" },
-          contents: { tr: "Yaklaşık 15 gün oldu. Yeni bir randevu oluşturmak ister misin?" }
-        })
-      });
-
-      reminderInfo.textContent =
-        `Hatırlatıcı ayarlandı: ${in15.toLocaleDateString("tr-TR")}`;
-
-      alert("Hatırlatıcı ayarlandı.");
-    } catch (err) {
-      console.error(err);
-      alert("Hatırlatıcı ayarlanamadı.");
-    }
+    window.location.href="customer-login.html";
   });
 
 </script>
+
+</body>
+</html>
