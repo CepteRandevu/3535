@@ -1,212 +1,216 @@
-settings 
-
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ayarlar | Cepterandevu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ayarlar | Cepterandevu</title>
 
-<style>
-  :root {
-    --bg:#050816;
-    --sidebar:#0b1120;
-    --card:#101528;
-    --accent:#22c55e;
-    --accent-strong:#16a34a;
-    --text:#f9fafb;
-    --muted:#9ca3af;
-    --border:rgba(148,163,184,0.35);
-    --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
-    --radius-xl:18px;
-  }
+  <style>
+    :root {
+      --bg:#050816;
+      --sidebar:#0b1120;
+      --card:#101528;
+      --accent:#22c55e;
+      --accent-strong:#16a34a;
+      --text:#f9fafb;
+      --muted:#9ca3af;
+      --border:rgba(148,163,184,0.35);
+      --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
+      --radius-xl:18px;
+    }
 
-  *{box-sizing:border-box;margin:0;padding:0;}
+    *{box-sizing:border-box;margin:0;padding:0;}
 
-  body{
-    background:radial-gradient(circle at top,#111827,#020617 55%);
-    font-family:system-ui,sans-serif;
-    color:var(--text);
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-  }
+    body{
+      background:radial-gradient(circle at top,#111827,#020617 55%);
+      font-family:system-ui,sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
 
-  /* ----------- LOGO DÜZENLEMESİ (TEK DEĞİŞİKLİK) ----------- */
-  .logo-box2{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-bottom:14px;
-  }
+    /* LOGO ALANI */
+    .logo-box2{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:14px;
+    }
 
-  .logo-preview{
-    width:120px;
-    height:120px;
-    border-radius:16px;
-    object-fit:cover;
-    background:#020617;
-    border:1px solid var(--border);
-  }
+    .logo-preview{
+      width:120px;
+      height:120px;
+      border-radius:16px;
+      object-fit:cover;
+      background:#020617;
+      border:1px solid var(--border);
+    }
 
-  .upload-btn{
-    padding:9px 14px;
-    background:var(--accent);
-    color:#022c22;
-    border:none;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    font-size:14px;
-  }
-  /* --------------------------------------------------------- */
+    .upload-btn{
+      padding:9px 14px;
+      background:var(--accent);
+      color:#022c22;
+      border:none;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      font-size:14px;
+    }
 
-  .drawer-overlay{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.55);
-    backdrop-filter:blur(2px);
-    display:none;z-index:998;
-  }
+    .drawer-overlay{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.55);
+      backdrop-filter:blur(2px);
+      display:none;z-index:998;
+    }
 
-  .drawer-menu{
-    position:fixed;top:0;left:0;width:250px;height:100%;
-    background:#0b1120;
-    transform:translateX(-100%);
-    transition:.28s;
-    z-index:999;
-    padding:20px;
-    border-right:1px solid rgba(255,255,255,0.08);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
+    .drawer-menu{
+      position:fixed;top:0;left:0;width:250px;height:100%;
+      background:#0b1120;
+      transform:translateX(-100%);
+      transition:.28s;
+      z-index:999;
+      padding:20px;
+      border-right:1px solid rgba(255,255,255,0.08);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-  .drawer-open{transform:translateX(0);}
-  .drawer-title{font-size:20px;font-weight:700;margin-bottom:10px;color:var(--accent);}
+    .drawer-open{transform:translateX(0);}
+    .drawer-title{font-size:20px;font-weight:700;margin-bottom:10px;color:var(--accent);}
 
-  .drawer-links a{
-    display:block;text-decoration:none;color:#e2e8f0;
-    padding:10px 12px;border-radius:10px;font-size:14px;
-  }
-  .drawer-links a:hover,
-  .drawer-links a.active{
-    background:var(--accent);color:#022c22;font-weight:600;
-  }
+    .drawer-links a{
+      display:block;text-decoration:none;color:#e2e8f0;
+      padding:10px 12px;border-radius:10px;font-size:14px;
+    }
+    .drawer-links a:hover,
+    .drawer-links a.active{
+      background:var(--accent);color:#022c22;font-weight:600;
+    }
 
-  .top-header{
-    background:#0b1120;border-bottom:1px solid var(--border);
-    padding:10px 0 10px;position:sticky;top:0;z-index:900;
-    display:flex;flex-direction:column;gap:6px;
-  }
+    .top-header{
+      background:#0b1120;border-bottom:1px solid var(--border);
+      padding:10px 0 10px;position:sticky;top:0;z-index:900;
+      display:flex;flex-direction:column;gap:6px;
+    }
 
-  .top-center{display:flex;justify-content:center;align-items:center;gap:10px;}
-  .logo-mark{
-    width:34px;height:34px;border-radius:14px;
-    background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;color:#ecfdf5;
-  }
-  .logo-title{font-size:16px;font-weight:600;}
-  .top-menu-row{padding-left:16px;}
-  .menu-btn{
-    background:var(--accent);border:0;color:#022c22;
-    padding:7px 14px;border-radius:10px;font-weight:600;
-    cursor:pointer;font-size:14px;
-  }
+    .top-center{display:flex;justify-content:center;align-items:center;gap:10px;}
+    .logo-mark{
+      width:34px;height:34px;border-radius:14px;
+      background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;color:#ecfdf5;
+      cursor:pointer;
+    }
+    .logo-title{font-size:16px;font-weight:600;}
+    .top-menu-row{padding-left:16px;}
+    .menu-btn{
+      background:var(--accent);border:0;color:#022c22;
+      padding:7px 14px;border-radius:10px;font-weight:600;
+      cursor:pointer;font-size:14px;
+    }
 
-  .sidebar{
-    width:240px;background:var(--sidebar);padding:24px 18px;
-    border-right:1px solid var(--border);position:fixed;top:0;bottom:0;
-    display:none;flex-direction:column;gap:14px;z-index:800;
-  }
+    .sidebar{
+      width:240px;background:var(--sidebar);padding:24px 18px;
+      border-right:1px solid var(--border);position:fixed;top:0;bottom:0;
+      display:none;flex-direction:column;gap:14px;z-index:800;
+    }
 
-  .logo-box{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-  .biz-name-small{font-size:15px;font-weight:600;}
+    .logo-box{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+    .biz-name-small{font-size:15px;font-weight:600;}
 
-  .menu button{
-    width:100%;padding:10px 12px;background:transparent;border:0;
-    text-align:left;color:var(--muted);cursor:pointer;border-radius:12px;
-    font-size:14px;display:flex;align-items:center;gap:8px;
-  }
+    .menu button{
+      width:100%;padding:10px 12px;background:transparent;border:0;
+      text-align:left;color:var(--muted);cursor:pointer;border-radius:12px;
+      font-size:14px;display:flex;align-items:center;gap:8px;
+    }
 
-  .menu button:hover{
-    background:rgba(34,197,94,0.12);color:var(--text);
-  }
+    .menu button:hover{
+      background:rgba(34,197,94,0.12);color:var(--text);
+    }
 
-  .menu button.active{
-    background:var(--accent);color:#022c22;font-weight:600;
-  }
+    .menu button.active{
+      background:var(--accent);color:#022c22;font-weight:600;
+    }
 
-  .main-area{padding:20px 18px 28px;}
-  .page-title{font-size:20px;font-weight:700;margin-bottom:16px;}
+    .main-area{padding:20px 18px 28px;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:16px;}
 
-  .card{
-    background:var(--card);border-radius:var(--radius-xl);
-    border:1px solid var(--border);padding:18px 16px 20px;
-    margin-bottom:18px;box-shadow:var(--shadow-soft);
-  }
+    .card{
+      background:var(--card);border-radius:var(--radius-xl);
+      border:1px solid var(--border);padding:18px 16px 20px;
+      margin-bottom:18px;box-shadow:var(--shadow-soft);
+    }
 
-  .card h3{font-size:16px;margin-bottom:10px;}
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
+    .card h3{font-size:16px;margin-bottom:10px;}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;}
 
-  input, select, textarea{
-    width:100%;padding:9px 11px;border-radius:12px;background:#020617;
-    border:1px solid var(--border);color:var(--text);margin-bottom:10px;
-    font-size:13px;outline:none;
-  }
+    input, select, textarea{
+      width:100%;padding:9px 11px;border-radius:12px;background:#020617;
+      border:1px solid var(--border);color:var(--text);margin-bottom:10px;
+      font-size:13px;outline:none;
+    }
 
-  input:focus, select:focus, textarea:focus{
-    border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);
-  }
+    input:focus, select:focus, textarea:focus{
+      border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);
+    }
 
-  .schedule-info{
-    font-size:12px;color:var(--muted);margin-bottom:8px;
-  }
+    .row-two{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:10px;
+    }
 
-  .schedule-grid{
-    display:flex;flex-direction:column;gap:6px;margin-bottom:8px;
-  }
+    .schedule-info{
+      font-size:12px;color:var(--muted);margin-bottom:8px;
+    }
 
-  .schedule-row{
-    display:flex;align-items:center;gap:10px;padding:6px 8px;
-    border-radius:10px;background:#020617;border:1px solid rgba(148,163,184,0.25);
-  }
+    .schedule-grid{
+      display:flex;flex-direction:column;gap:6px;margin-bottom:8px;
+    }
 
-  .schedule-day{width:90px;font-size:13px;font-weight:500;}
+    .schedule-row{
+      display:flex;align-items:center;gap:10px;padding:6px 8px;
+      border-radius:10px;background:#020617;border:1px solid rgba(148,163,184,0.25);
+    }
 
-  .schedule-times{
-    display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap;
-  }
+    .schedule-day{width:90px;font-size:13px;font-weight:500;}
 
-  .schedule-times input[type="time"]{
-    width:110px;margin-bottom:0;padding:6px 8px;border-radius:8px;
-  }
+    .schedule-times{
+      display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap;
+    }
 
-  .closed-label{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
+    .schedule-times input[type="time"]{
+      width:110px;margin-bottom:0;padding:6px 8px;border-radius:8px;
+    }
 
-  .btn-primary{
-    width:100%;
-    background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-    border:0;padding:11px 12px;border-radius:12px;
-    font-weight:700;font-size:14px;color:#022c22;
-    cursor:pointer;margin-top:4px;
-    box-shadow:0 10px 28px rgba(34,197,94,0.45);
-  }
+    .closed-label{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);}
 
-  .logout-btn{
-    width:100%;background:#ef4444;color:white;border:0;
-    padding:11px 12px;border-radius:12px;font-weight:600;
-    font-size:14px;cursor:pointer;margin-top:8px;
-  }
+    .btn-primary{
+      width:100%;
+      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
+      border:0;padding:11px 12px;border-radius:12px;
+      font-weight:700;font-size:14px;color:#022c22;
+      cursor:pointer;margin-top:4px;
+      box-shadow:0 10px 28px rgba(34,197,94,0.45);
+    }
 
-  @media(min-width:900px){
-    body{flex-direction:row;}
-    .sidebar{display:flex;}
-    .top-header{display:none;}
-    .main-area{margin-left:240px;padding:26px 26px 32px;}
-  }
-</style>
+    .logout-btn{
+      width:100%;background:#ef4444;color:white;border:0;
+      padding:11px 12px;border-radius:12px;font-weight:600;
+      font-size:14px;cursor:pointer;margin-top:8px;
+    }
+
+    @media(min-width:900px){
+      body{flex-direction:row;}
+      .sidebar{display:flex;}
+      .top-header{display:none;}
+      .main-area{margin-left:240px;padding:26px 26px 32px;}
+    }
+  </style>
 </head>
 
 <body>
@@ -226,7 +230,7 @@ settings
 
 <header class="top-header">
   <div class="top-center">
-    <div class="logo-mark">C</div>
+    <div class="logo-mark" onclick="location.href='../index.html'">C</div>
     <span class="logo-title" id="bizNameMobile">İşletme Paneli</span>
   </div>
   <div class="top-menu-row">
@@ -236,7 +240,7 @@ settings
 
 <aside class="sidebar">
   <div class="logo-box">
-    <div class="logo-mark">C</div>
+    <div class="logo-mark" onclick="location.href='../index.html'">C</div>
     <div class="biz-name-small" id="bizNameSmall">İşletme</div>
   </div>
   <div class="menu">
@@ -258,9 +262,9 @@ settings
 
     <label>Logo</label>
     <div class="logo-box2">
-        <img id="logoPreview" class="logo-preview" src="">
-        <input type="file" id="logoInput" accept="image/*" style="display:none;">
-        <button class="upload-btn" onclick="document.getElementById('logoInput').click();">Logo Seç</button>
+      <img id="logoPreview" class="logo-preview" src="">
+      <input type="file" id="logoInput" accept="image/*" style="display:none;">
+      <button class="upload-btn" onclick="document.getElementById('logoInput').click();">Logo Seç</button>
     </div>
 
     <label>İşletme Adı</label>
@@ -269,11 +273,15 @@ settings
     <div class="row-two">
       <div>
         <label>İl</label>
-        <select id="citySelect"><option value="">İl seçiniz</option></select>
+        <select id="citySelect">
+          <option value="">İl seçiniz</option>
+        </select>
       </div>
       <div>
         <label>İlçe</label>
-        <select id="districtSelect"><option value="">Önce il seçiniz</option></select>
+        <select id="districtSelect" disabled>
+          <option value="">Önce il seçiniz</option>
+        </select>
       </div>
     </div>
 
@@ -346,8 +354,40 @@ settings
     '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-size="40" fill="%2322c55e">Logo</text>' +
     '</svg>';
 
+  /* TÜRKİYE İL / İLÇE LİSTESİ (KISALTILMIŞ) */
+  const TR_CITIES = [
+    { name:"Adana", districts:["Çukurova","Seyhan","Yüreğir","Ceyhan","Kozan","Karaisalı","Karataş","Pozantı","Sarıçam","İmamoğlu","Aladağ","Feke","Saimbeyli","Tufanbeyli","Yumurtalık"] },
+    { name:"Adıyaman", districts:["Merkez","Besni","Çelikhan","Gerger","Gölbaşı","Kahta","Samsat","Sincik","Tut"] },
+    { name:"Afyonkarahisar", districts:["Merkez","Başmakçı","Bayat","Bolvadin","Çay","Çobanlar","Dazkırı","Dinar","Emirdağ","Evciler","Hocalar","İhsaniye","İscehisar","Kızılören","Sandıklı","Sinanpaşa","Sultandağı","Şuhut"] },
+    { name:"Ankara", districts:["Altındağ","Çankaya","Keçiören","Mamak","Sincan","Yenimahalle","Etimesgut","Gölbaşı","Pursaklar","Polatlı","Beypazarı","Elmadağ","Kızılcahamam","Çubuk","Kazán","Ayaş","Nallıhan","Şereflikoçhisar","Haymana","Bala","Kalecik","Akyurt","Güdül","Evren"] },
+    { name:"Antalya", districts:["Muratpaşa","Kepez","Konyaaltı","Alanya","Manavgat","Serik","Kemer","Kumluca","Finike","Demre","Kaş","Gazipaşa","İbradı","Akseki","Elmalı","Gündoğmuş","Korkuteli"] },
+    { name:"Bursa", districts:["Osmangazi","Yıldırım","Nilüfer","İnegöl","Gemlik","Mudanya","Gürsu","Kestel","Karacabey","Mustafakemalpaşa","Yenişehir","İznik","Orhangazi","Orhaneli","Keles","Harmancık","Büyükorhan"] },
+    { name:"İstanbul", districts:[
+      "Adalar","Arnavutköy","Ataşehir","Avcılar","Bağcılar","Bahçelievler","Bakırköy","Başakşehir","Bayrampaşa",
+      "Beşiktaş","Beykoz","Beylikdüzü","Beyoğlu","Büyükçekmece","Çatalca","Çekmeköy","Esenler","Esenyurt","Eyüpsultan",
+      "Fatih","Gaziosmanpaşa","Güngören","Kadıköy","Kağıthane","Kartal","Küçükçekmece","Maltepe","Pendik","Sancaktepe",
+      "Sarıyer","Silivri","Sultanbeyli","Sultangazi","Şile","Şişli","Tuzla","Ümraniye","Üsküdar","Zeytinburnu"
+    ]},
+    { name:"İzmir", districts:[
+      "Aliağa","Balçova","Bayındır","Bayraklı","Bergama","Beydağ","Bornova","Buca","Çeşme","Çiğli","Dikili","Foça",
+      "Gaziemir","Güzelbahçe","Karabağlar","Karaburun","Karşıyaka","Kemalpaşa","Kınık","Kiraz","Konak","Menderes",
+      "Menemen","Narlıdere","Ödemiş","Seferihisar","Selçuk","Tire","Torbalı","Urla"
+    ]},
+    { name:"Kocaeli", districts:["İzmit","Gebze","Darıca","Çayırova","Dilovası","Körfez","Derince","Başiskele","Gölcük","Karamürsel","Kartepe","Kandıra"] },
+    { name:"Konya", districts:["Meram","Selçuklu","Karatay","Akşehir","Beyşehir","Çumra","Cihanbeyli","Ereğli","Ilgın","Kulu","Seydişehir","Yunak","Karapınar","Hadim","Bozkır","Doğanhisar","Hüyük","Kadınhanı","Sarayönü","Taşkent","Ahırlı","Derebucak","Emirgazi","Güneysınır","Halkapınar","Tuzlukçu","Altınekin","Akören","Yalıhüyük"] },
+    { name:"Muğla", districts:["Bodrum","Fethiye","Menteşe","Milas","Marmaris","Seydikemer","Datça","Ortaca","Köyceğiz","Yatağan","Ula","Kavaklıdere"] },
+    { name:"Aydın", districts:["Efeler","Didim","Kuşadası","Nazilli","Söke","Çine","Bozdoğan","Germencik","İncirliova","Karacasu","Karpuzlu","Koçarlı","Kuyucak","Sultanhisar","Yenipazar"] },
+    { name:"Mersin", districts:["Akdeniz","Toroslar","Yenişehir","Mezitli","Tarsus","Erdemli","Silifke","Mut","Anamur","Gülnar","Bozyazı","Aydıncık","Çamlıyayla"] },
+    { name:"Şanlıurfa", districts:["Eyyübiye","Haliliye","Karaköprü","Siverek","Viranşehir","Akçakale","Birecik","Bozova","Ceylanpınar","Halfeti","Harran","Hilvan","Suruç"] },
+    { name:"Gaziantep", districts:["Şahinbey","Şehitkamil","Nizip","İslahiye","Oğuzeli","Yavuzeli","Nurdağı","Araban","Karkamış"] },
+    { name:"Kayseri", districts:["Kocasinan","Melikgazi","Talas","Develi","İncesu","Yahyalı","Bünyan","Pınarbaşı","Tomarza","Sarıoğlan","Sarız","Felahiye","Hacılar","Akkışla","Özvatan","Yeşilhisar"] },
+    { name:"Eskişehir", districts:["Tepebaşı","Odunpazarı","Alpu","Beylikova","Çifteler","Günyüzü","Han","İnönü","Mahmudiye","Mihalgazi","Mihalıççık","Sarıcakaya","Seyitgazi","Sivrihisar"] },
+    { name:"Trabzon", districts:["Ortahisar","Akçaabat","Araklı","Arsin","Beşikdüzü","Çarşıbaşı","Çaykara","Dernekpazarı","Düzköy","Hayrat","Köprübaşı","Maçka","Of","Sürmene","Şalpazarı","Tonya","Vakfıkebir","Yomra"] },
+    { name:"Samsun", districts:["Atakum","İlkadım","Canik","Tekkeköy","Bafra","Çarşamba","Terme","Vezirköprü","Havza","Ladik","Asarcık","Alaçam","Yakakent","Kavak","Ondokuzmayıs","Salıpazarı","Ayvacık"] },
+    { name:"Diğer", districts:["Merkez"] }
+  ];
+
   let BUSINESS_ID = null;
-  let citiesData = [];
   let cityFromDB = "";
   let districtFromDB = "";
 
@@ -388,7 +428,17 @@ settings
 
   logoInput.addEventListener("change", async()=>{
     const f = logoInput.files[0];
-    if(!f || !BUSINESS_ID) return;
+
+    if(!f){
+      alert("Dosya seçilemedi.");
+      return;
+    }
+
+    if(!BUSINESS_ID){
+      alert("Kullanıcı bilgisi yüklenmeden logo yüklenemez.");
+      return;
+    }
+
     saveBizBtn.disabled = true;
 
     try{
@@ -409,57 +459,60 @@ settings
     }
   });
 
-  async function loadCities(){
-    try{
-      const r = await fetch("/al/js/turkey-cities.json");
-      citiesData = await r.json();
-      fillCities();
-    }catch(e){
-      console.error("Şehir listesi yüklenemedi",e);
-    }
-  }
-
   function fillCities(){
     citySelect.innerHTML = `<option value="">İl seçiniz</option>`;
-    citiesData.forEach(c=>{
+    TR_CITIES.forEach(c=>{
       const o = document.createElement("option");
       o.value = c.name;
       o.textContent = c.name;
       citySelect.appendChild(o);
     });
 
+    // Eğer DB'den gelen il varsa onu seçelim
     if(cityFromDB){
       citySelect.value = cityFromDB;
       fillDistricts(cityFromDB, districtFromDB);
+    }else{
+      districtSelect.innerHTML = `<option value="">Önce il seçiniz</option>`;
+      districtSelect.disabled = true;
     }
   }
 
-  function fillDistricts(cityName,selected=""){
+  function fillDistricts(cityName, selected = ""){
     districtSelect.innerHTML = "";
 
     if(!cityName){
       districtSelect.innerHTML = `<option value="">Önce il seçiniz</option>`;
+      districtSelect.disabled = true;
       return;
     }
 
-    const c = citiesData.find(x=>x.name===cityName);
-    if(!c || !c.districts){
-      districtSelect.innerHTML=`<option value="">İlçe bulunamadı</option>`;
+    const c = TR_CITIES.find(x=>x.name === cityName);
+    if(!c || !c.districts || !c.districts.length){
+      districtSelect.innerHTML = `<option value="">İlçe bulunamadı</option>`;
+      districtSelect.disabled = true;
       return;
     }
 
+    districtSelect.disabled = false;
     districtSelect.innerHTML = `<option value="">İlçe seçiniz</option>`;
+
     c.districts.forEach(d=>{
-      const o=document.createElement("option");
-      o.value=d; o.textContent=d;
+      const o = document.createElement("option");
+      o.value = d;
+      o.textContent = d;
       districtSelect.appendChild(o);
     });
 
-    if(selected) districtSelect.value = selected;
+    if(selected){
+      districtSelect.value = selected;
+    }
   }
 
   citySelect.addEventListener("change",()=>{
-    fillDistricts(citySelect.value);
+    cityFromDB = citySelect.value;
+    districtFromDB = "";
+    fillDistricts(cityFromDB);
   });
 
   function buildScheduleRows(){
@@ -507,20 +560,13 @@ settings
     return out;
   }
 
-  onAuthStateChanged(auth, async user=>{
-    if(!user){
-      location.href="business-login.html";
-      return;
-    }
-    BUSINESS_ID = user.uid;
-    await loadCities();
-    await loadBusiness();
-  });
-
   async function loadBusiness(){
     const ref = doc(db,"businesses",BUSINESS_ID);
     const snap = await getDoc(ref);
-    if(!snap.exists()) return;
+    if(!snap.exists()){
+      fillCities(); // boş da olsa şehir listesi dolu olsun
+      return;
+    }
 
     const d = snap.data();
 
@@ -535,17 +581,18 @@ settings
     cityFromDB     = d.city     || "";
     districtFromDB = d.district || "";
 
-    if(d.logoBase64) logoPreview.src=d.logoBase64;
+    if(d.logoBase64) logoPreview.src = d.logoBase64;
 
-    if(cityFromDB){
-      citySelect.value=cityFromDB;
-      fillDistricts(cityFromDB,districtFromDB);
-    }
-
+    fillCities();
     fillScheduleFromDB(d.schedule);
   }
 
   saveBizBtn.addEventListener("click", async()=>{
+    if(!BUSINESS_ID){
+      alert("Kullanıcı oturumu bulunamadı.");
+      return;
+    }
+
     saveBizBtn.disabled=true;
 
     try{
@@ -558,6 +605,9 @@ settings
         district:districtSelect.value
       },{merge:true});
 
+      bizNameSmall.textContent  = bizNameInput.value.trim() || "İşletme";
+      bizNameMobile.textContent = bizNameInput.value.trim() || "İşletme";
+
       alert("İşletme bilgileri kaydedildi.");
     }catch(e){
       console.error(e);
@@ -568,6 +618,11 @@ settings
   });
 
   saveScheduleBtn.addEventListener("click", async()=>{
+    if(!BUSINESS_ID){
+      alert("Kullanıcı oturumu bulunamadı.");
+      return;
+    }
+
     const schedule = collectScheduleFromUI();
 
     for(const d of DAYS){
@@ -598,23 +653,39 @@ settings
 
   document.getElementById("savePassBtn").addEventListener("click",async()=>{
     const p = document.getElementById("newPassInput").value;
-    if(p.length<6){ alert("Şifre en az 6 karakter."); return; }
+    if(p.length<6){
+      alert("Şifre en az 6 karakter olmalı.");
+      return;
+    }
 
     try{
       await updatePassword(auth.currentUser,p);
       alert("Şifre güncellendi.");
     }catch(e){
       console.error(e);
-      alert("Şifre güncellenemedi.");
+      alert("Şifre güncellenemedi. Yeniden giriş yapmanız gerekebilir.");
     }
   });
 
   document.getElementById("logoutBtn").addEventListener("click",async()=>{
-    await signOut(auth);
-    location.href="business-login.html";
+    try{
+      await signOut(auth);
+      location.href="business-login.html";
+    }catch(e){
+      console.error(e);
+    }
+  });
+
+  onAuthStateChanged(auth, async user=>{
+    if(!user){
+      location.href="business-login.html";
+      return;
+    }
+    BUSINESS_ID = user.uid;
+    await loadBusiness();
   });
 
 </script>
 
 </body>
-</html> 
+</html>
