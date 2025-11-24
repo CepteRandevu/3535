@@ -1,0 +1,7 @@
+{
+  "name": "Cepterandevu",
+  "short_name": "CR",
+  "start_url": "/al/",
+  "display": "standalone",
+  "gcm_sender_id": "482941778795"
+}
