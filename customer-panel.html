@@ -5,24 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Müşteri Paneli | Cepterandevu</title>
 
-  <!-- OneSignal manifest -->
-  <link rel="manifest" href="/al/manifest.json">
-
-  <!-- OneSignal SDK -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
-        allowLocalhostAsSecureOrigin: true
-      });
-
-      // Bildirim izni isteme
-      OneSignal.Notifications.requestPermission();
-    });
-  </script>
-
   <style>
     :root{
       --bg:#050816;
@@ -37,6 +19,7 @@
       --radius-lg:18px;
       --shadow-soft:0 18px 45px rgba(15,23,42,0.85);
     }
+
     *{margin:0;padding:0;box-sizing:border-box;}
 
     body{
@@ -50,41 +33,58 @@
     }
 
     .app{ width:100%; max-width:900px; }
-    header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:16px;
+    }
 
     .logo{ display:flex; align-items:center; gap:10px; cursor:pointer; }
     .logo-mark{
-      width:32px; height:32px; border-radius:14px;
+      width:32px; height:32px;
+      border-radius:14px;
       background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
       display:flex; align-items:center; justify-content:center;
       font-size:18px; font-weight:800; color:#ecfdf5;
       box-shadow:0 10px 30px rgba(34,197,94,0.6);
     }
+
     .logo-text-main{font-weight:600;font-size:16px;}
     .logo-text-sub{font-size:11px;color:var(--muted);}
 
     .logout-btn{
-      border:0;border-radius:999px;padding:7px 14px;font-size:12px;
-      cursor:pointer;background:var(--danger);color:#fff;font-weight:600;
+      border:0;border-radius:999px;
+      padding:7px 14px;font-size:12px;cursor:pointer;
+      background:var(--danger);color:#fff;font-weight:600;
     }
 
     .grid{
-      display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1.2fr); gap:16px;
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(0,1.2fr);
+      gap:16px;
     }
-    @media(max-width:780px){ .grid{ grid-template-columns:minmax(0,1fr); } }
+    @media(max-width:780px){
+      .grid{ grid-template-columns:minmax(0,1fr); }
+    }
 
     .card{
       background:rgba(15,23,42,0.96);
       border-radius:var(--radius-lg);
       border:1px solid var(--border);
       box-shadow:var(--shadow-soft);
-      padding:16px; margin-bottom:16px;
+      padding:16px;
+      margin-bottom:16px;
     }
 
     .pfp-wrap{ display:flex; flex-direction:column; align-items:center; gap:8px; }
     .pfp{
-      width:120px; height:120px; border-radius:999px;
-      object-fit:cover; background:#020617; border:2px solid var(--accent);
+      width:120px; height:120px;
+      border-radius:999px;
+      object-fit:cover; object-position:center;
+      background:#020617;
+      border:2px solid var(--accent);
     }
 
     .pfp-btn{
@@ -96,10 +96,14 @@
     }
 
     input{
-      width:100%; padding:9px 11px; border-radius:12px;
+      width:100%;
+      padding:9px 11px;
+      border-radius:12px;
       border:1px solid rgba(148,163,184,0.35);
-      background:#020617; color:var(--text);
-      font-size:13px; margin-bottom:10px;
+      background:#020617;
+      color:var(--text);
+      font-size:13px;
+      margin-bottom:10px;
     }
 
     input:focus{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
@@ -113,13 +117,19 @@
     }
 
     .appt-box{
-      display:flex; gap:12px; background:#0b1220; padding:12px;
-      border-radius:14px; border:1px solid var(--border); margin-bottom:10px;
+      display:flex;
+      gap:12px;
+      background:#0b1220;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      margin-bottom:10px;
     }
 
     .appt-logo{
       width:50px;height:50px;border-radius:12px;
-      background:#020617;border:1px solid var(--border); object-fit:cover;
+      background:#020617;border:1px solid var(--border);
+      object-fit:cover;
     }
 
     .appt-info{ flex:1; font-size:13px; }
@@ -141,10 +151,11 @@
       padding:5px 10px;border-radius:10px;border:0;font-size:11px;
       cursor:pointer;background:var(--danger);color:#fff;margin-top:6px;
     }
-
   </style>
-</head>
 
+  <!-- OneSignal Web Push SDK (v16) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+</head>
 <body>
 <div class="app">
 
@@ -161,7 +172,6 @@
 
   <main class="grid">
 
-    <!-- PROFIL -->
     <section>
       <div class="card">
         <h2>Profilim</h2>
@@ -202,7 +212,6 @@
 
     </section>
 
-    <!-- RANDEVULAR -->
     <section>
 
       <div class="card">
@@ -220,7 +229,6 @@
   </main>
 
 </div>
-
 <script type="module">
 import { firebaseConfig } from "./js/firebase-config.js";
 
@@ -259,7 +267,7 @@ document.getElementById("homeLogo").onclick = ()=>{
   location.href = "https://cepterandevu.github.io/al/";
 };
 
-/* FOTOĞRAF SIKIŞTIRMA */
+/* --- FOTOĞRAF SIKIŞTIRMA: MOBİL DOSTU BASE64 --- */
 async function fileToBase64Compressed(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -269,7 +277,7 @@ async function fileToBase64Compressed(file) {
       img.onload = () => {
         try{
           const canvas = document.createElement("canvas");
-          const MAX = 900;
+          const MAX = 900; // maksimum kenar
 
           let width = img.width;
           let height = img.height;
@@ -292,6 +300,7 @@ async function fileToBase64Compressed(file) {
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
+          // jpeg + %70 kalite
           const base64 = canvas.toDataURL("image/jpeg", 0.7);
           resolve(base64);
         }catch(err){
@@ -307,36 +316,77 @@ async function fileToBase64Compressed(file) {
   });
 }
 
+/* ---------- OneSignal: müşteri cihaz playerId kaydı ---------- */
+async function setupOneSignalForCustomer(uid){
+  // SDK henüz yüklenmediyse bile kuyrukla çalışsın
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      await OneSignal.init({
+        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee"
+      });
+
+      // İzin iste
+      const permission = await OneSignal.Notifications.requestPermission();
+      if (permission !== "granted") {
+        console.log("Bildirim izni verilmedi");
+        return;
+      }
+
+      // Abonelik aç
+      await OneSignal.User.pushSubscription.optIn();
+
+      // Cihaz ID (playerId) al
+      const playerId = await OneSignal.User.pushSubscription.getId();
+      console.log("OneSignal playerId (müşteri):", playerId);
+
+      if (playerId) {
+        await updateDoc(doc(db,"customers",uid), {
+          oneSignalPlayerId: playerId
+        });
+      }
+    }catch(err){
+      console.error("OneSignal kurulurken hata:", err);
+    }
+  });
+}
+
 /* AUTH */
 onAuthStateChanged(auth, async user=>{
-  if(!user){ location.href="customer-login.html"; return; }
+  if(!user){
+    location.href="customer-login.html";
+    return;
+  }
   currentUID = user.uid;
   await loadProfile();
   listenAppointmentsRealtime();
+
+  // Bildirim için OneSignal kaydı
+  setupOneSignalForCustomer(currentUID);
 });
 
-/* PROFIL */
+/* PROFİL YÜKLE */
 async function loadProfile(){
   const ref = doc(db,"customers",currentUID);
   const snap = await getDoc(ref);
   if(!snap.exists()) return;
 
-  const d=snap.data();
+  const d = snap.data();
 
-  pNameEl.textContent=d.name || "-";
-  pPhoneEl.textContent=d.phone || "-";
+  pNameEl.textContent = d.name || "-";
+  pPhoneEl.textContent = d.phone || "-";
   if(d.createdAt?.toDate)
-    pJoinEl.textContent=d.createdAt.toDate().toLocaleDateString("tr-TR");
+    pJoinEl.textContent = d.createdAt.toDate().toLocaleDateString("tr-TR");
 
   pfpEl.src = d.photoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   editNameInput.value = d.name || "";
 }
 
-/* FOTO DEĞİŞTİR */
-choosePhotoBtn.onclick=()=> photoInput.click();
+/* FOTO YÜKLE */
+choosePhotoBtn.onclick = () => photoInput.click();
 
-photoInput.onchange = async ()=>{
+photoInput.onchange = async () =>{
   const f = photoInput.files[0];
   if(!f) return;
 
@@ -350,7 +400,7 @@ photoInput.onchange = async ()=>{
     choosePhotoBtn.textContent = "Fotoğrafı Değiştir";
   }catch(e){
     console.error(e);
-    alert("Fotoğraf yüklenirken hata oluştu.");
+    alert("Fotoğraf yüklenirken bir hata oluştu. Lütfen daha küçük boyutlu bir fotoğraf deneyin.");
     choosePhotoBtn.textContent = "Tekrar Dene";
   }
 
@@ -358,7 +408,7 @@ photoInput.onchange = async ()=>{
 };
 
 /* PROFİL KAYDET */
-saveProfileBtn.onclick = async()=>{
+saveProfileBtn.onclick = async ()=>{
   const nm = editNameInput.value.trim();
   const pw = editPasswordInput.value;
 
@@ -367,7 +417,10 @@ saveProfileBtn.onclick = async()=>{
   }
 
   if(pw){
-    if(pw.length<6){ alert("Şifre minimum 6 karakter"); return; }
+    if(pw.length<6){
+      alert("Şifre minimum 6 karakter olmalı.");
+      return;
+    }
     await updatePassword(auth.currentUser,pw);
   }
 
@@ -375,7 +428,7 @@ saveProfileBtn.onclick = async()=>{
   loadProfile();
 };
 
-/* RANDEVULAR */
+/* RANDEVULARI DİNLE */
 function listenAppointmentsRealtime(){
   const q = query(collection(db,"appointments"), where("customerUID","==",currentUID));
 
@@ -397,6 +450,7 @@ function listenAppointmentsRealtime(){
   });
 }
 
+/* DURUM ÇEVİRME */
 function convertStatusText(st){
   return {
     pending: "Beklemede",
@@ -406,6 +460,7 @@ function convertStatusText(st){
   }[st] || st;
 }
 
+/* RANDEVU KARTI */
 function createAppointmentBox(ap){
 
   const logo = ap.businessLogo || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -436,6 +491,7 @@ function createAppointmentBox(ap){
   </div>`;
 }
 
+/* YAKLAŞAN */
 function renderUpcoming(arr){
   if(arr.length===0){
     upcomingList.textContent="Yaklaşan randevu yok.";
@@ -447,6 +503,7 @@ function renderUpcoming(arr){
     .join("");
 }
 
+/* GEÇMİŞ */
 function renderHistory(arr){
   if(arr.length===0){
     historyList.textContent="Geçmiş randevu yok.";
@@ -470,7 +527,6 @@ logoutBtn.onclick = async()=>{
   await signOut(auth);
   location.href="customer-login.html";
 };
-
 </script>
 
 </body>
