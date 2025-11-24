@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Randevular | Cepterandevu</title>
 
+  <!-- MANIFEST (PWA + OneSignal için zorunlu) -->
+  <link rel="manifest" href="/al/manifest.json">
+
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+
+      await OneSignal.init({
+        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
+        notifyButton: { enable: true }
+      });
+
+      /* Bildirim izni iste */
+      OneSignal.Notifications.requestPermission();
+    });
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -92,7 +111,7 @@
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+      box-shadow: 0 4px 12px rgba(34 197 94 0.35);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -151,7 +170,7 @@
       background: var(--accent);
       color: #022c22;
       font-weight: 700;
-      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+      box-shadow: 0 4px 15px rgba(34,197,94,0.3);
     }
 
     .main-area {
@@ -207,7 +226,6 @@
       transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
 
-    /* YENİ BEKLEYEN RANDEVU HIGHLIGHT */
     .appt-row.new-pending {
       animation: pulseRow 1.2s ease-in-out infinite;
       border-color: rgba(34,197,94,0.9);
@@ -513,7 +531,6 @@
     const serviceCache = {};
     const employeeCache = {};
 
-    // Yeni pending randevuyu vurgulama süresi (ms)
     const NEW_PENDING_WINDOW_MS = 20000;
 
     onAuthStateChanged(auth, async (user) => {
@@ -557,7 +574,6 @@
       for (const ap of items) {
         const obj = { ...ap };
 
-        // MÜŞTERİ BİLGİSİ: önce "customers", yoksa "users"
         if (ap.customerUID) {
           if (!userCache[ap.customerUID]) {
             try {
@@ -646,7 +662,6 @@
       const row = document.createElement("div");
       row.className = "appt-row";
 
-      // Yeni & bekleyen randevuysa yanıp sönsün
       const now = Date.now();
       if (ap.status === "pending" && ap.createdAt && (now - ap.createdAt) <= NEW_PENDING_WINDOW_MS) {
         row.classList.add("new-pending");
