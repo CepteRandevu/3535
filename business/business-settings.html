@@ -470,6 +470,51 @@
   }
 
   // *** LOGO YÜKLEME HANDLER: ARTIK RESIZE KULLANIYOR ***
+
+/* ------------------------------------------
+   ZIRIL ZIRIL ÇALIŞAN LOGO KODU (FINAL)
+-------------------------------------------*/
+
+logoInput.addEventListener("change", async () => {
+  const file = logoInput.files[0];
+  if (!file) {
+    alert("Dosya seçilemedi.");
+    return;
+  }
+
+  // Auth tam READY olmadan işlem yapma
+  if (!auth.currentUser || !BUSINESS_ID) {
+    alert("Kullanıcı yüklenmeden logo yüklenemez. Sayfayı yenileyin.");
+    return;
+  }
+
+  saveBizBtn.disabled = true;
+
+  try {
+    // 1: Küçültme
+    const resized = await resizeImage(file, 300);
+
+    // 2: Ekrana önizleme
+    logoPreview.src = resized;
+
+    // 3: Firestore'a yaz
+    await setDoc(
+      doc(db, "businesses", BUSINESS_ID),
+      { logoBase64: resized },
+      { merge: true }
+    );
+
+    alert("Logo başarıyla yüklendi.");
+  } catch (err) {
+    console.error("LOGO HATASI:", err);
+    alert("Logo yüklenemedi, tekrar deneyin.");
+  } finally {
+    saveBizBtn.disabled = false;
+  }
+});
+
+
+  
   logoInput.addEventListener("change", async()=>{
     const f = logoInput.files[0];
 
