@@ -93,7 +93,6 @@
       font-size:11px;
       border:1px solid rgba(34,197,94,0.5);
     }
-
     /* TAKVİM KARTI */
     .agenda-card{
       background:var(--card);
@@ -248,192 +247,6 @@
       padding:12px 14px 14px;
       box-shadow:0 24px 70px rgba(0,0,0,0.8);
     }
-
-    .modal-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      margin-bottom:6px;
-    }
-
-    .modal-title-wrap h3{
-      font-size:17px;
-      margin-bottom:2px;
-    }
-
-    .modal-date{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .modal-close-icon{
-      background:transparent;
-      border:0;
-      color:var(--muted);
-      font-size:18px;
-      cursor:pointer;
-      padding:2px 4px;
-    }
-
-    .section-title{
-      font-size:13px;
-      color:var(--muted);
-      margin-top:8px;
-      margin-bottom:4px;
-      font-weight:600;
-    }
-
-    .appt-list{
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,0.4);
-      background:#020617;
-      padding:6px;
-      font-size:11px;
-      max-height:170px;
-      overflow:auto;
-    }
-
-    .appt-item{
-      border-radius:8px;
-      border:1px solid rgba(148,163,184,0.4);
-      padding:4px 5px;
-      margin-bottom:4px;
-      cursor:pointer;
-    }
-
-    .appt-item:hover{
-      border-color:var(--accent);
-    }
-
-    .appt-empty{
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    .appt-item-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:2px;
-    }
-
-    .appt-time{
-      font-weight:600;
-      color:#bbf7d0;
-      font-size:11px;
-    }
-
-    .appt-caption{
-      font-size:10px;
-      color:#fca5a5;
-    }
-
-    .badge-status{
-      font-size:10px;
-      padding:1px 6px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.6);
-      color:#e5e7eb;
-    }
-
-    .badge-status.pending{
-      border-color:#facc15;
-      color:#facc15;
-    }
-    .badge-status.approved{
-      border-color:#22c55e;
-      color:#4ade80;
-    }
-
-    .modal label{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:6px;
-      display:block;
-    }
-
-    .modal input,
-    .modal select{
-      width:100%;
-      padding:8px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:#020617;
-      color:var(--text);
-      margin-top:3px;
-      font-size:13px;
-    }
-
-    .btn{
-      width:100%;
-      padding:9px;
-      border-radius:10px;
-      border:0;
-      font-size:13px;
-      font-weight:600;
-      cursor:pointer;
-      margin-top:8px;
-    }
-
-    .btn-primary{
-      background:linear-gradient(135deg,var(--accent),var(--accent-strong));
-      color:#022c22;
-      box-shadow:0 12px 30px rgba(34,197,94,0.4);
-    }
-
-    .btn-secondary{
-      background:#020617;
-      color:var(--muted);
-      border:1px solid var(--border);
-    }
-
-    .btn-danger{
-      background:var(--danger);
-      color:#fff;
-    }
-
-    .error-text{
-      font-size:11px;
-      color:#fecaca;
-      margin-top:4px;
-      display:none;
-    }
-
-    /* MOBİL ADAPTASYON */
-    @media (max-width:768px){
-      body{
-        padding:12px;
-      }
-
-      .agenda-card{
-        padding:10px;
-      }
-
-      .day-cell{
-        min-height:72px;
-        padding:5px 4px;
-      }
-
-      .slot-mini{
-        font-size:9px;
-      }
-
-      .top-bar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:6px;
-      }
-
-      .modal{
-        max-width:100%;
-        width:100%;
-        border-radius:18px 18px 0 0;
-        position:fixed;
-        bottom:0;
-        left:0;
-        right:0;
-      }
-    }
   </style>
 </head>
 
@@ -477,7 +290,6 @@
   </div>
 
 </div>
-
 <!-- MODAL -->
 <div id="modalBg">
   <div class="modal">
@@ -558,7 +370,6 @@
     loadingEl.style.display = "none";
     agendaWrap.style.display = "block";
   });
-
   /* ---------- TAKVİM ÇİZ ---------- */
   function renderCalendar(){
     daysGrid.innerHTML = "";
@@ -571,7 +382,6 @@
     });
 
     const days = AgendaUtils.generateMonthDays(currentMonth);
-
     const todayStr = new Date().toISOString().slice(0,10);
 
     days.forEach(d=>{
@@ -622,53 +432,13 @@
         }
       }
 
-      cell.addEventListener("click", ()=>{
-        openDayModal(d.dateStr);
-      });
-
+      cell.addEventListener("click", ()=> openDayModal(d.dateStr));
       daysGrid.appendChild(cell);
     });
   }
 
-  /* ---------- GÜN HÜCRESİNİ TEK BAŞINA GÜNCELLE ---------- */
-  function refreshDayCell(dateStr){
-    const cell = daysGrid.querySelector(`.day-cell[data-date="${dateStr}"]`);
-    if (!cell) return;
 
-    // header dışındakileri temizle
-    const keep = [];
-    cell.childNodes.forEach((node, idx)=>{
-      if (idx === 0 || node.classList?.contains("badge-today")) keep.push(node);
-    });
-    cell.innerHTML = "";
-    keep.forEach(k=>cell.appendChild(k));
-
-    const appts = AgendaUtils.getAppointmentsForDay(dateStr);
-    if (appts.length > 0){
-      const count = document.createElement("div");
-      count.className = "appt-count";
-      count.textContent = `${appts.length} randevu`;
-      cell.appendChild(count);
-
-      const maxShow = 2;
-      appts.slice(0,maxShow).forEach(a=>{
-        const mini = document.createElement("div");
-        mini.className = "slot-mini";
-        const cust = a.customerName || "Müşteri";
-        mini.textContent = `${a.time} · ${cust}`;
-        cell.appendChild(mini);
-      });
-
-      if (appts.length > maxShow){
-        const extra = document.createElement("div");
-        extra.className = "slot-mini";
-        extra.textContent = `+${appts.length - maxShow} daha`;
-        cell.appendChild(extra);
-      }
-    }
-  }
-
-  /* ---------- GÜN MODALI ---------- */
+  /* ---------- GÜN MODALI (FULL UZATILMIŞ FINAL) ---------- */
   async function openDayModal(dateStr){
     modalTitle.textContent = "Gün detayları";
     modalDateEl.textContent = AgendaUtils.formatDateHuman(dateStr);
@@ -678,7 +448,7 @@
 
     modalInner.innerHTML = "";
 
-    // Randevu listesi
+    /* ----------------- RANDEVU LİSTESİ ----------------- */
     const sec1 = document.createElement("div");
     sec1.innerHTML = `<div class="section-title">Bu gündeki randevular</div>`;
     const listBox = document.createElement("div");
@@ -689,16 +459,30 @@
       empty.className = "appt-empty";
       empty.textContent = "Bu güne kayıtlı randevu yok.";
       listBox.appendChild(empty);
-    } else {
+    } 
+    else {
       appts.forEach(ap=>{
         const item = document.createElement("div");
         item.className = "appt-item";
+
+        /* PROFİL FOTOĞRAFI */
+        const avatar = ap.customerPhoto || "";
+        const avatarHTML = avatar 
+          ? `<img src="${avatar}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">`
+          : `<div style="width:26px;height:26px;border-radius:50%;background:#1e293b;color:#22c55e;display:flex;align-items:center;justify-content:center;font-size:12px;margin-right:6px;">C</div>`;
 
         const header = document.createElement("div");
         header.className = "appt-item-header";
 
         const left = document.createElement("div");
-        left.innerHTML = `<span class="appt-time">${ap.time}</span> · ${ap.customerName || "Müşteri"}`;
+        left.innerHTML = `
+          ${avatarHTML}
+          <span class="appt-time">${ap.time}</span> · 
+          ${ap.customerName || "Müşteri"}
+          <div style="font-size:9px;color:#94a3b8;margin-left:32px;">
+            Tel: ${ap.customerPhone || "-"}  
+          </div>
+        `;
 
         const right = document.createElement("div");
         const statusSpan = document.createElement("span");
@@ -715,23 +499,27 @@
         line2.textContent   = `${ap.serviceName || "Hizmet"}${ap.employeeName ? " · " + ap.employeeName : ""}`;
 
         const line3 = document.createElement("div");
-        line3.className = "appt-caption";
-        line3.textContent = "Silmek için tıklayın";
+        line3.style.fontSize = "10px";
+        line3.style.color   = "#9ca3af";
+        line3.textContent = `Oluşturulma: ${new Date(ap.createdAt).toLocaleString("tr-TR")}`;
+
+        const line4 = document.createElement("div");
+        line4.className = "appt-caption";
+        line4.textContent = "Silmek için tıklayın";
 
         item.appendChild(header);
         item.appendChild(line2);
         item.appendChild(line3);
+        item.appendChild(line4);
 
         item.addEventListener("click", async ()=>{
           if (!confirm("Bu randevuyu silmek istiyor musunuz?")) return;
           try{
             await AgendaUtils.deleteAppointment(db, ap.id, dateStr);
             alert("Randevu silindi.");
-            // listeyi yeniden oluştur
             openDayModal(dateStr);
             refreshDayCell(dateStr);
           }catch(e){
-            console.error(e);
             alert("Randevu silinirken hata oluştu.");
           }
         });
@@ -743,7 +531,8 @@
     sec1.appendChild(listBox);
     modalInner.appendChild(sec1);
 
-    // Elle randevu ekleme
+
+    /* ----------------- ELLE RANDEVU EKLEME ----------------- */
     const sec2 = document.createElement("div");
     sec2.innerHTML = `<div class="section-title">Elle yeni randevu ekle</div>`;
 
@@ -758,8 +547,10 @@
       opt.textContent = h;
       selTime.appendChild(opt);
     });
+
     lblTime.appendChild(selTime);
     sec2.appendChild(lblTime);
+
 
     const lblCust = document.createElement("label");
     lblCust.textContent = "Müşteri Adı";
@@ -768,6 +559,22 @@
     inpCust.placeholder = "Ad soyad";
     lblCust.appendChild(inpCust);
     sec2.appendChild(lblCust);
+
+    const lblPhone = document.createElement("label");
+    lblPhone.textContent = "Telefon Numarası";
+    const inpPhone = document.createElement("input");
+    inpPhone.id = "newPhone";
+    inpPhone.placeholder = "05xx xxx xx xx";
+    lblPhone.appendChild(inpPhone);
+    sec2.appendChild(lblPhone);
+
+    const lblPhoto = document.createElement("label");
+    lblPhoto.textContent = "Profil Fotoğrafı (URL)";
+    const inpPhoto = document.createElement("input");
+    inpPhoto.id = "newPhoto";
+    inpPhoto.placeholder = "İsteğe bağlı";
+    lblPhoto.appendChild(inpPhoto);
+    sec2.appendChild(lblPhoto);
 
     const lblServ = document.createElement("label");
     lblServ.textContent = "Hizmet";
@@ -781,7 +588,7 @@
     lblEmp.textContent = "Çalışan";
     const inpEmp = document.createElement("input");
     inpEmp.id = "newEmp";
-    inpEmp.placeholder = "Çalışan adı (isteğe bağlı)";
+    inpEmp.placeholder = "Çalışan adı";
     lblEmp.appendChild(inpEmp);
     sec2.appendChild(lblEmp);
 
@@ -797,32 +604,34 @@
 
     btnAdd.addEventListener("click", async ()=>{
       errorText.style.display = "none";
-      errorText.textContent   = "";
 
       const time = selTime.value;
       const customerName = inpCust.value.trim();
       const serviceName  = inpServ.value.trim();
       const employeeName = inpEmp.value.trim();
+      const customerPhone= inpPhone.value.trim();
+      const customerPhoto= inpPhoto.value.trim();
 
       if (!time || !customerName || !serviceName){
-        errorText.textContent = "Saat, müşteri adı ve hizmet alanları zorunludur.";
+        errorText.textContent = "Saat, müşteri adı ve hizmet zorunludur.";
         errorText.style.display = "block";
         return;
       }
 
-      // Aynı saate ikinci randevu engeli
       if (AgendaUtils.isHourBusy(dateStr, time)){
-        errorText.textContent = "Bu saat için zaten randevu var. Aynı saate ikinci randevu ekleyemezsiniz.";
+        errorText.textContent = "Bu saat dolu.";
         errorText.style.display = "block";
         return;
       }
 
       try{
         await AgendaUtils.addAppointment(db, {
-          businessID:  BUSINESS_ID,
-          date:        dateStr,
+          businessID: BUSINESS_ID,
+          date: dateStr,
           time,
           customerName,
+          customerPhone,
+          customerPhoto,
           serviceName,
           employeeName,
           status: "approved",
@@ -830,22 +639,21 @@
         });
 
         alert("Randevu eklendi.");
-        // modal içeriğini güncelle + hücreyi tazele
         openDayModal(dateStr);
         refreshDayCell(dateStr);
-      }catch(e){
-        console.error(e);
-        errorText.textContent = "Randevu eklenirken hata oluştu.";
+
+      }catch{
+        errorText.textContent = "Randevu eklenirken hata.";
         errorText.style.display = "block";
       }
     });
 
     sec2.appendChild(btnAdd);
-
     modalInner.appendChild(sec2);
 
     modalBg.style.display = "flex";
   }
+
 
   /* ---------- AY GEÇİŞ BUTONLARI ---------- */
   document.getElementById("prevMonth").addEventListener("click", async ()=>{
@@ -859,6 +667,7 @@
     await AgendaUtils.loadMonth(db, BUSINESS_ID, currentMonth);
     renderCalendar();
   });
+
 </script>
 
 </body>
