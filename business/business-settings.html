@@ -30,6 +30,35 @@
     flex-direction:column;
   }
 
+  /* ----------- LOGO DÜZENLEMESİ (TEK DEĞİŞİKLİK) ----------- */
+  .logo-box2{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:14px;
+  }
+
+  .logo-preview{
+    width:120px;
+    height:120px;
+    border-radius:16px;
+    object-fit:cover;
+    background:#020617;
+    border:1px solid var(--border);
+  }
+
+  .upload-btn{
+    padding:9px 14px;
+    background:var(--accent);
+    color:#022c22;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:14px;
+  }
+  /* --------------------------------------------------------- */
+
   .drawer-overlay{
     position:fixed;top:0;left:0;width:100%;height:100%;
     background:rgba(0,0,0,0.55);
@@ -469,7 +498,6 @@
       const end   = document.getElementById(`end_${d.key}`).value;
       const closed= document.getElementById(`closed_${d.key}`).checked;
 
-      // Boş bırakılmışsa kapalı kabul et
       if(!start || !end) out[d.key] = { start:"", end:"", closed:true };
       else out[d.key] = { start, end, closed };
     });
@@ -539,7 +567,6 @@
   saveScheduleBtn.addEventListener("click", async()=>{
     const schedule = collectScheduleFromUI();
 
-    // Saat tutarlılığı kontrolü
     for(const d of DAYS){
       const s = schedule[d.key];
       if(!s.closed && s.start && s.end){
@@ -566,7 +593,6 @@
     }
   });
 
-  // Şifre
   document.getElementById("savePassBtn").addEventListener("click",async()=>{
     const p = document.getElementById("newPassInput").value;
     if(p.length<6){ alert("Şifre en az 6 karakter."); return; }
