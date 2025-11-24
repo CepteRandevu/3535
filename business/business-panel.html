@@ -27,75 +27,137 @@ body {
   min-height:100vh;
 }
 
-/* Mobil üst menü */
+/* -------------------- DRAWER (Mobil Menü) -------------------- */
+.drawer-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(2px);
+  display:none;
+  z-index:998;
+}
+
+.drawer-menu{
+  position:fixed;top:0;left:0;width:250px;height:100%;
+  background:#0b1120;
+  transform:translateX(-100%);
+  transition:.28s;
+  z-index:999;
+  padding:20px;
+  border-right:1px solid rgba(255,255,255,0.08);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.drawer-open{ transform:translateX(0); }
+
+.drawer-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:10px;
+  color:var(--accent);
+}
+
+.drawer-links a{
+  display:block;
+  text-decoration:none;
+  color:#e2e8f0;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:14px;
+}
+.drawer-links a:hover,
+.drawer-links a.active{
+  background:var(--accent);
+  color:#022c22;
+  font-weight:600;
+}
+
+/* -------------------- Mobil Üst Bar -------------------- */
 .top-header{
   background:#0b1120;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  border-bottom:1px solid var(--border);
+  padding:10px 0 10px;
   position:sticky;
   top:0;
   z-index:900;
-  border-bottom:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
+
+.top-center{display:flex;justify-content:center;align-items:center;gap:10px;}
 .logo-mark{
-  background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
   width:34px;height:34px;border-radius:14px;
+  background:radial-gradient(circle at 30% 10%,#4ade80,#16a34a 42%,#0f766e);
   display:flex;align-items:center;justify-content:center;
   font-weight:800;color:#ecfdf5;
 }
-.logo-title{
-  font-size:16px;font-weight:600;margin-left:8px;
+.logo-title{font-size:16px;font-weight:600;}
+.top-menu-row{padding-left:16px;}
+.menu-btn{
+  background:var(--accent);border:0;color:#022c22;
+  padding:7px 14px;border-radius:10px;font-weight:600;
+  cursor:pointer;font-size:14px;
 }
 
-/* Sidebar */
+/* -------------------- Sidebar (Masaüstü) -------------------- */
 .sidebar{
   width:240px;
   background:var(--sidebar);
   border-right:1px solid var(--border);
   padding:20px;
-  flex-shrink:0;
   display:none;
+  flex-shrink:0;
+  flex-direction:column;
+  gap:14px;
 }
-.sidebar .menu-btn{
-  display:block;
+.logo-box{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.biz-name-small{font-size:15px;font-weight:600;}
+
+.menu button{
+  width:100%;
+  padding:10px 12px;
   background:transparent;
   border:0;
-  padding:12px;
-  width:100%;
   text-align:left;
-  border-radius:12px;
   color:var(--muted);
   cursor:pointer;
+  border-radius:12px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
-.sidebar .menu-btn:hover{
+
+.menu button:hover{
   background:rgba(34,197,94,0.12);
   color:var(--text);
 }
-.sidebar .menu-btn.active{
+
+.menu button.active{
   background:var(--accent);
   color:#022c22;
   font-weight:600;
 }
 
 @media(min-width:900px){
-  .sidebar{display:block;}
+  .sidebar{display:flex;}
   .top-header{display:none;}
 }
 
-/* MAIN */
+/* -------------------- MAIN -------------------- */
 .main{
   flex:1;
   padding:20px;
 }
+
 .page-title{
   font-size:22px;
   font-weight:700;
   margin-bottom:18px;
 }
 
-/* Randevu Kartı */
 .appt-card{
   background:var(--card);
   padding:16px;
@@ -106,65 +168,81 @@ body {
   flex-direction:column;
   gap:6px;
 }
+
 .appt-header{
   display:flex;
   justify-content:space-between;
   font-size:15px;
   font-weight:600;
 }
+
 .appt-sub{
-  font-size:13px;color:var(--muted);
+  font-size:13px;
+  color:var(--muted);
 }
+
 .appt-status{
   padding:4px 8px;
   border-radius:8px;
   font-size:12px;
   font-weight:600;
 }
-.status-pending{
-  background:rgba(234,179,8,0.2);
-  color:#facc15;
-}
-.status-approved{
-  background:rgba(34,197,94,0.2);
-  color:#4ade80;
-}
-.status-rejected{
-  background:rgba(248,113,113,0.2);
-  color:#f87171;
-}
+.status-pending{ background:rgba(234,179,8,0.2); color:#facc15; }
+.status-approved{ background:rgba(34,197,94,0.2); color:#4ade80; }
+.status-rejected{ background:rgba(248,113,113,0.2); color:#f87171; }
 
 </style>
 </head>
 
 <body>
 
-<!-- Mobil üst menü -->
+<!-- -------------------- DRAWER -------------------- -->
+<div id="drawerOverlay" class="drawer-overlay"></div>
+<div id="drawerMenu" class="drawer-menu">
+  <div class="drawer-title">Cepterandevu</div>
+  <div class="drawer-links">
+    <a href="business-panel.html" class="active">Panel</a>
+    <a href="business-services.html">Hizmetler</a>
+    <a href="business-employees.html">Çalışanlar</a>
+    <a href="business-appointments.html">Randevular</a>
+    <a href="business-agenda.html">Ajanda</a>
+    <a href="business-settings.html">Ayarlar</a>
+  </div>
+</div>
+
+<!-- -------------------- TOP HEADER (Mobil) -------------------- -->
 <header class="top-header">
-  <div style="display:flex;align-items:center;">
+  <div class="top-center">
     <div class="logo-mark">C</div>
     <span class="logo-title" id="bizNameMobile">Panel</span>
   </div>
+  <div class="top-menu-row">
+    <button id="menuBtn" class="menu-btn">Menü</button>
+  </div>
 </header>
 
-<!-- Sidebar -->
+<!-- -------------------- SIDEBAR (Desktop) -------------------- -->
 <aside class="sidebar">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+  <div class="logo-box">
     <div class="logo-mark">C</div>
-    <div id="bizNameSmall" style="font-size:15px;font-weight:600;">İşletme</div>
+    <div class="biz-name-small" id="bizNameSmall">İşletme</div>
   </div>
-  <button class="menu-btn active">Panel</button>
-  <button class="menu-btn" onclick="location.href='business-services.html'">Hizmetler</button>
-  <button class="menu-btn" onclick="location.href='business-employees.html'">Çalışanlar</button>
-  <button class="menu-btn" onclick="location.href='business-appointments.html'">Randevular</button>
-  <button class="menu-btn" onclick="location.href='business-agenda.html'">Ajanda</button>
- <button class="menu-btn" onclick="location.href='business-settings.html'">Ayarlar</button>
+
+  <div class="menu">
+    <button class="active">Panel</button>
+    <button onclick="location.href='business-services.html'">Hizmetler</button>
+    <button onclick="location.href='business-employees.html'">Çalışanlar</button>
+    <button onclick="location.href='business-appointments.html'">Randevular</button>
+    <button onclick="location.href='business-agenda.html'">Ajanda</button>
+    <button onclick="location.href='business-settings.html'">Ayarlar</button>
+  </div>
 </aside>
 
+<!-- -------------------- MAIN -------------------- -->
 <main class="main">
   <h1 class="page-title">En Son Randevular</h1>
-
   <div id="appointments"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -219,6 +297,7 @@ async function loadBusinessInfo(){
     bizNameMobile.textContent = d.name || "Panel";
   }
 }
+
 /* ---------------- LOAD APPOINTMENTS ---------------- */
 async function loadAppointments(){
   appointmentsEl.innerHTML = "Yükleniyor...";
@@ -246,7 +325,6 @@ async function loadAppointments(){
     });
   });
 
-  /* --- En yeni randevu en üstte --- */
   list.sort((a,b)=> b.createdAt - a.createdAt);
 
   if(list.length === 0){
@@ -256,7 +334,7 @@ async function loadAppointments(){
 
   appointmentsEl.innerHTML = "";
 
-  for (const appt of list){
+  for(const appt of list){
     const customer = await loadCustomer(appt.customerUID);
     const service  = await loadService(appt.serviceID);
     const employee = await loadEmployee(appt.employeeID);
@@ -322,5 +400,18 @@ function formatDate(d){
 </script>
 
 </main>
+
+<script>
+  const drawer = document.getElementById("drawerMenu");
+  const overlay = document.getElementById("drawerOverlay");
+  const menuBtn = document.getElementById("menuBtn");
+
+  function openDrawer(){ drawer.classList.add("drawer-open"); overlay.style.display="block"; }
+  function closeDrawer(){ drawer.classList.remove("drawer-open"); overlay.style.display="none"; }
+
+  if(menuBtn) menuBtn.addEventListener("click", openDrawer);
+  if(overlay) overlay.addEventListener("click", closeDrawer);
+</script>
+
 </body>
 </html>
