@@ -214,6 +214,12 @@ async function loadBusiness(){
   bizNameEl.textContent = businessData.name;
   bizLocationEl.textContent = `${businessData.city || ""} ${businessData.district || ""}`;
   bizMetaEl.textContent = businessData.phone || "";
+  document.getElementById("bizAddress").textContent =
+  businessData.address ? `Adres: ${businessData.address}` : "";
+
+document.getElementById("bizDesc").textContent =
+  businessData.description ? `Açıklama: ${businessData.description}` : "";
+  
 
   loadingEl.style.display="none";
   wrapEl.style.display="block";
