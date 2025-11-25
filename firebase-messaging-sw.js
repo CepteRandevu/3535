@@ -1,9 +1,9 @@
-// firebase-messaging-sw.js
+// /al/firebase-messaging-sw.js
 
+// Compat kullanıyoruz çünkü service worker tarafında ES module çok dertli.
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
 
-// BURAYA kendi firebaseConfig'ini koy
 firebase.initializeApp({
   apiKey: "AIzaSyB8jn673zFuYRDhgzFd5yfZ-MP2XSXgyFg",
   authDomain: "cepterandevu-35fe4.firebaseapp.com",
@@ -15,15 +15,36 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Arka planda (site kapalıyken) gelen bildirimler
-messaging.onBackgroundMessage(function (payload) {
+// Arka planda gelen bildirimler
+messaging.onBackgroundMessage((payload) => {
   console.log("[firebase-messaging-sw.js] Background message:", payload);
 
-  const notificationTitle = payload.notification?.title || "Bildirim";
+  const notificationTitle = payload.notification?.title || "Cepterandevu";
   const notificationOptions = {
     body: payload.notification?.body || "",
-    icon: "/icon-192.png" // varsa küçük ikon (yoksa sil)
+    icon: "/al/icons/icon-192.png", // Yoksa da sorun değil, sadece logoda boş kalır
+    data: payload.data || {}
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Bildirime tıklama
+self.addEventListener("notificationclick", function(event) {
+  event.notification.close();
+
+  const urlToOpen = event.notification.data?.click_action || "/al/";
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(function(clientList) {
+      for (const client of clientList) {
+        if (client.url.includes("/al/") && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
 });
