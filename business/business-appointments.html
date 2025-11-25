@@ -5,24 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Randevular | Cepterandevu</title>
 
-  <!-- MANIFEST (PWA + OneSignal için zorunlu) -->
-  <link rel="manifest" href="/al/manifest.json">
-
-  <!-- OneSignal SDK -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-
-      await OneSignal.init({
-        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
-        notifyButton: { enable: true }
-      });
-
-      /* Bildirim izni iste */
-      OneSignal.Notifications.requestPermission();
-    });
-  </script>
+  <!-- PWA + FCM için manifest -->
+  <link rel="manifest" href="/manifest.json">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -476,6 +460,7 @@
     </div>
   </main>
 
+  <!-- Drawer JS -->
   <script>
     const drawer = document.getElementById("drawerMenu");
     const overlay = document.getElementById("drawerOverlay");
@@ -494,8 +479,10 @@
     overlay.addEventListener("click", closeDrawer);
   </script>
 
+  <!-- Firebase + Randevular + Push (TEK MODULE) -->
   <script type="module">
     import { firebaseConfig } from "../js/firebase-config.js";
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
       getAuth,
@@ -509,12 +496,31 @@
       onSnapshot,
       doc,
       getDoc,
-      updateDoc
+      updateDoc,
+      setDoc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+      getMessaging,
+      getToken,
+      onMessage
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
+    // UYGULAMA TEK KEZ BAŞLATILIYOR
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const messaging = getMessaging(app);
+
+    // Service worker kaydı
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/firebase-messaging-sw.js")
+        .then(reg => {
+          console.log("Service worker kayıtlı:", reg);
+        })
+        .catch(err => {
+          console.error("Service worker kaydı hatası:", err);
+        });
+    }
 
     let businessID = null;
 
@@ -541,6 +547,11 @@
 
       businessID = user.uid;
       await loadBusinessName();
+
+      // Kullanıcı giriş yapmışken push izni iste + token kaydet
+      await setupPushForUser(user);
+
+      // Randevuları dinlemeye başla
       listenAppointmentsRealtime();
     });
 
@@ -769,6 +780,57 @@
         console.error("Randevu dinleme hatası:", err);
       });
     }
+
+    // PUSH KURULUMU
+    async function setupPushForUser(user) {
+      try {
+        if (!("Notification" in window)) {
+          console.log("Tarayıcı bildirim desteklemiyor.");
+          return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          console.log("Bildirim izni verilmedi:", permission);
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+
+        const currentToken = await getToken(messaging, {
+          vapidKey: "BHz_LvVX9Y9cQxHWZOYLX-YscxL6gItx9sQetA8uJurvn8aAXA3t9K2TYwvr2_xG3jg19P5y2aXLhENWbCBx_Pc",
+          serviceWorkerRegistration: registration,
+        });
+
+        if (!currentToken) {
+          console.log("FCM token alınamadı");
+          return;
+        }
+
+        console.log("FCM token:", currentToken);
+
+        await setDoc(
+          doc(db, "userPushTokens", user.uid),
+          {
+            token: currentToken,
+            updatedAt: Date.now(),
+            phone: user.phoneNumber || null,
+            type: "business"
+          },
+          { merge: true }
+        );
+
+        console.log("Token Firestore'a kaydedildi.");
+      } catch (err) {
+        console.error("Push kurulurken hata:", err);
+      }
+    }
+
+    // Site açıkken gelen bildirimler
+    onMessage(messaging, (payload) => {
+      console.log("Ön planda bildirim:", payload);
+      // İstersen buraya toast / mini popup ekleyebilirsin
+    });
   </script>
 </body>
 </html>
