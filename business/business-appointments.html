@@ -5,24 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Randevular | Cepterandevu</title>
 
-  <!-- MANIFEST (PWA + OneSignal için zorunlu) -->
-  <link rel="manifest" href="/al/manifest.json">
+<link rel="manifest" href="/al/manifest.json">
 
-  <!-- OneSignal SDK -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-
-      await OneSignal.init({
-        appId: "784cba74-0683-49ed-a3c6-e86741fc6aee",
-        notifyButton: { enable: true }
-      });
-
-      /* Bildirim izni iste */
-      OneSignal.Notifications.requestPermission();
-    });
-  </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
