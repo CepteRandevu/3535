@@ -6,7 +6,7 @@
   <title>Randevular | Cepterandevu</title>
 
   <!-- PWA + FCM için manifest -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="/al/manifest.json">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -513,7 +513,7 @@
 
     // Service worker kaydı
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/firebase-messaging-sw.js")
+      navigator.serviceWorker.register('/al/firebase-messaging-sw.js')
         .then(reg => {
           console.log("Service worker kayıtlı:", reg);
         })
