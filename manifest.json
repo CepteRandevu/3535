@@ -1,10 +1,10 @@
 {
   "name": "Cepterandevu",
   "short_name": "Cepterandevu",
-  "start_url": "/al/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#050816",
-  "theme_color": "#050816",
+  "theme_color": "#22c55e",
   "icons": [
     {
       "src": "/al/icons/icon-192.png",
