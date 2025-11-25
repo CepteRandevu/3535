@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Randevular | Cepterandevu</title>
 
-<link rel="manifest" href="/al/manifest.json">
-
+  <!-- MANIFEST (PWA + FCM için) -->
+  <link rel="manifest" href="/al/manifest.json">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -478,6 +478,7 @@
     overlay.addEventListener("click", closeDrawer);
   </script>
 
+  <!-- FIREBASE + FCM + RANDEVU LİSTESİ -->
   <script type="module">
     import { firebaseConfig } from "../js/firebase-config.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -493,12 +494,20 @@
       onSnapshot,
       doc,
       getDoc,
-      updateDoc
+      updateDoc,
+      setDoc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+      getMessaging,
+      getToken,
+      onMessage
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
+    // Firebase init
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const messaging = getMessaging(app);
 
     let businessID = null;
 
@@ -526,6 +535,13 @@
       businessID = user.uid;
       await loadBusinessName();
       listenAppointmentsRealtime();
+
+      // FCM token kaydetme (işletme tarafı)
+      try {
+        await initBusinessPush(user);
+      } catch (e) {
+        console.error("FCM init hatası:", e);
+      }
     });
 
     async function loadBusinessName() {
@@ -753,9 +769,56 @@
         console.error("Randevu dinleme hatası:", err);
       });
     }
-  </script>
-  
-  <script type="module" src="/al/js/push-init.js"></script>
 
+    // ---------- FCM KISMI (İŞLETME TOKEN KAYDI) ----------
+
+    async function saveBusinessToken(uid, token) {
+      if (!token) return;
+      await setDoc(doc(db, "businessTokens", uid), {
+        token,
+        updatedAt: Date.now()
+      });
+      console.log("Business FCM token kaydedildi:", token);
+    }
+
+    async function initBusinessPush(user) {
+      if (!("Notification" in window)) {
+        console.log("Bu tarayıcı bildirim desteklemiyor.");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        console.log("Bildirim izni verilmedi.");
+        return;
+      }
+
+      if (!("serviceWorker" in navigator)) {
+        console.log("Service Worker desteklenmiyor.");
+        return;
+      }
+
+      // Service Worker kaydı
+      const reg = await navigator.serviceWorker.register("/al/firebase-messaging-sw.js");
+      console.log("Service Worker registered for FCM");
+
+      const token = await getToken(messaging, {
+        vapidKey: "BHz_LvVX9Y9cQxHWZOYLX-YscxL6gItx9sQetA8uJurvn8aAXA3t9K2TYwvr2_xG3jg19P5y2aXLhENWbCBx_Pc",
+        serviceWorkerRegistration: reg
+      });
+
+      if (!token) {
+        console.log("FCM token alınamadı.");
+        return;
+      }
+
+      await saveBusinessToken(user.uid, token);
+    }
+
+    // Site açıkken gelen FCM bildirim log'u
+    onMessage(messaging, (payload) => {
+      console.log("Ön planda FCM bildirimi:", payload);
+    });
+  </script>
 </body>
 </html>
