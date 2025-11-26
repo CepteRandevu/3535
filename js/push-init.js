@@ -17,13 +17,12 @@ import {
   onMessage
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
+// Firebase app instance
 let app;
 try {
-  // Sayfa zaten initializeApp çağırıyor (business-appointments vs.)
   app = getApp();
 } catch (e) {
-  console.warn("Firebase app bulunamadı, push init atlanıyor:", e);
-  // Bu sayfada Firebase yoksa push çalışmayacak, ama sayfa da bozulmayacak.
+  console.warn("Firebase app bulunamadı:", e);
   return;
 }
 
@@ -33,83 +32,76 @@ const messaging = getMessaging(app);
 
 // Service worker kaydı
 navigator.serviceWorker.register('/al/firebase-messaging-sw.js')
-  .then(reg => {
-    console.log('Service worker kayıtlı:', reg.scope);
-  })
-  .catch(err => {
-    console.error('Service worker kaydı hatası:', err);
-  });
+  .then(reg => console.log("SW kayıt:", reg.scope))
+  .catch(err => console.error("SW kayıt hatası:", err));
 
+// Kullanıcıya push kur
 async function setupPushForUser(user) {
   try {
+    // Tarayıcı desteği
     if (!("Notification" in window)) {
-      console.log("Tarayıcı bildirim desteklemiyor.");
+      console.log("Bildirim yok.");
       return;
     }
 
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      console.log("Bildirim izni verilmedi:", permission);
+    // İzin iste
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") {
+      console.log("Bildirim reddedildi.");
       return;
     }
 
-    const registration = await navigator.serviceWorker.ready;
+    const reg = await navigator.serviceWorker.ready;
 
-    const currentToken = await getToken(messaging, {
+    // Token al
+    const token = await getToken(messaging, {
       vapidKey: "BHz_LvVX9Y9cQxHWZOYLX-YscxL6gItx9sQetA8uJurvn8aAXA3t9K2TYwvr2_xG3jg19P5y2aXLhENWbCBx_Pc",
-      serviceWorkerRegistration: registration,
+      serviceWorkerRegistration: reg
     });
 
-    if (!currentToken) {
-      console.log("FCM token alınamadı");
+    if (!token) {
+      console.log("Token alınamadı.");
       return;
     }
 
-    console.log("FCM token:", currentToken);
+    console.log("Alınan Token:", token);
 
-    // Kullanıcının işletme mi, müşteri mi olduğunu tespit et
-    let collectionName = "userPushTokens"; // default müşteri
+    // Kullanıcı işletme mi müşteri mi?
+    let collection = "userPushTokens";
     let role = "user";
 
-    try {
-      const bizRef = doc(db, "businesses", user.uid);
-      const bizSnap = await getDoc(bizRef);
-      if (bizSnap.exists()) {
-        collectionName = "businessPushTokens";
-        role = "business";
-      }
-    } catch (e) {
-      console.error("Rol kontrolü hata:", e);
+    const bizSnap = await getDoc(doc(db, "businesses", user.uid));
+    if (bizSnap.exists()) {
+      collection = "businessTokens"; // **DOĞRU KOLEKSİYON**
+      role = "business";
     }
 
-    await setDoc(doc(db, collectionName, user.uid), {
-      token: currentToken,
-      role,
+    // Token kaydet
+    await setDoc(doc(db, collection, user.uid), {
+      token: token,
       updatedAt: Date.now(),
+      role: role,
       phone: user.phoneNumber || null
     });
 
-    console.log("Token Firestore'a kaydedildi:", collectionName);
+    console.log("Token Firestore'a kaydedildi →", collection);
 
   } catch (err) {
-    console.error("Push kurulurken hata:", err);
+    console.error("Push hata:", err);
   }
 }
 
-// Kullanıcı login ise global push ayarla
+// Login kontrolü
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("Push için login kullanıcı:", user.uid);
+    console.log("Push için kullanıcı:", user.uid);
     setupPushForUser(user);
   } else {
-    console.log("Login yok, push kurulmayacak.");
+    console.log("Login yok → push yok");
   }
 });
 
-// Site açıkken gelen bildirimler (foreground)
+// Açıkken gelen bildirimler
 onMessage(messaging, (payload) => {
   console.log("Ön planda bildirim:", payload);
-
-  // İstersen sonra burada toast / modal vs yaparsın
-  // alert(payload.notification?.title + " - " + payload.notification?.body);
 });
